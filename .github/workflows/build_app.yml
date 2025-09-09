@@ -3,18 +3,9 @@ name: Build macOS App
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'app/**'
-      - '.github/workflows/build_app.yml'
-      - 'Makefile'
-      - 'scripts/**'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'app/**'
-      - '.github/workflows/build_app.yml'
-      - 'Makefile'
-      - 'scripts/**'
+  workflow_dispatch:
 
 jobs:
   build:

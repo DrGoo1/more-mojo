@@ -3,18 +3,9 @@ name: Build Audio Plugins (macOS)
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'plugin/**'
-      - '.github/workflows/build_plugin_mac.yml'
-      - 'Makefile'
-      - 'scripts/**'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'plugin/**'
-      - '.github/workflows/build_plugin_mac.yml'
-      - 'Makefile'
-      - 'scripts/**'
+  workflow_dispatch:
 
 jobs:
   build:
