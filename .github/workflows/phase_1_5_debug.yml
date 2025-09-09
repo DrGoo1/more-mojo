@@ -1,0 +1,49 @@
+name: Phase 1.5 - Debug Build (Verbose)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+          
+      # Run preflight checks with verbose output
+      - name: Run preflight checks
+        run: |
+          chmod +x scripts/preflight_fix.sh
+          bash -x scripts/preflight_fix.sh
+          
+      # Check for files
+      - name: List source files
+        run: |
+          echo "Listing source files:"
+          find app/Sources -type f -name "*.swift" | sort
+          
+      # Build with Debug configuration and verbose output
+      - name: Build App (Verbose)
+        run: |
+          cd app
+          mkdir -p build
+          xcodebuild -project "MoreMojoStudio.xcodeproj" \
+            -scheme "MoreMojoStudio" \
+            -configuration Debug \
+            -derivedDataPath "build" \
+            SWIFT_OPTIMIZATION_LEVEL=-Onone \
+            -verbose \
+            clean build
+            
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-logs
+          path: app/build/Logs/Build
+          retention-days: 7
