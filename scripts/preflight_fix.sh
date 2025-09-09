@@ -40,4 +40,19 @@ find "$APP_SRC" -name "*.swift" ! -name "MoreMojoStudioApp.swift" -print0 | whil
   fi
 done
 
+# 5) Check for proper Swift optimization level in build settings
+echo "  - Check Swift optimization level for Debug builds"
+find "$ROOT" -name "*.xcodeproj" -print0 | while IFS= read -r -d '' project; do
+  if [ -f "$project/project.pbxproj" ]; then
+    echo "    Checking $project"
+    # Look for Debug configurations with wrong optimization level
+    if grep -A 5 "Debug \*\* = {" "$project/project.pbxproj" | grep -q "SWIFT_OPTIMIZATION_LEVEL = \"-O\";"; then
+      echo "    ⚠️ Debug configuration with Release optimization level detected"
+      # Modify the project file to set correct optimization level
+      perl -0777 -i -pe 's/(Debug \*\* = \{[^}]*)(SWIFT_OPTIMIZATION_LEVEL = \"-O\";)/$1SWIFT_OPTIMIZATION_LEVEL = \"-Onone\";/g' "$project/project.pbxproj"
+      echo "    ✅ Fixed: Set Debug configuration to use -Onone"
+    fi
+  fi
+done
+
 echo "  - Preflight fixups complete"

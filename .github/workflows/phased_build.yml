@@ -33,10 +33,15 @@ jobs:
           chmod +x scripts/bootstrap_macos.sh
           ./scripts/bootstrap_macos.sh
           
+      - name: Run preflight checks
+        run: |
+          chmod +x scripts/preflight_fix.sh
+          ./scripts/preflight_fix.sh
+          
       - name: Build App
         run: |
           chmod +x scripts/build_app.sh
-          ./scripts/build_app.sh
+          SWIFT_OPTIMIZATION_LEVEL=-Onone ./scripts/build_app.sh
           
       - name: Upload App artifact
         uses: actions/upload-artifact@v4
