@@ -1,0 +1,35 @@
+name: Debug Artifact Upload
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  debug:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create test files
+      run: |
+        # Create test directory and file
+        mkdir -p debug_test
+        echo "This is a test file to debug artifacts" > debug_test/test.txt
+        echo "Current directory: $(pwd)"
+        echo "Files in directory:"
+        find . -type f -name "test.txt" | sort
+      
+    - name: Upload test artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-test-artifact
+        path: debug_test/test.txt
+        retention-days: 1
+      
+    - name: Echo GitHub context
+      run: |
+        echo "Repository: ${{ github.repository }}"
+        echo "Run ID: ${{ github.run_id }}"
+        echo "Workflow: ${{ github.workflow }}"
+        echo "Actions URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
