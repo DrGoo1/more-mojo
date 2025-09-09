@@ -1,0 +1,63 @@
+name: Phase 2 - Plugin Parity & Presets
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'plugin/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'plugin/**'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+          
+      - name: Clone JUCE
+        run: |
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git
+          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+          
+      - name: Build Plugin
+        run: |
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2
+          cmake --build plugin/build --config Release
+          
+      - name: Package Plugins
+        run: |
+          mkdir -p dist
+          cp -R plugin/build/MoreMojoPlugin_artefacts/Release/AU/*.component dist/ || true
+          cp -R plugin/build/MoreMojoPlugin_artefacts/Release/VST3/*.vst3 dist/ || true
+          
+          # Archive component and vst3 separately for easier extraction
+          cd dist
+          zip -r MoreMojo_AU.zip *.component || true
+          zip -r MoreMojo_VST3.zip *.vst3 || true
+          
+      - name: Upload Plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-Plugins
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "Phase 2 (Plugin Parity) build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
