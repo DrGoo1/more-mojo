@@ -29,8 +29,11 @@ jobs:
       with:
         xcode-version: 'latest-stable'
 
+    - name: Add script permissions
+      run: chmod +x scripts/*.sh
+
     - name: Install dependencies
-      run: make bootstrap
+      run: ./scripts/bootstrap_macos.sh
 
     - name: Build App (script)
       run: |
@@ -68,5 +71,5 @@ jobs:
           Artifacts available for download from the Actions page.
           
           Build Time: ${{ steps.build-time.outputs.time }}
-        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        to: drguostuff@gmail.com
         from: MoreMojo Build Notifications <github-actions@github.com>

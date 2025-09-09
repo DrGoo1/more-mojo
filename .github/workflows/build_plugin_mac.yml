@@ -33,6 +33,9 @@ jobs:
         ref: master
         path: JUCE
       
+    - name: Add script permissions
+      run: chmod +x scripts/*.sh
+
     - name: Install dependencies
       run: |
         brew install cmake
@@ -85,5 +88,5 @@ jobs:
           Artifacts available for download from the Actions page:
           - AU Component: MoreMojo-AU-macOS
           - VST3 Plugin: MoreMojo-VST3-macOS
-        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        to: drguostuff@gmail.com
         from: MoreMojo Build Notifications <github-actions@github.com>
