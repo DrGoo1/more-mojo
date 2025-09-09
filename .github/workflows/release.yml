@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh && ./scripts/bootstrap_macos.sh
+      
+      - name: Build App
+        run: |
+          chmod +x scripts/build_app.sh
+          ./scripts/build_app.sh
+      
+      - name: Build Plugin
+        run: |
+          export JUCE_DIR=$GITHUB_WORKSPACE/JUCE
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR"
+          cmake --build plugin/build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir -p dist
+          cp -R "app/build/Build/Products/Release/MoreMojoStudio.app" dist/ || true
+          cp -R plugin/build/Release/*.component dist/ || true
+          cp -R plugin/build/Release/*.vst3 dist/ || true
+          
+          cd dist
+          # Create zip archives for each artifact type
+          zip -r MoreMojo-App-${{ github.ref_name }}.zip MoreMojoStudio.app
+          zip -r MoreMojo-AU-${{ github.ref_name }}.zip *.component
+          zip -r MoreMojo-VST3-${{ github.ref_name }}.zip *.vst3
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/MoreMojo-App-${{ github.ref_name }}.zip
+            dist/MoreMojo-AU-${{ github.ref_name }}.zip
+            dist/MoreMojo-VST3-${{ github.ref_name }}.zip
+          name: MoreMojo ${{ github.ref_name }}
+          body: |
+            Release ${{ github.ref_name }}
+            
+            ## What's New
+            <!-- Release notes will be manually added -->
+            
+            ## Artifacts
+            - MoreMojoStudio App (macOS)
+            - AU Component Plugin
+            - VST3 Plugin
+          draft: true
+      
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "Release ${{ github.ref_name }} build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

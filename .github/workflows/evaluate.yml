@@ -1,0 +1,48 @@
+name: Evaluator (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: "vocal|instrument|bus|master"
+        required: true
+        default: vocal
+      plugin:
+        description: "AU name"
+        required: true
+        default: "Apple: AUDistortion"
+
+jobs:
+  eval:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up environment
+        run: |
+          mkdir -p tools/evaluator_cli/presets
+      
+      - name: Build and run evaluator
+        run: |
+          cd tools/evaluator_cli && make build
+          ./evaluator --type "${{ github.event.inputs.type }}" --plugin "${{ github.event.inputs.plugin }}" --out ./presets/${{ github.event.inputs.type }}.json
+      
+      - name: Upload recommendations
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-Recommendations
+          path: tools/evaluator_cli/presets
+          if-no-files-found: error
+          retention-days: 7
+      
+      # Slack notification for build status
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "Evaluator run for ${{ github.event.inputs.type }} using ${{ github.event.inputs.plugin }} completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,0 +1,57 @@
+name: Build Plugin Phase 2
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-plugin:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Pull JUCE (or use submodule)
+      run: |
+        git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+        echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+      
+    - name: Build Plugin
+      run: |
+        # Build the plugin with the DSP chain for Phase 2
+        cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2
+        cmake --build plugin/build --config Release
+    
+    - name: Package Plugins
+      run: |
+        mkdir -p dist
+        cp -R plugin/build/Release/*.component dist/ || true
+        cp -R plugin/build/Release/*.vst3 dist/ || true
+        
+        # Archive component and vst3 separately for easier extraction
+        cd dist
+        zip -r MoreMojo_AU.zip *.component
+        zip -r MoreMojo_VST3.zip *.vst3
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: MoreMojo-Plugins
+        path: dist
+        if-no-files-found: error
+        retention-days: 7
+        
+    # Slack notification for build status
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,workflow
+        text: "Plugin build ${{ github.workflow }} completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -1,0 +1,62 @@
+name: AI Model Smoke Test
+
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  model:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Test model presence and validity
+        run: |
+          test -d "app/Sources/AI/Models/MyTinyTCN.mlmodelc" || (echo "No model, skipping"; exit 0)
+          echo "Model present"
+          
+          # Swift script to verify model load
+          cat > verify_model.swift << 'EOF'
+          import Foundation
+          import CoreML
+          
+          func verifyModel() -> Bool {
+            guard let url = URL(string: "file://\(FileManager.default.currentDirectoryPath)/app/Sources/AI/Models/MyTinyTCN.mlmodelc") else {
+              print("Error creating URL")
+              return false
+            }
+            
+            do {
+              let model = try MLModel(contentsOf: url)
+              print("Model loaded successfully")
+              print("Model description: \(model.modelDescription)")
+              return true
+            } catch {
+              print("Error loading model: \(error)")
+              return false
+            }
+          }
+          
+          exit(verifyModel() ? 0 : 1)
+          EOF
+          
+          # Only run verification if model exists
+          if [ -d "app/Sources/AI/Models/MyTinyTCN.mlmodelc" ]; then
+            swift verify_model.swift
+          else
+            echo "Model not found, skipping verification"
+          fi
+          
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "AI Model smoke test completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
