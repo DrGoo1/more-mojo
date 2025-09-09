@@ -58,9 +58,13 @@ jobs:
         path: dist/MoreMojo_VST3.zip
         retention-days: 7
         
-    # Email notifications removed due to authentication issues
-    - name: Build status
+    # Slack notification for build status
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
       if: always()
-      run: |
-        echo "Plugin build ${{ github.workflow }} completed with status: ${{ job.status }}"
-        echo "See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,workflow
+        text: "Plugin build ${{ github.workflow }} completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
