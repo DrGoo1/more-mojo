@@ -46,18 +46,13 @@ jobs:
         cd dist
         zip -r MoreMojo_VST3.zip *.vst3
 
-    - name: Upload AU Component
+    # Upload all plugin artifacts in one step
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: MoreMojo-AU-macOS
-        path: dist/MoreMojo_AU.zip
-        retention-days: 7
-
-    - name: Upload VST3 Plugin
-      uses: actions/upload-artifact@v4
-      with:
-        name: MoreMojo-VST3-macOS
-        path: dist/MoreMojo_VST3.zip
+        name: MoreMojo-Plugins
+        path: dist
+        if-no-files-found: error
         retention-days: 7
         
     # Slack notification for build status
