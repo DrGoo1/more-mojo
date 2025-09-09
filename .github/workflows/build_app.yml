@@ -20,11 +20,10 @@ jobs:
       with:
         xcode-version: 'latest-stable'
 
-    - name: Add script permissions
-      run: chmod +x scripts/*.sh
-
-    - name: Install dependencies
-      run: ./scripts/bootstrap_macos.sh
+    - name: Install basic dependencies
+      run: |
+        brew install xcodegen cmake
+        mkdir -p bin
 
     - name: Build App (script)
       run: |

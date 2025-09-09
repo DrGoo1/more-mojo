@@ -24,12 +24,10 @@ jobs:
         ref: master
         path: JUCE
       
-    - name: Add script permissions
-      run: chmod +x scripts/*.sh
-
-    - name: Install dependencies
+    - name: Install basic dependencies
       run: |
-        brew install cmake
+        brew install xcodegen cmake
+        mkdir -p bin
         
     - name: Build Plugin (script)
       run: |
