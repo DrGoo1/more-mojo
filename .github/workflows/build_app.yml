@@ -22,7 +22,9 @@ jobs:
 
     - name: Install basic dependencies
       run: |
-        brew install xcodegen cmake
+        # Install xcodegen, skip cmake if it exists
+        brew install xcodegen || true
+        brew list cmake || brew install cmake || true
         mkdir -p bin
 
     - name: Build App (script)
