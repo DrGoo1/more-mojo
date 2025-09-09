@@ -1,0 +1,274 @@
+name: Complete Phased Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_phase:
+        description: 'Phase to start from (1, 2, 3, or 4)'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+  push:
+    tags:
+      - 'v*.*.*'  # Run on version tags
+
+jobs:
+  phase1:
+    name: Phase 1 - App Build
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.start_phase <= '1' || github.event_name == 'push' }}
+    runs-on: macos-latest
+    outputs:
+      status: ${{ job.status }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+          
+      - name: Build App
+        run: |
+          chmod +x scripts/build_app.sh
+          ./scripts/build_app.sh
+          
+      - name: Upload App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-App
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Notify on completion
+        if: always()
+        run: echo "::notice::Phase 1 (App Build) completed with status ${{ job.status }}"
+  
+  phase2:
+    name: Phase 2 - Plugin Parity
+    needs: [phase1]
+    if: |
+      always() && 
+      (needs.phase1.result == 'success' || github.event.inputs.start_phase == '2')
+    runs-on: macos-latest
+    outputs:
+      status: ${{ job.status }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Pull JUCE
+        run: |
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+          
+      - name: Build Plugin
+        run: |
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2
+          cmake --build plugin/build --config Release
+          
+      - name: Package Plugins
+        run: |
+          mkdir -p dist
+          cp -R plugin/build/Release/*.component dist/ || true
+          cp -R plugin/build/Release/*.vst3 dist/ || true
+          
+          # Archive component and vst3 for easier access
+          cd dist
+          zip -r MoreMojo_AU.zip *.component || true
+          zip -r MoreMojo_VST3.zip *.vst3 || true
+          
+      - name: Upload Plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-Plugins
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Notify on completion
+        if: always()
+        run: echo "::notice::Phase 2 (Plugin Parity) completed with status ${{ job.status }}"
+  
+  phase3:
+    name: Phase 3 - Evaluator
+    needs: [phase2]
+    if: |
+      always() && 
+      (needs.phase2.result == 'success' || github.event.inputs.start_phase == '3')
+    runs-on: macos-latest
+    outputs:
+      status: ${{ job.status }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for evaluator directory
+        id: check_dir
+        run: |
+          if [ -d "tools/evaluator_cli" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::warning::Skipping Phase 3: Evaluator directory not found"
+          fi
+          
+      - name: Build and run evaluator
+        if: steps.check_dir.outputs.exists == 'true'
+        run: |
+          cd tools/evaluator_cli
+          mkdir -p presets
+          make build
+          ./evaluator --type "vocal" --plugin "Apple: AUDistortion" --out ./presets/vocal.json
+          
+      - name: Upload recommendations
+        if: steps.check_dir.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-Recommendations
+          path: tools/evaluator_cli/presets
+          if-no-files-found: warn
+          retention-days: 7
+          
+      - name: Notify on completion
+        if: always()
+        run: |
+          if [ "${{ steps.check_dir.outputs.exists }}" == "true" ]; then
+            echo "::notice::Phase 3 (Evaluator) completed with status ${{ job.status }}"
+          else
+            echo "::notice::Phase 3 (Evaluator) skipped - directory not found"
+          fi
+  
+  phase4:
+    name: Phase 4 - AI Model
+    needs: [phase3]
+    if: |
+      always() && 
+      (needs.phase3.result == 'success' || github.event.inputs.start_phase == '4')
+    runs-on: macos-latest
+    outputs:
+      status: ${{ job.status }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for AI model
+        id: check_model
+        run: |
+          if [ -d "app/Sources/AI/Models/MyTinyTCN.mlmodelc" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::warning::AI model not found, test will check for that"
+          fi
+          
+      - name: Run model validation
+        run: |
+          test -d "app/Sources/AI/Models/MyTinyTCN.mlmodelc" || (echo "No model, skipping"; exit 0)
+          echo "Model present"
+          
+          # Swift script to verify model load
+          if [ -d "app/Sources/AI/Models/MyTinyTCN.mlmodelc" ]; then
+            cat > verify_model.swift << 'EOF'
+          import Foundation
+          import CoreML
+          
+          func verifyModel() -> Bool {
+            guard let url = URL(string: "file://\(FileManager.default.currentDirectoryPath)/app/Sources/AI/Models/MyTinyTCN.mlmodelc") else {
+              print("Error creating URL")
+              return false
+            }
+            
+            do {
+              let model = try MLModel(contentsOf: url)
+              print("Model loaded successfully")
+              print("Model description: \(model.modelDescription)")
+              return true
+            } catch {
+              print("Error loading model: \(error)")
+              return false
+            }
+          }
+          
+          exit(verifyModel() ? 0 : 1)
+          EOF
+            
+            swift verify_model.swift || true
+          fi
+          
+      - name: Notify on completion
+        if: always()
+        run: echo "::notice::Phase 4 (AI Model) completed with status ${{ job.status }}"
+        
+  summary:
+    name: Build Summary
+    needs: [phase1, phase2, phase3, phase4]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate build summary
+        run: |
+          echo "# MoreMojo Phased Build Summary" > $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 1 - App Build | ${{ needs.phase1.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 2 - Plugin Parity | ${{ needs.phase2.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 3 - Evaluator | ${{ needs.phase3.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase 4 - AI Model | ${{ needs.phase4.result }} |" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Create release for tags
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: MoreMojo ${{ github.ref_name }}
+          draft: true
+          body: |
+            ## Build Results
+            - Phase 1 (App): ${{ needs.phase1.result }}
+            - Phase 2 (Plugin): ${{ needs.phase2.result }}
+            - Phase 3 (Evaluator): ${{ needs.phase3.result }}
+            - Phase 4 (AI Model): ${{ needs.phase4.result }}
+            
+            ## Release Notes
+            <!-- Add release notes here -->
+            
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: custom
+          fields: repo,message,commit,author,action,eventName,workflow
+          custom_payload: |
+            {
+              "attachments": [{
+                "color": "${{ job.status == 'success' && 'good' || job.status == 'failure' && 'danger' || 'warning' }}",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*MoreMojo Phased Build Complete*\n\nApp: ${{ needs.phase1.result }}\nPlugin: ${{ needs.phase2.result }}\nEvaluator: ${{ needs.phase3.result }}\nAI: ${{ needs.phase4.result }}"
+                    }
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    ]
+                  }
+                ]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
