@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Enhanced preflight fix script with automatic source file checking and fixing
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_SRC="$ROOT/app/Sources"
@@ -51,6 +52,44 @@ find "$ROOT" -name "*.xcodeproj" -print0 | while IFS= read -r -d '' project; do
       # Modify the project file to set correct optimization level
       perl -0777 -i -pe 's/(Debug \*\* = \{[^}]*)(SWIFT_OPTIMIZATION_LEVEL = \"-O\";)/$1SWIFT_OPTIMIZATION_LEVEL = \"-Onone\";/g' "$project/project.pbxproj"
       echo "    ✅ Fixed: Set Debug configuration to use -Onone"
+    fi
+  fi
+done
+
+# 6) Check for required source files
+echo "  - Checking for required source files"
+REQUIRED_FILES=(
+  "Interpolators.swift"
+  "AnalogInterpolator.swift"
+  "AudioEngine.swift"
+  "AppState.swift"
+  "ContentView.swift"
+  "MoreMojoStudioApp.swift"
+  "MoreMojoSimpleView.swift"
+  "MoreMojoContainer.swift"
+  "MojoMakerView.swift"
+  "MoreMojoAssets.swift"
+  "PhotorealControls.swift"
+  "ProcessorParams.swift"
+)
+
+for file in "${REQUIRED_FILES[@]}"; do
+  if [ ! -f "$APP_SRC/$file" ]; then
+    echo "    ⚠️ Required file $file not found - searching for similar files"
+    # Try to find files with similar names
+    similar_files=$(find "$APP_SRC" -name "*${file%.*}*" -type f)
+    if [ -n "$similar_files" ]; then
+      echo "    Found similar files:"
+      echo "$similar_files"
+      # If only one similar file found and it's just a case difference, create a symbolic link
+      count=$(echo "$similar_files" | wc -l)
+      if [ "$count" -eq 1 ]; then
+        src_file=$(echo "$similar_files" | tr -d '\n')
+        echo "    Creating symbolic link from $src_file to $APP_SRC/$file"
+        ln -sf "$src_file" "$APP_SRC/$file"
+      fi
+    else
+      echo "    ⚠️ No similar files found"
     fi
   fi
 done
