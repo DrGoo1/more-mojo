@@ -1,0 +1,72 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - '.github/workflows/build_app.yml'
+      - 'Makefile'
+      - 'scripts/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - '.github/workflows/build_app.yml'
+      - 'Makefile'
+      - 'scripts/**'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: 'latest-stable'
+
+    - name: Install dependencies
+      run: make bootstrap
+
+    - name: Build App (script)
+      run: |
+        chmod +x scripts/build_app.sh
+        ./scripts/build_app.sh
+
+    - name: Archive app
+      run: |
+        cd dist
+        zip -r MoreMojoStudio.zip MoreMojoStudio.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: MoreMojoStudio-macOS
+        path: dist/MoreMojoStudio.zip
+        retention-days: 7
+        
+    - name: Send email notification
+      if: always()  # Run even if previous steps fail
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_USERNAME }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        subject: MoreMojo App Build ${{ job.status }}
+        body: |
+          MoreMojo App Build ${{ github.workflow }} completed with status: ${{ job.status }}
+          
+          Repository: ${{ github.repository }}
+          Commit: ${{ github.sha }}
+          See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          Artifacts available for download from the Actions page.
+          
+          Build Time: ${{ steps.build-time.outputs.time }}
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: MoreMojo Build Notifications <github-actions@github.com>

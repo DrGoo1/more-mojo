@@ -1,0 +1,390 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0587D80B9058834B463595B6 /* Interpolators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E8958F55D3BA1BC61E36DA /* Interpolators.swift */; };
+		10E9725BBA5F05C0D6FE42CF /* PhotorealControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864F3BA0109F968B90F07B30 /* PhotorealControls.swift */; };
+		12A2158EA46D8BC694B06B98 /* ProcessorParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D40D430B4D2DCF4114641 /* ProcessorParams.swift */; };
+		3DF0E439CBD9899EC5769D5C /* AudioProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */; };
+		3E82DF19BCE97E262DB87EC1 /* MoreMojoContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */; };
+		5298F507D3C463F55C1B12E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */; };
+		5A3775BFA4349C38843F8725 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */; };
+		799B55CC03EC16CF2451E053 /* MojoMakerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B524010831E2FA189338B1 /* MojoMakerView.swift */; };
+		9876A26CF5231D49F8EB2F9F /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */; };
+		A240BB403455C276AD866516 /* MoreMojoAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */; };
+		A35EE6539C2DB2FB4FC888DC /* MoreMojoStudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */; };
+		CB6810CA4DC8C5FFEC2C13AE /* AnalogInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C9B9570F053053913AB33C /* AnalogInterpolator.swift */; };
+		E65DA25B1963174F69649A00 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D323BBD4A967C20E162889E /* AppState.swift */; };
+		F8CE57765950843BEE376F62 /* MoreMojoSimpleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		13C9B9570F053053913AB33C /* AnalogInterpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogInterpolator.swift; sourceTree = "<group>"; };
+		1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoSimpleView.swift; sourceTree = "<group>"; };
+		2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoStudioApp.swift; sourceTree = "<group>"; };
+		49E8958F55D3BA1BC61E36DA /* Interpolators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolators.swift; sourceTree = "<group>"; };
+		5D323BBD4A967C20E162889E /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoAssets.swift; sourceTree = "<group>"; };
+		716D40D430B4D2DCF4114641 /* ProcessorParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessorParams.swift; sourceTree = "<group>"; };
+		820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingView.swift; sourceTree = "<group>"; };
+		864F3BA0109F968B90F07B30 /* PhotorealControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotorealControls.swift; sourceTree = "<group>"; };
+		B1B524010831E2FA189338B1 /* MojoMakerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MojoMakerView.swift; sourceTree = "<group>"; };
+		C7DDF71B6DF52C4CF945F7B9 /* MoreMojoStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoreMojoStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoContainer.swift; sourceTree = "<group>"; };
+		FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		45E0D89B5BB457A77C352BFA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7DDF71B6DF52C4CF945F7B9 /* MoreMojoStudio.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6D50A0794A15B7B9AE875492 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				13C9B9570F053053913AB33C /* AnalogInterpolator.swift */,
+				5D323BBD4A967C20E162889E /* AppState.swift */,
+				2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */,
+				820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */,
+				0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */,
+				49E8958F55D3BA1BC61E36DA /* Interpolators.swift */,
+				B1B524010831E2FA189338B1 /* MojoMakerView.swift */,
+				668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */,
+				ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */,
+				1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */,
+				3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */,
+				864F3BA0109F968B90F07B30 /* PhotorealControls.swift */,
+				716D40D430B4D2DCF4114641 /* ProcessorParams.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		D0AF0D5144D878F81A96EC16 = {
+			isa = PBXGroup;
+			children = (
+				6D50A0794A15B7B9AE875492 /* Sources */,
+				FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */,
+				45E0D89B5BB457A77C352BFA /* Products */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		63A33A03AECE2BF6ECBC79E0 /* MoreMojoStudio */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5C2034FDA80F6FE7FC70EC7F /* Build configuration list for PBXNativeTarget "MoreMojoStudio" */;
+			buildPhases = (
+				0039088DB5F601A51AC81BD8 /* Sources */,
+				2ACC4AF26DB6005198F13328 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MoreMojoStudio;
+			packageProductDependencies = (
+			);
+			productName = MoreMojoStudio;
+			productReference = C7DDF71B6DF52C4CF945F7B9 /* MoreMojoStudio.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1E0C83255274F3DEB37DFA52 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					63A33A03AECE2BF6ECBC79E0 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = EC18C385728E5BAF27138026 /* Build configuration list for PBXProject "MoreMojoStudio" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D0AF0D5144D878F81A96EC16;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				63A33A03AECE2BF6ECBC79E0 /* MoreMojoStudio */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2ACC4AF26DB6005198F13328 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5298F507D3C463F55C1B12E5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0039088DB5F601A51AC81BD8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB6810CA4DC8C5FFEC2C13AE /* AnalogInterpolator.swift in Sources */,
+				E65DA25B1963174F69649A00 /* AppState.swift in Sources */,
+				9876A26CF5231D49F8EB2F9F /* AudioEngine.swift in Sources */,
+				3DF0E439CBD9899EC5769D5C /* AudioProcessingView.swift in Sources */,
+				5A3775BFA4349C38843F8725 /* ContentView.swift in Sources */,
+				0587D80B9058834B463595B6 /* Interpolators.swift in Sources */,
+				799B55CC03EC16CF2451E053 /* MojoMakerView.swift in Sources */,
+				A240BB403455C276AD866516 /* MoreMojoAssets.swift in Sources */,
+				3E82DF19BCE97E262DB87EC1 /* MoreMojoContainer.swift in Sources */,
+				F8CE57765950843BEE376F62 /* MoreMojoSimpleView.swift in Sources */,
+				A35EE6539C2DB2FB4FC888DC /* MoreMojoStudioApp.swift in Sources */,
+				10E9725BBA5F05C0D6FE42CF /* PhotorealControls.swift in Sources */,
+				12A2158EA46D8BC694B06B98 /* ProcessorParams.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		10028472364A56B29E7BA3FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 120;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4E5C6AC3A98095B83AC1CD77 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = MoreMojoStudio.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.moremojo.studio;
+				PRODUCT_NAME = MoreMojoStudio;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DDCEA609F686BB65742D49B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 120;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		EF6D8C7BF3DF77CCCC062E02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = MoreMojoStudio.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.moremojo.studio;
+				PRODUCT_NAME = MoreMojoStudio;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5C2034FDA80F6FE7FC70EC7F /* Build configuration list for PBXNativeTarget "MoreMojoStudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E5C6AC3A98095B83AC1CD77 /* Debug */,
+				EF6D8C7BF3DF77CCCC062E02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EC18C385728E5BAF27138026 /* Build configuration list for PBXProject "MoreMojoStudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				10028472364A56B29E7BA3FB /* Debug */,
+				DDCEA609F686BB65742D49B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1E0C83255274F3DEB37DFA52 /* Project object */;
+}

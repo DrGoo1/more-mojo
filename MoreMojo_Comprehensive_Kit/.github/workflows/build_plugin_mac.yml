@@ -1,0 +1,30 @@
+
+name: Build Plugin (macOS)
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build-plugin:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull JUCE (or use submodule)
+        run: |
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+
+      - name: Build Plugin
+        run: |
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR"
+          cmake --build plugin/build --config Release
+
+      - name: Collect Plugin Artifacts
+        run: |
+          mkdir -p dist
+          cp -R plugin/build/Release/*.component dist/ || true
+          cp -R plugin/build/Release/*.vst3 dist/ || true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-Plugins
+          path: dist

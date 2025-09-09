@@ -1,0 +1,75 @@
+{
+  "" : {
+    "const-values" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master.swiftconstvalues",
+    "dependencies" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master.d",
+    "diagnostics" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master.dia",
+    "emit-module-dependencies" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master-emit-module.d",
+    "emit-module-diagnostics" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master-emit-module.dia",
+    "swift-dependencies" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio-master.swiftdeps"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AnalogInterpolator.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AnalogInterpolator.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AnalogInterpolator.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AnalogInterpolator.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AppState.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AppState.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AppState.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AppState.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AudioEngine.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioEngine.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioEngine.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioEngine.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AudioProcessingView.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioProcessingView.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioProcessingView.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/AudioProcessingView.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ContentView.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ContentView.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ContentView.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ContentView.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/Interpolators.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/Interpolators.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/Interpolators.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/Interpolators.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MojoMakerView.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MojoMakerView.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MojoMakerView.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MojoMakerView.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoAssets.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoAssets.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoAssets.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoAssets.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoContainer.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoContainer.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoContainer.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoContainer.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoSimpleView.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoSimpleView.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoSimpleView.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoSimpleView.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoStudioApp.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudioApp.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudioApp.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudioApp.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/PhotorealControls.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/PhotorealControls.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/PhotorealControls.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/PhotorealControls.o"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ProcessorParams.swift" : {
+    "index-unit-output-path" : "/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ProcessorParams.o",
+    "llvm-bc" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ProcessorParams.bc",
+    "object" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/ProcessorParams.o"
+  }
+}

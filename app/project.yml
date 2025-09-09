@@ -1,0 +1,103 @@
+name: MoreMojoStudio
+options:
+  bundleIdPrefix: com.moremojo
+  deploymentTarget:
+    macOS: "11.0"
+  minimumXcodeGenVersion: "2.18.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  indentWidth: 2
+  tabWidth: 2
+
+settings:
+  base:
+    MARKETING_VERSION: 1.2.0
+    CURRENT_PROJECT_VERSION: 120
+    SWIFT_VERSION: 5.0
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+    DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+
+targets:
+  MoreMojoStudio:
+    type: application
+    platform: macOS
+    deploymentTarget: "11.0"
+    sources:
+      # Main app files
+      - path: Sources
+        type: group
+        includes:
+          - "**/*.swift"
+      # Assets
+      - path: Assets.xcassets
+        type: folder
+        optional: true
+    resources:
+      # Assets catalog
+      - path: Assets.xcassets
+        optional: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.moremojo.studio
+        PRODUCT_NAME: MoreMojoStudio
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+        MACOSX_DEPLOYMENT_TARGET: "11.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        GCC_OPTIMIZATION_LEVEL: s
+        SWIFT_OPTIMIZATION_LEVEL: "-O"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: RELEASE
+        SWIFT_COMPILATION_MODE: wholemodule
+        ENABLE_NS_ASSERTIONS: NO
+        COPY_PHASE_STRIP: NO
+      configs:
+        debug:
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+          GCC_OPTIMIZATION_LEVEL: 0
+          SWIFT_COMPILATION_MODE: "singlefile"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          ENABLE_NS_ASSERTIONS: YES
+          ONLY_ACTIVE_ARCH: YES
+    frameworks:
+      - Metal
+      - MetalKit
+      - MetalPerformanceShaders
+      - CoreML
+      - AVFoundation
+      - Accelerate
+      - CoreGraphics
+      - CoreImage
+      - CoreAudio
+      - CoreData
+      - AppKit
+    entitlements:
+      path: MoreMojoStudio.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+        com.apple.security.files.user-selected.read-write: true
+        com.apple.security.device.audio-input: true
+    info:
+      path: Info.plist
+      properties:
+        CFBundleName: More Mojo Studio
+        CFBundleDisplayName: More Mojo Studio
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.music
+        NSPrincipalClass: NSApplication
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSMicrophoneUsageDescription: "More Mojo Studio needs access to the microphone for audio processing."
+        NSMainStoryboardFile: ""
+        NSSupportsAutomaticTermination: YES
+        NSSupportsSuddenTermination: YES
+    scheme:
+      environmentVariables:
+        MOREMOJO_USE_MPS: "1"
+        PYTHONPATH: "$(SRCROOT)/../python"

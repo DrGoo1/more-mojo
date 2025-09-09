@@ -1,0 +1,18 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "aedcd46dcce57311609c8b322ec7ac62c9db2143b6581041f645bd8a1ae04173"
+build_start_time: [1757430823, 827748000]
+build_end_time: [1757430829, 575843000]
+inputs:
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AnalogInterpolator.swift": !dirty [1757430821, 187029809]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AppState.swift": !dirty [1757430821, 206925400]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AudioEngine.swift": !dirty [1757430821, 229320873]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/AudioProcessingView.swift": !dirty [1757430821, 190504443]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ContentView.swift": !dirty [1757430821, 179067206]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/Interpolators.swift": !dirty [1757430821, 175275572]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MojoMakerView.swift": !dirty [1757430821, 155825398]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoAssets.swift": !dirty [1757430821, 159927325]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoContainer.swift": !dirty [1757430821, 171354229]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoSimpleView.swift": !dirty [1757430821, 144995580]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/MoreMojoStudioApp.swift": !dirty [1757430821, 194653203]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/PhotorealControls.swift": !dirty [1757430821, 149508299]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ProcessorParams.swift": !dirty [1757430821, 167375010]

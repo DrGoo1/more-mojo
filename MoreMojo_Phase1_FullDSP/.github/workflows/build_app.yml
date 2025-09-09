@@ -1,0 +1,25 @@
+
+name: Build App (macOS)
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build-app:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bootstrap
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+      - name: Build App
+        run: |
+          cd app
+          make build
+      - name: Collect App Artifact
+        run: |
+          mkdir -p dist
+          cp -R "app/build/Build/Products/Release/RealFeel Studio.app" dist/ || true
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-App
+          path: dist

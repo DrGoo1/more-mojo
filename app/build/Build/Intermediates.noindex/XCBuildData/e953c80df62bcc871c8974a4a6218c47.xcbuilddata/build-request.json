@@ -1,0 +1,65 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildOnly"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "63276c1610c3561c8ad18e17421ee524c16d7dd1956928851d0dd58f2cec18fa"
+    }
+  ],
+  "containerPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/MoreMojoStudio.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "arm64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "platform" : "macosx",
+      "sdk" : "macosx15.5",
+      "sdkVariant" : "macos",
+      "supportedArchitectures" : [
+        "arm64e",
+        "arm64",
+        "x86_64"
+      ],
+      "targetArchitecture" : "arm64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Products",
+      "derivedDataPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build",
+      "indexDataStoreFolderPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Release",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "ACTION" : "build",
+          "COLOR_DIAGNOSTICS" : "YES",
+          "diagnostic_message_length" : "86",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

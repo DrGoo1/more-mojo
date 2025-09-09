@@ -1,0 +1,39 @@
+
+name: RealFeel Studio
+options:
+  deploymentTarget:
+    macOS: "12.0"
+settings:
+  base:
+    SWIFT_VERSION: 5.0
+    MACOSX_DEPLOYMENT_TARGET: 12.0
+targets:
+  RealFeel Studio:
+    type: application
+    platform: macOS
+    productName: RealFeel Studio
+    bundleId: com.moremojo.studio
+    sources:
+      - path: Sources
+        includes:
+          - RealFeelStudioApp.swift
+          - ContentView.swift
+          - MoreMojoContainer.swift
+          - MoreMojoSimpleView.swift
+          - MojoMakerView.swift
+          - PhotorealControls.swift
+          - MoreMojoAssets.swift
+          - ProcessorParams.swift
+          - Presets.swift
+          - AudioEngine.swift
+          - Interpolators.swift
+          - AnalogInterpolator.swift
+          - Metering.swift
+          - Integrity.swift
+          - Info.plist
+      - path: Assets.xcassets
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_FILE: Sources/Info.plist
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
