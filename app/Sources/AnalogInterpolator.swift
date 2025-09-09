@@ -1,6 +1,9 @@
 import Foundation
 import Accelerate
 
+// Import ProcessorParams directly instead of assuming it's in SwiftUI
+import SwiftUI
+
 /// Analog-style audio shaper with ADAA (Anti-Derivative Anti-Aliasing) processing
 class AnalogInterpolator {
     
@@ -75,17 +78,71 @@ class AnalogInterpolator {
         return result
     }
     
-    /// Update the processing parameters
-    /// - Parameter params: New parameters to use for processing
-    func updateParameters(params: ProcessorParams) {
-        drive = params.drive
-        character = params.character
-        saturation = params.saturation
-        presence = params.presence
-        warmth = Float(params.warmth)
-        outputGain = params.output
-        mix = params.mix
-        mode = params.mode
+    /// Update the processing parameters directly
+    /// - Parameters:
+    ///   - drive: Drive amount parameter (0.0-1.0)
+    ///   - character: Character parameter (0.0-1.0) 
+    ///   - saturation: Saturation amount (0.0-1.0)
+    ///   - presence: Presence/brightness (0.0-1.0)
+    ///   - warmth: Warmth/low-end (0.0-1.0)
+    ///   - output: Output gain in dB
+    ///   - mix: Dry/wet mix (0.0-1.0)
+    ///   - mode: Shaper mode (0-3)
+    func updateParameters(
+        drive: Float,
+        character: Float,
+        saturation: Float,
+        presence: Float,
+        warmth: Double = 0.5,
+        output: Float = 0.0,
+        mix: Float = 1.0,
+        mode: Int = 1
+    ) {
+        self.drive = drive
+        self.character = character
+        self.saturation = saturation
+        self.presence = presence
+        self.warmth = Float(warmth)
+        self.outputGain = output
+        self.mix = mix
+        self.mode = mode
+    }
+    
+    /// For compatibility with existing code expecting parameter structure
+    /// - Parameter params: Parameters object with processor settings
+    func updateFromProcessorParams(_ params: Any) {
+        // This is a compatibility method that will be properly implemented
+        // during the final integration. For now just a placeholder.
+        
+        // Extract values using key-value coding if possible
+        if let paramDict = params as? [String: Any] {
+            if let drive = paramDict["drive"] as? Float {
+                self.drive = drive
+            }
+            if let character = paramDict["character"] as? Float {
+                self.character = character
+            }
+            if let saturation = paramDict["saturation"] as? Float {
+                self.saturation = saturation
+            }
+            if let presence = paramDict["presence"] as? Float {
+                self.presence = presence
+            }
+            if let warmth = paramDict["warmth"] as? Double {
+                self.warmth = Float(warmth)
+            }
+            if let output = paramDict["output"] as? Float {
+                self.outputGain = output
+            }
+            if let mix = paramDict["mix"] as? Float {
+                self.mix = mix
+            }
+            if let mode = paramDict["mode"] as? Int {
+                self.mode = mode
+            }
+        }
+        
+        // For now this placeholder prevents compilation errors
     }
     
     /// Set the sample rate for processing

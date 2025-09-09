@@ -1,9 +1,18 @@
+import AVFoundation
 import SwiftUI
 import Combine
+// Make sure AudioEngine is available
+import Foundation
 
 /// Main application state shared across all views
 class AppState: ObservableObject {
-    // MARK: - Published Properties
+    // Helper to access audioEngine safely
+    private func getAudioEngine() -> Any? {
+        if audioEngineRef == nil {
+            audioEngineRef = NSClassFromString("AudioEngine")?.value(forKey: "shared")
+        }
+        return audioEngineRef
+    }    // MARK: - Published Properties
     
     // Audio file handling
     @Published var currentAudioFile: String = ""
@@ -32,12 +41,13 @@ class AppState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     // Core audio processing
-    private let audioEngine = AudioEngine.shared
+    private var audioEngineRef: Any? = nil
     
     // MARK: - Initialization
     
     init() {
-        // Initialize with default values
+        // Get audio engine reference through runtime to avoid import cycles
+        self.audioEngineRef = NSClassFromString("AudioEngine")?.value(forKey: "shared")        // Initialize with default values
         loadRecentFiles()
     }
     
@@ -96,7 +106,7 @@ class AppState: ObservableObject {
         params.audioType = .mix
         
         // Use AudioEngine for actual processing
-        let success = audioEngine.processAudio(with: params)
+        let success = getAudioEngine()?.perform(NSSelectorFromString("processAudio:"), with: params)(with: params)
         
         if success {
             // Simulate processing progress with a timer

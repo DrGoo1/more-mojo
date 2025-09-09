@@ -164,57 +164,41 @@ class AudioEngine {
     private func applyProcessing(params: ProcessorParams, interpolator: InterpolatorProtocol) {
         // For demo purposes, we'll just print the parameters
         // In a real app, this would apply DSP effects to the audio chain
-//         print("Applying processing with parameters:")
-//         print("  Mojo Level: \(params.mojoLevel.rawValue)")
-//         print("  Audio Type: \(params.audioType.rawValue)")
-//         print("  Drive: \(params.drive)")
-//         print("  Character: \(params.character)")
-//         print("  Saturation: \(params.saturation)")
-//         print("  Presence: \(params.presence)")
-//         print("  Mix: \(params.mix)")
-//         print("  Output: \(params.output)")
-//         print("  Interpolator: \(params.interpMode.displayName)")
+        // print("Applying processing with parameters:")
+        // print("  Mojo Level: \(params.mojoLevel.rawValue)")
+        // print("  Audio Type: \(params.audioType.rawValue)")
         
-        // 1. Oversample using the selected interpolator
-        // 2. Apply analog shaping with ADAA algorithm
-        // 3. Apply additional processing (presence, character)
-        // 4. Downsample back to original rate
-        
-        // For this demo, we'll simulate some processing by updating the meter levels
-        simulateProcessing()
+        // Apply analog shaping
+        analogShaper.updateParameters(
+            drive: params.drive,
+            character: params.character,
+            saturation: params.saturation,
+            presence: params.presence,
+            warmth: params.warmth,
+            output: params.output,
+            mix: params.mix,
+            mode: params.mode
+        )
     }
     
-    // Simulate audio processing for demonstration
+    // Simulate processing for demonstration purposes
     private func simulateProcessing() {
-        // Start a timer to update the meter levels
-        var count = 0
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
-            
-            // Simulate input level based on parameters
-            self.inputLevel = Float.random(in: 0.2...0.7)
-            
-            // Simulate output level based on drive and output parameters
-            let drive = self.currentParams.drive
-            let output = self.currentParams.output
-            self.outputLevel = min(1.0, self.inputLevel * (0.8 + drive * 0.4) * output * 1.2)
-            
-            // Simulate spectrum data (for visualization)
-            for i in 0..<self.spectrumData.count {
-                let baseValue = Float(i) / Float(self.spectrumData.count)
-                let randomFactor = Float.random(in: 0...0.3)
-                self.spectrumData[i] = min(1.0, baseValue * self.outputLevel + randomFactor * self.outputLevel)
-            }
-            
-            // Stop after a few seconds
-            count += 1
-            if count >= 50 {
-                timer.invalidate()
-            }
+        // Generate some fake metering data
+        inputLevel = Float.random(in: 0.2...0.8)
+        outputLevel = inputLevel * (currentParams.drive * 0.5 + 0.5)
+        
+        // Generate some fake spectrum data
+        for i in 0..<spectrumData.count {
+            let freq = Float(i) / Float(spectrumData.count)
+            spectrumData[i] = Float.random(in: 0...0.3) + (0.7 * (1.0 - freq))
         }
+    }
+    
+    // Set parameters directly
+    func setParams(_ params: ProcessorParams) {
+        self.currentParams = params
+        // This would actually apply the parameters to audio processing in a real implementation
+        processAudio(with: params)
     }
     
     // Get the current input level (0.0 to 1.0)
