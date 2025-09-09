@@ -25,14 +25,15 @@ echo "==> Build app (xcodebuild)"
 DERIVED="build"
 xcodebuild -project "MoreMojoStudio.xcodeproj" \
   -scheme "MoreMojoStudio" \
-  -configuration Release \
+  -configuration Debug \
   -derivedDataPath "$DERIVED" \
+  SWIFT_OPTIMIZATION_LEVEL=-Onone \
   clean build
 
 echo "==> Package artifact"
 cd "$ROOT"
 mkdir -p dist
-APP="app/build/Build/Products/Release/MoreMojoStudio.app"
+APP="app/build/Build/Products/Debug/MoreMojoStudio.app"
 if [ -d "$APP" ]; then
   rm -rf "dist/MoreMojoStudio.app"
   cp -R "$APP" dist/
