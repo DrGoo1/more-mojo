@@ -18,20 +18,8 @@ jobs:
         echo "Hello from test workflow!"
         ls -la
         
-    - name: Send email notification
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.MAIL_USERNAME }}
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: Simple Test Workflow ${{ job.status }}
-        body: |
-          Simple test workflow completed with status: ${{ job.status }}
-          
-          Repository: ${{ github.repository }}
-          Commit: ${{ github.sha }}
-          
-          This is a test notification to verify email delivery is working.
-        to: drguostuff@gmail.com
-        from: Test Workflow <github-actions@github.com>
+    - name: Output success message
+      run: |
+        echo "Workflow completed successfully!"
+        echo "Repository: ${{ github.repository }}"
+        echo "Commit: ${{ github.sha }}"

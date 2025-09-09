@@ -42,24 +42,9 @@ jobs:
         path: dist/MoreMojoStudio.zip
         retention-days: 7
         
-    - name: Send email notification
-      if: always()  # Run even if previous steps fail
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.MAIL_USERNAME }}
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: MoreMojo App Build ${{ job.status }}
-        body: |
-          MoreMojo App Build ${{ github.workflow }} completed with status: ${{ job.status }}
-          
-          Repository: ${{ github.repository }}
-          Commit: ${{ github.sha }}
-          See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          
-          Artifacts available for download from the Actions page.
-          
-          Build Time: ${{ steps.build-time.outputs.time }}
-        to: drguostuff@gmail.com
-        from: MoreMojo Build Notifications <github-actions@github.com>
+    # Email notifications removed due to authentication issues
+    - name: Build status
+      if: always()
+      run: |
+        echo "Build ${{ github.workflow }} completed with status: ${{ job.status }}"
+        echo "See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
