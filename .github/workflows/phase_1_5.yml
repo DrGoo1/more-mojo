@@ -1,0 +1,73 @@
+name: Phase 1.5 - Steal That Mojo
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/Sources/StealMojoSwift.swift'
+      - 'app/Sources/StealMojoPanel_SwiftOnly.swift'
+      - 'app/Sources/MoreMojoSimpleView.swift'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'app/Sources/StealMojoSwift.swift'
+      - 'app/Sources/StealMojoPanel_SwiftOnly.swift'
+      - 'app/Sources/MoreMojoSimpleView.swift'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+          
+      - name: Build App
+        run: |
+          chmod +x scripts/build_app.sh
+          ./scripts/build_app.sh
+          
+      - name: Verify Steal That Mojo integration
+        run: |
+          # Check if the required files are present
+          if [ ! -f "app/Sources/StealMojoSwift.swift" ]; then
+            echo "Error: StealMojoSwift.swift not found"
+            exit 1
+          fi
+          
+          if [ ! -f "app/Sources/StealMojoPanel_SwiftOnly.swift" ]; then
+            echo "Error: StealMojoPanel_SwiftOnly.swift not found"
+            exit 1
+          fi
+          
+          # Verify integration in MoreMojoSimpleView
+          grep -q "showStealMojo" app/Sources/MoreMojoSimpleView.swift
+          if [ $? -ne 0 ]; then
+            echo "Error: StealMojoPanel integration not found in MoreMojoSimpleView.swift"
+            exit 1
+          fi
+          
+          echo "Steal That Mojo integration verified"
+          
+      - name: Upload App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-App-Phase-1.5
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "Phase 1.5 (Steal That Mojo) build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

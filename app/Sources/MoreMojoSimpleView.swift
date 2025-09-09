@@ -8,6 +8,12 @@ struct MoreMojoSimpleView: View {
     var onAdvanced: () -> Void
     var onProcess: () -> Void
     
+    // State for showing Steal That Mojo panel
+    @State private var showStealMojo = false
+    
+    // Reference to the audio engine for applying params
+    @EnvironmentObject var engine: AudioEngine
+    
     // Audio type options
     private let audioTypes = ["Drums", "Bass", "Guitar", "Vocals", "Mix"]
     
@@ -23,6 +29,15 @@ struct MoreMojoSimpleView: View {
                     .fontWeight(.bold)
                 
                 Spacer()
+                
+                Button("Steal That Mojo...") {
+                    showStealMojo = true
+                }
+                .padding(.horizontal, 15)
+                .padding(.vertical, 8)
+                .background(Color.blue.opacity(0.7))
+                .foregroundColor(.white)
+                .cornerRadius(8)
                 
                 Button("Advanced") {
                     onAdvanced()
@@ -138,5 +153,10 @@ struct MoreMojoSimpleView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white.opacity(0.2))
         )
+        .sheet(isPresented: $showStealMojo) {
+            StealMojoPanel_SwiftOnly(onApply: { params in
+                engine.setParams(params)
+            })
+        }
     }
 }
