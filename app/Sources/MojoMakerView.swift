@@ -1,5 +1,7 @@
 import SwiftUI
 
+// Using PhotorealControls.swift component implementations
+
 struct MojoMakerView: View {
     @Binding var drive: Double
     @Binding var mix: Double

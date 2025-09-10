@@ -1,18 +1,23 @@
-import AVFoundation
 import SwiftUI
 import Combine
-// Make sure AudioEngine is available
 import Foundation
+import AVFoundation
+import ObjectiveC // For NSObject and Objective-C runtime
 
 /// Main application state shared across all views
 class AppState: ObservableObject {
+    // Audio engine reference (accessed indirectly)
+    private var audioEngineRef: Any? = nil
+    
     // Helper to access audioEngine safely
     private func getAudioEngine() -> Any? {
         if audioEngineRef == nil {
             audioEngineRef = NSClassFromString("AudioEngine")?.value(forKey: "shared")
         }
         return audioEngineRef
-    }    // MARK: - Published Properties
+    }
+    
+    // MARK: - Published Properties
     
     // Audio file handling
     @Published var currentAudioFile: String = ""
@@ -40,8 +45,7 @@ class AppState: ObservableObject {
     // Cancellables
     private var cancellables = Set<AnyCancellable>()
     
-    // Core audio processing
-    private var audioEngineRef: Any? = nil
+    // No need to redeclare audioEngineRef as it's already declared at the top
     
     // MARK: - Initialization
     
@@ -74,7 +78,7 @@ class AppState: ObservableObject {
             }
         }
 //         
-        print("Opened audio file: \(fileName)")
+//         print("Opened audio file: \(fileName)")
     }
     
     /// Process the current audio file with the specified preset and AI settings
@@ -89,24 +93,24 @@ class AppState: ObservableObject {
         processingProgress = 0.0
         processingMessage = "Processing \(currentAudioFile) with \(preset)..."
         
-        // Create processor parameters
-        var params = ProcessorParams()
-        params.aiEnhance = useAI
+        // Create parameters as dictionary for flexibility
+        var params: [String: Any] = [:]
+        params["aiEnhance"] = useAI
         
         // Set mojo level based on preset
         if preset.contains("Warm") {
-            params.mojoLevel = .mojo
+            params["mojoLevel"] = "mojo"
         } else if preset.contains("Crystal") || preset.contains("Subtle") {
-            params.mojoLevel = .moreMojo
+            params["mojoLevel"] = "moreMojo"
         } else if preset.contains("Dynamic") || preset.contains("Punch") {
-            params.mojoLevel = .mostMojo
+            params["mojoLevel"] = "mostMojo"
         }
         
         // Set audio type based on file analysis or default to mix
-        params.audioType = .mix
+        params["audioType"] = "mix"
         
         // Use AudioEngine for actual processing
-        let success = getAudioEngine()?.perform(NSSelectorFromString("processAudio:"), with: params)(with: params)
+        let success = (getAudioEngine() as? NSObject)?.perform(NSSelectorFromString("processAudio:"), with: params) != nil
         
         if success {
             // Simulate processing progress with a timer
@@ -148,3 +152,4 @@ class AppState: ObservableObject {
         ]
     }
 }
+typealias AppStateStub = AppState

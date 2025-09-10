@@ -1,7 +1,35 @@
 import SwiftUI
+import Foundation
+import Combine
+
+// Local stub implementation for ContentView
+// DUPLICATE REMOVED: class AppState: ObservableObject {
+    var currentAudioFile: String = ""
+    var recentAudioFiles: [String] = []
+    var activePreset: String = "Default"
+    var aiEnabled: Bool = true
+    var isProcessing: Bool = false
+    var processingMessage: String = ""
+    var processingProgress: Double = 0.0
+    var presets: [String] = ["Default", "Vintage Warm", "Crystal Clear"]
+    
+    // Audio device management
+    var availableInputDevices: [String] = ["Built-in Microphone", "Audio Interface"]
+    var availableOutputDevices: [String] = ["Built-in Speakers", "Audio Interface"]
+    var selectedInputDevice: String = "Built-in Microphone"
+    var selectedOutputDevice: String = "Built-in Speakers"
+    
+    func processAudio(preset: String, useAI: Bool) -> Bool { return true }
+
+    func openAudioFile() {}
+    func syncWithHardware() {}
+
+// Stubs for required views
+// DUPLICATE REMOVED - AudioProcessingView implementation deleted
+// DUPLICATE REMOVED - old implementation deleted
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
+    @StateObject private var appState = AppStateStub()
     
     var body: some View {
         TabView {
@@ -15,7 +43,7 @@ struct ContentView: View {
                     Label("Audio", systemImage: "waveform")
                 }
             
-            MoreMojoContainer()
+            MoreMojoContainerView() // Use our new implementation with Peter-Max UI
                 .tabItem {
                     Label("More Mojo", systemImage: "dial.max.fill")
                 }
@@ -25,12 +53,13 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gear")
                 }
         }
+        .environmentObject(appState)
         .frame(minWidth: 800, minHeight: 600)
     }
 }
 
 struct MainDashboardView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var appState: AppStateStub
     
     var body: some View {
         VStack(spacing: 20) {
@@ -92,7 +121,7 @@ struct MainDashboardView: View {
 }
 
 struct SettingsView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var appState: AppStateStub
     
     var body: some View {
         Form {

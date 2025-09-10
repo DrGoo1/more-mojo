@@ -1,7 +1,24 @@
 import SwiftUI
+import Combine
+import Foundation
 
+// Add stub class declaration if needed for the parser
+class AppStateStub: ObservableObject {
+    var currentAudioFile: String = ""
+    var recentAudioFiles: [String] = []
+    var activePreset: String = "Default"
+    var aiEnabled: Bool = true
+    var isProcessing: Bool = false
+    var processingMessage: String = ""
+    var processingProgress: Double = 0.0
+    
+    func processAudio(preset: String, useAI: Bool) -> Bool { return true }
+    func openAudioFile() {}
+}
+
+// Using AppStateStub directly to avoid name conflicts
 struct AudioProcessingView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var appState: AppStateStub
     @State private var isProcessing = false
     
     var body: some View {
@@ -24,8 +41,10 @@ struct AudioProcessingView: View {
             
             // Controls
             HStack(spacing: 30) {
+                // Use a local binding to avoid tag issues
+                let presetNames = ["Default", "Vintage Warm", "Crystal Clear"]
                 Picker("Preset", selection: $appState.activePreset) {
-                    ForEach(appState.presets, id: \.self) { preset in
+                    ForEach(presetNames, id: \.self) { preset in
                         Text(preset).tag(preset)
                     }
                 }

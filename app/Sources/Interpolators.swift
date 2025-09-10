@@ -1,15 +1,8 @@
 import Foundation
 import Accelerate
 
-// Protocol defining the interface for audio interpolation algorithms
-protocol InterpolatorProtocol {
-    var oversamplingFactor: Int { get }
-    func configure(sampleRate: Double)
-    func up(_ input: [Float], _ output: inout [Float])
-    func down(_ input: [Float], _ output: inout [Float])
-    func upStereo(_ inputL: [Float], _ inputR: [Float], _ outputL: inout [Float], _ outputR: inout [Float])
-    func downStereo(_ inputL: [Float], _ inputR: [Float], _ outputL: inout [Float], _ outputR: inout [Float])
-}
+// Use the InterpolatorProtocol from AudioEngine.swift
+// Protocol is already defined there
 
 // Half-band interpolator (4x oversampling) - efficient for real-time use
 class HalftBandInterpolator: InterpolatorProtocol {
@@ -30,7 +23,7 @@ class HalftBandInterpolator: InterpolatorProtocol {
         output = [Float](repeating: 0, count: n * oversamplingFactor)
         
         for i in 0..<n {
-            output[i * oversamplingFactor] = input[i] * oversamplingFactor
+            output[i * oversamplingFactor] = input[i] * Float(oversamplingFactor)
         }
         
         // In real implementation, apply multi-stage filtering
@@ -177,37 +170,10 @@ class AdaptiveInterpolator: InterpolatorProtocol {
     }
 }
 
-// Analog shaping algorithm
-class AnalogInterpolator {
-    private var drive: Float = 0.5
-    private var character: Float = 0.5
-    private var saturation: Float = 0.5
-    private var presence: Float = 0.5
-    
-    func configure(drive: Float, character: Float, saturation: Float, presence: Float) {
-        self.drive = drive
-        self.character = character
-        self.saturation = saturation
-        self.presence = presence
-    }
-    
-    func processSample(_ sample: Float) -> Float {
-        // Apply drive gain
-        var processed = sample * (1.0 + drive * 3.0)
-        
-        // Apply character (asymmetric distortion)
-        processed += character * 0.2 * sin(processed)
-        
-        // Apply saturation (tanh waveshaper)
-        processed = tanh(processed * (0.5 + saturation))
-        
-        // Apply presence (high frequency enhancement)
-        // This is simplified; real implementation would use a filter
-        
-        return processed
-    }
-    
-    func processStereo(_ leftSample: Float, _ rightSample: Float) -> (left: Float, right: Float) {
-        return (processSample(leftSample), processSample(rightSample))
-    }
+// AnalogInterpolator is already defined in AnalogInterpolator.swift
+// This is a sample implementation for reference only
+/*
+class AnalogShaper {
+    // Implementation moved to AnalogInterpolator.swift
 }
+*/

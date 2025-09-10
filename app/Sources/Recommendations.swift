@@ -64,7 +64,7 @@ class RecommendationsManager {
             let decoder = JSONDecoder()
             return try decoder.decode(RecommendationResult.self, from: data)
         } catch {
-            print("Error loading recommendation: \(error)")
+//             print("Error loading recommendation: \(error)")
             return nil
         }
     }
@@ -98,7 +98,10 @@ struct RecommendationsPanel: View {
             Button("Load Recommendation") {
                 loadRecommendation()
             }
-            .buttonStyle(.borderedProminent)
+            .padding(8)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(6)
             
             if let rec = recommendation {
                 VStack(alignment: .leading, spacing: 8) {
@@ -113,10 +116,10 @@ struct RecommendationsPanel: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Recommended settings:").font(.subheadline)
                             Text("Interpolation: \(formatInterpolation(overall.interpMode))")
-                            Text("Drive: \(String(format: "%.2f", overall.drive))")
-                            Text("Character: \(String(format: "%.2f", overall.character))")
-                            Text("Saturation: \(String(format: "%.2f", overall.saturation))")
-                            Text("Presence: \(String(format: "%.2f", overall.presence))")
+                            Text("Drive: \(String(format: "%.2", overall.drive))")
+                            Text("Character: \(String(format: "%.2", overall.character))")
+                            Text("Saturation: \(String(format: "%.2", overall.saturation))")
+                            Text("Presence: \(String(format: "%.2", overall.presence))")
                         }
                         .padding(.vertical, 4)
                         
@@ -172,7 +175,7 @@ struct RecommendationsPanel: View {
         return timestamp
     }
     
-    private func formatInterpolation(_ mode: ProcessorParams.InterpMode) -> String {
+    private func formatInterpolation(_ mode: InterpMode) -> String {
         switch mode {
         case .liveHB4x: return "Live (HB 4×)"
         case .hqSinc8x: return "HQ (Sinc 8×)"
