@@ -1,6 +1,6 @@
 import Foundation
 
-// Canonical definitions live here.
+// Single source of truth for core types
 public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
     case liveHB4x = 0, hqSinc8x, transientSpline4x, adaptive, aiAnalogHook
     public var id: Int { rawValue }
