@@ -285,11 +285,10 @@ enum SwiftMojoAnalyzer {
             let Ms = interp(s.freq, s.mag, at: fGrid)
             let Mr = interp(r.freq, r.mag, at: fGrid)
             let diff = zip(Mr, Ms).map { $0 - $1 } // dB to boost src to match ref
-            // compress to bands
+            // compress to bands (explicit element type + explicit initializer)
             var bands: [MojoEQBand] = []
-            let edges = stride(from: 0, to: fGrid.count, by: fGrid.count / bands.clampedCount(8)).map{ Int($0) }
             let N = 8
-            let e = (0...N).map { i -> Int in Int(Float(i)/Float(N) * Float(fGrid.count-1)) }
+            let e = (0...N).map { i in Int(Float(i)/Float(N) * Float(fGrid.count-1)) }
             for i in 0..<N {
                 let i0 = e[i], i1 = e[i+1]
                 if i1 <= i0 { continue }

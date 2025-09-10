@@ -17,6 +17,11 @@ jobs:
           brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
           brew list xcbeautify >/dev/null 2>&1 || brew install xcbeautify
 
+      - name: Preflight guard
+        run: |
+          chmod +x scripts/preflight_guard.sh
+          ./scripts/preflight_guard.sh app/Sources
+
       - name: Build with full logs
         run: |
           set -euo pipefail

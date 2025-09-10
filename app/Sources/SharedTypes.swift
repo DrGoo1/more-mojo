@@ -1,12 +1,8 @@
 import Foundation
 
-// MARK: - Interp mode (use this consistently everywhere)
+// Canonical definitions live here.
 public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
-    case liveHB4x = 0      // half-band FIR 4x (low latency)
-    case hqSinc8x          // linear-phase windowed-sinc 8x
-    case transientSpline4x // Hermite 4x (transient-friendly)
-    case adaptive          // 1x↔4x based on HF/transient
-    case aiAnalogHook      // for future AI path (bypass if absent)
+    case liveHB4x = 0, hqSinc8x, transientSpline4x, adaptive, aiAnalogHook
     public var id: Int { rawValue }
     public var displayName: String {
         switch self {
@@ -19,32 +15,24 @@ public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
     }
 }
 
-// MARK: - Processor parameters (single source of truth)
 public struct ProcessorParams: Codable, Equatable {
-    // Pre-/post gain
-    public var input:  Float = 0.0    // dB (-12...+12)
-    public var output: Float = 0.0    // dB (-12...+12)
-
-    // Mojo core
-    public var drive:      Float = 0.55  // 0..1
-    public var character:  Float = 0.50  // 0..1
-    public var saturation: Float = 0.45  // 0..1
-    public var presence:   Float = 0.50  // 0..1
-
-    // Mix
-    public var mix:        Float = 1.00  // 0..1
-
-    // Mode & quality
+    public var input:  Float = 0.0   // dB
+    public var output: Float = 0.0   // dB
+    public var drive:      Float = 0.55
+    public var character:  Float = 0.50
+    public var saturation: Float = 0.45
+    public var presence:   Float = 0.50
+    public var mix:        Float = 1.00
     public var interpMode: InterpMode = .liveHB4x
-    public var mode:       Int = 1       // curve family (Warm/Vintage/Tape/Tube), if you use it
+    public var mode:       Int = 1
 }
 
-// MARK: - EQ Match (shared)
 public struct MojoEQBand: Codable, Equatable {
-    public var lo: Float   // Hz
-    public var hi: Float   // Hz
+    public var lo: Float
+    public var hi: Float
     public var gain_dB: Float
 }
+
 public struct MojoEQMatch: Codable, Equatable {
     public var bands: [MojoEQBand]
 }
