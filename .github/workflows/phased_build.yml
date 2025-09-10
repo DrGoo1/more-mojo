@@ -42,26 +42,45 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ci_logs
-          # Print tool versions (helps when macOS images change)
-          xcodebuild -version | tee -a ci_logs/tooling.txt
-          sw_vers           | tee -a ci_logs/tooling.txt
-          swift --version   | tee -a ci_logs/tooling.txt
 
-          # Run your builder but capture stdout/stderr to a log
+          # Tooling info (helps when macOS image changes)
+          echo "=== Tooling ===" | tee -a ci_logs/tooling.txt
+          xcodebuild -version | tee -a ci_logs/tooling.txt
+          sw_vers               | tee -a ci_logs/tooling.txt
+          swift --version       | tee -a ci_logs/tooling.txt
+          echo "PWD: $(pwd)"    | tee -a ci_logs/tooling.txt
+          ls -la                | tee -a ci_logs/tooling.txt
+
+          # Run your builder and capture a plain-text log
           chmod +x scripts/build_app.sh
-          SWIFT_OPTIMIZATION_LEVEL=-Onone ./scripts/build_app.sh 2>&1 | tee ci_logs/xcodebuild_app.log
-          
-      - name: Upload build logs (always)
+          ./scripts/build_app.sh 2>&1 | tee ci_logs/xcodebuild_app_stdout.log
+
+          # Ensure a result bundle exists (in case your script didn't create one)
+          if [ ! -d "app/build/App.xcresult" ]; then
+            echo "No xcresult found, creating one via a dry-run build…" | tee -a ci_logs/tooling.txt
+            xcodebuild -project "app/RealFeel Studio.xcodeproj" \
+              -scheme "RealFeel Studio" \
+              -configuration Release \
+              -resultBundlePath "app/build/App.xcresult" \
+              -showBuildTimingSummary \
+              -destination 'platform=macOS' \
+              -derivedDataPath app/build \
+              -dry-run || true
+          fi
+
+      - name: Upload app build logs (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-build-logs
           path: |
             ci_logs/**
-            app/build/Logs/Build/**        # Xcode's .xcactivitylog if present
-            ~/Library/Logs/DiagnosticReports/**
+            app/build/Build/Logs/**             # classic Xcode logs if produced
+            app/build/App.xcresult/**           # the xcresult bundle
+          if-no-files-found: warn
+          retention-days: 7
 
-      - name: Upload App artifact
+      - name: Upload app artifact (if produced)
         if: success()
         uses: actions/upload-artifact@v4
         with:
