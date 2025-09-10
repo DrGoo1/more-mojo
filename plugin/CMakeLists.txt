@@ -88,13 +88,8 @@ set_target_properties(MoreMojoPlugin PROPERTIES
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-# Specify installation directories
-install(TARGETS MoreMojoPlugin
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    BUNDLE DESTINATION "/Library/Audio/Plug-Ins/Components"
-)
+# Plugin target installations are handled by JUCE and our custom deploy commands
+# We don't need a direct install command as it would use the wrong target
 
 # --- Begin JUCE post-build deploy (MoreMojobyUmboGumbo) ---
 
