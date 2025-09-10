@@ -8,9 +8,13 @@ extension Notification.Name {
 struct TopConsumerView: View {
     @ObservedObject var audioEngine: AudioEngine = AudioEngine.shared
     @State private var rotation: Double = 45.0
+    @State private var wheelVal: Double = 0.5
     @State private var intensity: Double = 0.7
     @State private var houseMacro: Bool = true
+    @State private var macroMode: MojoMacroMode = .appDecides
     @State private var selectedPreset: Int = 0
+    @State private var params: ProcessorParams = ProcessorParams()
+    @State private var stealPreset: ProcessorParams?
     
     // Audio transport state
     @State private var isPlaying: Bool = false
@@ -29,12 +33,13 @@ struct TopConsumerView: View {
                         .fontWeight(.bold)
                         .foregroundColor(PMXPalette.highlight)
                     
-                    MojoWheel(
-                        value: $rotation,
-                        rms: CGFloat(audioEngine.rmsOut),
-                        mode: houseMacro ? .appDecides : .stealMacro
-                    ) { v in
-                        applyWheelSettings()
+                    MojoWheel(value: $wheelVal,
+                              rms: CGFloat(audioEngine.rmsOut),
+                              mode: macroMode) { v in
+                        params = (macroMode == .appDecides)
+                            ? MojoMacro.applyAppDecides(v)
+                            : MojoMacro.applyStealMacro(v, base: stealPreset ?? params)
+                        applyParams(params)
                     }
                     .frame(width: 180, height: 180)
                     
@@ -211,6 +216,9 @@ struct TopConsumerView: View {
     
     // Apply settings from the mojo wheel
     private func applyWheelSettings() {
+        // Update macroMode based on houseMacro toggle
+        macroMode = houseMacro ? .appDecides : .stealMacro
+        
         var params = createParamsDict()
         
         // Calculate wheel parameters based on rotation and intensity
@@ -231,6 +239,23 @@ struct TopConsumerView: View {
         params["mix"] = Float(intensity)
         
         // Apply parameters
+        audioEngine.setParams(params)
+    }
+    
+    // Apply processor parameters
+    private func applyParams(_ processorParams: ProcessorParams) {
+        // Convert ProcessorParams to dictionary and apply to audio engine
+        var params = createParamsDict()
+        params["input"] = processorParams.input
+        params["output"] = processorParams.output
+        params["drive"] = processorParams.drive
+        params["character"] = processorParams.character
+        params["saturation"] = processorParams.saturation
+        params["presence"] = processorParams.presence
+        params["mix"] = processorParams.mix
+        params["mode"] = Float(processorParams.mode)
+        
+        // Apply to audio engine
         audioEngine.setParams(params)
     }
     
