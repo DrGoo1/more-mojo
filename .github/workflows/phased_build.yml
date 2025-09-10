@@ -38,12 +38,31 @@ jobs:
           chmod +x scripts/preflight_fix.sh
           ./scripts/preflight_fix.sh
           
-      - name: Build App
+      - name: Build App (script) with full logs
         run: |
+          set -euo pipefail
+          mkdir -p ci_logs
+          # Print tool versions (helps when macOS images change)
+          xcodebuild -version | tee -a ci_logs/tooling.txt
+          sw_vers           | tee -a ci_logs/tooling.txt
+          swift --version   | tee -a ci_logs/tooling.txt
+
+          # Run your builder but capture stdout/stderr to a log
           chmod +x scripts/build_app.sh
-          SWIFT_OPTIMIZATION_LEVEL=-Onone ./scripts/build_app.sh
+          SWIFT_OPTIMIZATION_LEVEL=-Onone ./scripts/build_app.sh 2>&1 | tee ci_logs/xcodebuild_app.log
           
+      - name: Upload build logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build-logs
+          path: |
+            ci_logs/**
+            app/build/Logs/Build/**        # Xcode's .xcactivitylog if present
+            ~/Library/Logs/DiagnosticReports/**
+
       - name: Upload App artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MoreMojo-App
@@ -73,10 +92,20 @@ jobs:
           git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
           echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
           
-      - name: Build Plugin
+      - name: Build Plugin with full logs
         run: |
-          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2
-          cmake --build plugin/build --config Release
+          set -euo pipefail
+          mkdir -p ci_logs
+          # Print tool versions
+          xcodebuild -version | tee -a ci_logs/tooling.txt
+          cmake --version    | tee -a ci_logs/tooling.txt
+          
+          # Run build with logging
+          echo "Running CMake configure..." | tee -a ci_logs/plugin_build.log
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2 2>&1 | tee -a ci_logs/plugin_build.log
+          
+          echo "Running CMake build..." | tee -a ci_logs/plugin_build.log
+          cmake --build plugin/build --config Release 2>&1 | tee -a ci_logs/plugin_build.log
           
       - name: Package Plugins
         run: |
@@ -89,7 +118,19 @@ jobs:
           zip -r MoreMojo_AU.zip *.component || true
           zip -r MoreMojo_VST3.zip *.vst3 || true
           
+      - name: Upload build logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-build-logs
+          path: |
+            ci_logs/**
+            plugin/build/*.log
+            plugin/build/CMakeFiles/CMakeError.log
+            plugin/build/CMakeFiles/CMakeOutput.log
+          
       - name: Upload Plugin artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MoreMojo-Plugins

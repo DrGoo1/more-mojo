@@ -74,12 +74,20 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           
-      - name: Send Slack notification
-        uses: 8398a7/action-slack@v3
+      # Uncomment the Slack notification when webhook is configured in GitHub secrets
+      # - name: Send Slack notification
+      #   uses: 8398a7/action-slack@v3
+      #   if: always()
+      #   with:
+      #     status: ${{ job.status }}
+      #     fields: repo,message,commit,author,action,eventName,workflow
+      #     text: "Phase 1.5 (Steal That Mojo) build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      # Alternative basic notification that doesn't require webhook
+      - name: Job status notification
         if: always()
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,workflow
-          text: "Phase 1.5 (Steal That Mojo) build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          echo "::notice::Phase 1.5 (Steal That Mojo) build completed with status ${{ job.status }}"
+          echo "See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
