@@ -91,12 +91,15 @@ set_target_properties(MoreMojoPlugin PROPERTIES
 # Plugin target installations are handled by JUCE and our custom deploy commands
 # We don't need a direct install command as it would use the wrong target
 
-# --- Begin JUCE post-build deploy (MoreMojobyUmboGumbo) ---
+# --- Begin JUCE post-build deploy ---
+
+# Note: JUCE's COPY_PLUGIN_AFTER_BUILD is already enabled above, which copies to user plugin folders
+# This additional deploy block creates a local deploy/ folder for CI and testing
 
 # This must match the 1st arg you used in juce_add_plugin(...)
 set(PLUGIN_BASE_NAME MoreMojoPlugin)
 
-# Copy VST3 bundle after build
+# VST3 bundle
 if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_VST3)
   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_VST3 POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -108,7 +111,7 @@ if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_VST3)
     VERBATIM)
 endif()
 
-# Copy AU bundle after build
+# AU component
 if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_AU)
   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_AU POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -120,7 +123,7 @@ if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_AU)
     VERBATIM)
 endif()
 
-# Copy Standalone app after build (optional)
+# Standalone app
 if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_Standalone)
   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_Standalone POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
