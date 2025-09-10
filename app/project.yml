@@ -31,6 +31,19 @@ targets:
         type: group
         includes:
           - "**/*.swift"
+          - PMXPalette.swift
+          - MojoWheel.swift
+          - MojoMacro.swift
+          - WaveformSimple.swift
+          - FaceplateOverlay.swift
+          - RoundKnob.swift
+          - TopConsumerView.swift
+          - ProBritStripView.swift
+          - MoreMojoContainer.swift
+          - StealMojoPanel_SwiftOnly.swift
+          - StealMojoSwift.swift
+        excludes:
+          - BritStripFaceplate.swift
       # Assets
       - path: Assets.xcassets
         type: folder
@@ -39,6 +52,8 @@ targets:
       # Assets catalog
       - path: Assets.xcassets
         optional: true
+      # Layout JSON
+      - path: faceplate_layout.json
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.moremojo.studio
