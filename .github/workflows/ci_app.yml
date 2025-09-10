@@ -1,0 +1,59 @@
+name: Build macOS App
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  app:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap
+        run: |
+          set -euo pipefail
+          brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+          brew list xcbeautify >/dev/null 2>&1 || brew install xcbeautify
+
+      - name: Build with full logs
+        run: |
+          set -euo pipefail
+          mkdir -p ci_logs
+          chmod +x scripts/build_app.sh
+          # tee raw log
+          ./scripts/build_app.sh 2>&1 | tee ci_logs/xcodebuild_app_raw.log
+          # pretty log for human review
+          xcbeautify --is-ci --quiet < ci_logs/xcodebuild_app_raw.log > ci_logs/xcodebuild_app_pretty.log || true
+
+      - name: Upload build logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build-logs
+          path: |
+            ci_logs/**
+            app/build/Build/Logs/**
+            app/build/App.xcresult/**
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Summarize last errors on PR
+        if: failure() && github.event_name == 'pull_request'
+        run: |
+          echo "## Build Errors (last 120 lines)" >> $GITHUB_STEP_SUMMARY
+          tail -n 120 ci_logs/xcodebuild_app_pretty.log >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment errors on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          message: |
+            ### ❌ Build failed
+            **Last 60 lines**
+            ```
+            $(tail -n 60 ci_logs/xcodebuild_app_pretty.log)
+            ```
+            **Artifacts:** _app-build-logs_ (contains full stdout and `.xcresult`)
