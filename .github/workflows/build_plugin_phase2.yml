@@ -20,22 +20,41 @@ jobs:
         git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
         echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
       
-    - name: Build Plugin
+    - name: Build Plugin (script)
       run: |
-        # Build the plugin with the DSP chain for Phase 2
-        cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" -DPHASE=2
-        cmake --build plugin/build --config Release
+        chmod +x scripts/build_plugin.sh
+        # Pass PHASE=2 to the build script
+        PHASE=2 ./scripts/build_plugin.sh
     
     - name: Package Plugins
       run: |
         mkdir -p dist
-        cp -R plugin/build/Release/*.component dist/ || true
-        cp -R plugin/build/Release/*.vst3 dist/ || true
+        # Use the deploy directory created by build_plugin.sh
+        if [ -d "plugin/build/deploy/AU" ]; then
+          cp -R plugin/build/deploy/AU/*.component dist/ || true
+        fi
+        if [ -d "plugin/build/deploy/VST3" ]; then
+          cp -R plugin/build/deploy/VST3/*.vst3 dist/ || true
+        fi
+        if [ -d "plugin/build/deploy/Standalone" ]; then
+          cp -R plugin/build/deploy/Standalone/*.app dist/ || true
+        fi
+        
+        # Fallback to Release directory if deploy doesn't exist
+        if [ ! -d "plugin/build/deploy" ]; then
+          cp -R plugin/build/Release/*.component dist/ || true
+          cp -R plugin/build/Release/*.vst3 dist/ || true
+        fi
         
         # Archive component and vst3 separately for easier extraction
         cd dist
-        zip -r MoreMojo_AU.zip *.component
-        zip -r MoreMojo_VST3.zip *.vst3
+        find . -type d -name "*.component" | while read -r comp; do
+          zip -r MoreMojo_AU.zip "$comp"
+        done
+        
+        find . -type d -name "*.vst3" | while read -r vst; do
+          zip -r MoreMojo_VST3.zip "$vst"
+        done
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
