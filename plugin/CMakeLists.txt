@@ -96,8 +96,45 @@ install(TARGETS MoreMojoPlugin
     BUNDLE DESTINATION "/Library/Audio/Plug-Ins/Components"
 )
 
-# After build, copy to dist folder
-add_custom_command(TARGET MoreMojoPlugin POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/../dist"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_BUNDLE_DIR:MoreMojoPlugin>" "${CMAKE_SOURCE_DIR}/../dist/$<TARGET_FILE_NAME:MoreMojoPlugin>"
-)
+# --- Begin JUCE post-build deploy (MoreMojobyUmboGumbo) ---
+
+# This must match the 1st arg you used in juce_add_plugin(...)
+set(PLUGIN_BASE_NAME MoreMojoPlugin)
+
+# Copy VST3 bundle after build
+if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_VST3)
+  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_VST3 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_BINARY_DIR}/deploy/VST3"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_VST3>"
+            "${CMAKE_BINARY_DIR}/deploy/VST3/${PLUGIN_BASE_NAME}.vst3"
+    COMMENT "Deploying ${PLUGIN_BASE_NAME}.vst3"
+    VERBATIM)
+endif()
+
+# Copy AU bundle after build
+if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_AU)
+  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_AU POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_BINARY_DIR}/deploy/AU"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_AU>"
+            "${CMAKE_BINARY_DIR}/deploy/AU/${PLUGIN_BASE_NAME}.component"
+    COMMENT "Deploying ${PLUGIN_BASE_NAME}.component"
+    VERBATIM)
+endif()
+
+# Copy Standalone app after build (optional)
+if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_Standalone)
+  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_Standalone POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_BINARY_DIR}/deploy/Standalone"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_Standalone>"
+            "${CMAKE_BINARY_DIR}/deploy/Standalone/${PLUGIN_BASE_NAME}.app"
+    COMMENT "Deploying ${PLUGIN_BASE_NAME}.app"
+    VERBATIM)
+endif()
+
+# --- End JUCE post-build deploy ---
