@@ -66,11 +66,17 @@ class AudioEngine: ObservableObject {
     private lazy var analogShaper = AnalogInterpolator()
     
     // Audio meter levels
-    private(set) var inputLevel: Float = 0.0
-    private(set) var outputLevel: Float = 0.0
+    @Published private(set) var inputLevel: Float = 0.0
+    @Published private(set) var outputLevel: Float = 0.0
+    
+    // Audio state
+    @Published var isPlaying: Bool = false
+    @Published var duration: TimeInterval = 0
+    @Published var currentTime: TimeInterval = 0
+    @Published private(set) var rmsOut: Float = 0
     
     // Spectrum analyzer data
-    private(set) var spectrumData: [Float] = Array(repeating: 0, count: 128)
+    @Published private(set) var spectrumData: [Float] = Array(repeating: 0, count: 128)
     
     // FFT setup
     private var fftSetup: FFTSetup?
