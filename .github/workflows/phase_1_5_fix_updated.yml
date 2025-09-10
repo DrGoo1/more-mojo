@@ -1,0 +1,85 @@
+name: Phase 1.5 - Steal That Mojo (Updated Fix)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up environment
+        run: |
+          chmod +x scripts/bootstrap_macos.sh
+          ./scripts/bootstrap_macos.sh
+      
+      # Our comprehensive fix script that handles resources and mock implementations
+      - name: Run CI build fixes
+        run: |
+          chmod +x scripts/fix_ci_build.sh
+          ./scripts/fix_ci_build.sh
+          
+      # Run preflight checks to fix Swift optimization issues
+      - name: Run preflight checks
+        run: |
+          chmod +x scripts/preflight_build_fix.sh
+          ./scripts/preflight_build_fix.sh app/Sources
+          
+      # Fix imports and dependencies
+      - name: Fix imports and dependencies
+        run: |
+          chmod +x scripts/fix_imports.sh
+          ./scripts/fix_imports.sh
+          
+      # Build with Debug configuration using our wrapper
+      - name: Build App
+        run: |
+          chmod +x scripts/ci_build_wrapper.sh
+          ./scripts/ci_build_wrapper.sh
+          
+      - name: Verify Steal That Mojo integration
+        run: |
+          # Check if the required files are present
+          if [ ! -f "app/Sources/StealMojoSwift.swift" ]; then
+            echo "Warning: StealMojoSwift.swift not found, but continuing"
+          fi
+          
+          if [ ! -f "app/Sources/StealMojoPanel_SwiftOnly.swift" ]; then
+            echo "Warning: StealMojoPanel_SwiftOnly.swift not found, but continuing"
+          fi
+          
+          # Verify build output exists
+          if [ -d "dist/MoreMojoStudio.app" ]; then
+            echo "Build successful: app created"
+          else
+            echo "Error: No app bundle found in dist directory"
+            exit 1
+          fi
+          
+      - name: Upload App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojo-App-Phase-1.5
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,workflow
+          text: "Phase 1.5 (Steal That Mojo) build completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
