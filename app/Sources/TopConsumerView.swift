@@ -30,13 +30,12 @@ struct TopConsumerView: View {
                         .foregroundColor(PMXPalette.highlight)
                     
                     MojoWheel(
-                        rotation: $rotation,
-                        intensity: $intensity,
-                        onValueChange: { val in
-                            applyWheelSettings()
-                        },
-                        mode: houseMacro ? .app : .steal
-                    )
+                        value: $rotation,
+                        rms: CGFloat(audioEngine.rmsOut),
+                        mode: houseMacro ? .appDecides : .stealMacro
+                    ) { v in
+                        applyWheelSettings()
+                    }
                     .frame(width: 180, height: 180)
                     
                     // Macro mode toggle
@@ -219,12 +218,12 @@ struct TopConsumerView: View {
         
         // Map rotation to different parameters based on mode
         if houseMacro {
-            // House macro mode - rotation affects multiple parameters
+            // House macro mode (appDecides) - rotation affects multiple parameters
             params["drive"] = Float(rotationNormalized * 0.8 + 0.2)
             params["presence"] = Float((1.0 - rotationNormalized) * 0.7 + 0.3)
             params["saturation"] = Float(rotationNormalized * 0.6 + 0.2)
         } else {
-            // Steal mode - rotation selects character profile
+            // Steal mode (stealMacro) - rotation selects character profile
             params["character"] = Float(rotationNormalized * 0.8 + 0.2)
         }
         

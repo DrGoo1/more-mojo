@@ -5,17 +5,7 @@ import AVFoundation
 
 // MARK: - Swift-only HPSS (vDSP) + features + recommendation + EQ match
 
-struct MojoEQBand: Codable { var lo: Float; var hi: Float; var gain_dB: Float }
-struct MojoEQMatch: Codable { var bands: [MojoEQBand] }
-struct MojoRecommendation: Codable {
-    var interpMode: String
-    var drive: Float
-    var saturation: Float
-    var character: Float
-    var presence: Float
-    var mix: Float
-    var output: Float
-}
+public enum SwiftMojoAnalyzer {
 struct MojoFingerprint: Codable {
     struct Features: Codable {
         var crest_dB: Float
@@ -305,7 +295,7 @@ enum SwiftMojoAnalyzer {
                 if i1 <= i0 { continue }
                 let gains = diff[i0...i1]
                 let midGain = gains.sorted()[gains.count/2]
-                bands.append(.init(lo: fGrid[i0], hi: fGrid[i1], gain_dB: midGain))
+                bands.append(MojoEQBand(lo: fGrid[i0], hi: fGrid[i1], gain_dB: midGain))
             }
             return MojoEQMatch(bands: bands)
         } catch { return nil }
