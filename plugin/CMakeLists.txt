@@ -88,51 +88,9 @@ set_target_properties(MoreMojoPlugin PROPERTIES
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-# Plugin target installations are handled by JUCE and our custom deploy commands
-# We don't need a direct install command as it would use the wrong target
-
-# --- Begin JUCE post-build deploy ---
-
-# Note: JUCE's COPY_PLUGIN_AFTER_BUILD is already enabled above, which copies to user plugin folders
-# This additional deploy block creates a local deploy/ folder for CI and testing
-
-# This must match the 1st arg you used in juce_add_plugin(...)
-set(PLUGIN_BASE_NAME MoreMojoPlugin)
-
-# VST3 bundle
-if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_VST3)
-  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_VST3 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${CMAKE_BINARY_DIR}/deploy/VST3"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_VST3>"
-            "${CMAKE_BINARY_DIR}/deploy/VST3/${PLUGIN_BASE_NAME}.vst3"
-    COMMENT "Deploying ${PLUGIN_BASE_NAME}.vst3"
-    VERBATIM)
-endif()
-
-# AU component
-if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_AU)
-  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_AU POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${CMAKE_BINARY_DIR}/deploy/AU"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_AU>"
-            "${CMAKE_BINARY_DIR}/deploy/AU/${PLUGIN_BASE_NAME}.component"
-    COMMENT "Deploying ${PLUGIN_BASE_NAME}.component"
-    VERBATIM)
-endif()
-
-# Standalone app
-if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_Standalone)
-  add_custom_command(TARGET ${PLUGIN_BASE_NAME}_Standalone POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${CMAKE_BINARY_DIR}/deploy/Standalone"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_Standalone>"
-            "${CMAKE_BINARY_DIR}/deploy/Standalone/${PLUGIN_BASE_NAME}.app"
-    COMMENT "Deploying ${PLUGIN_BASE_NAME}.app"
-    VERBATIM)
-endif()
-
-# --- End JUCE post-build deploy ---
+# Plugin installations are handled by JUCE via COPY_PLUGIN_AFTER_BUILD
+# COPY_PLUGIN_AFTER_BUILD is already enabled in the juce_add_plugin call above
+# This will automatically copy plugins to the user's standard plugin directories:
+#  - AU components to ~/Library/Audio/Plug-Ins/Components
+#  - VST3 plugins to ~/Library/Audio/Plug-Ins/VST3
+#  - Standalone app will be in the build output directory
