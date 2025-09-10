@@ -1,8 +1,9 @@
 import Foundation
 import Accelerate
 
-// Use the InterpolatorProtocol from AudioEngine.swift
-// Protocol is already defined there
+// Use the InterpolatorProtocol defined in AudioEngine.swift
+// This avoids duplicate protocol declarations
+@_exported import class AVFoundation.AVAudioEngine  // Required to access AudioEngine.swift
 
 // Half-band interpolator (4x oversampling) - efficient for real-time use
 class HalftBandInterpolator: InterpolatorProtocol {

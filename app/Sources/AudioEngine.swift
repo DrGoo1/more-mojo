@@ -13,17 +13,8 @@ protocol InterpolatorProtocol {
     func downStereo(_ inputL: [Float], _ inputR: [Float], _ outputL: inout [Float], _ outputR: inout [Float])
 }
 
-// Basic stub for AnalogInterpolator to satisfy compilation
-// DUPLICATE REMOVED: class AnalogInterpolator {
-    func updateParameters(drive: Float, character: Float, saturation: Float, presence: Float,
-                        warmth: Double = 0.5, output: Float = 0.0, mix: Float = 1.0, mode: Int = 1) {
-        // Stub implementation
-    }
-
-    
-    func configure(drive: Float, character: Float, saturation: Float, presence: Float) {
-        // Stub implementation
-    }
+// Using AnalogInterpolator from AnalogInterpolator.swift
+// Make sure to import that file and use its implementation
 
 /// Audio processing engine for the More Mojo application
 class AudioEngine: ObservableObject {
