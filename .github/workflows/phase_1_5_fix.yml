@@ -33,6 +33,12 @@ jobs:
           chmod +x scripts/preflight_fix.sh
           ./scripts/preflight_fix.sh
           
+      # Fix imports and dependencies
+      - name: Fix imports and dependencies
+        run: |
+          chmod +x scripts/fix_imports.sh
+          ./scripts/fix_imports.sh
+          
       # Check Swift syntax before building
       - name: Check Swift syntax
         run: |

@@ -1,0 +1,151 @@
+*** a/app/Sources/SharedTypes.swift
+--- b/app/Sources/SharedTypes.swift
+@@
++import Foundation
++
++// Single source of truth for core types
++public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
++    case liveHB4x = 0, hqSinc8x, transientSpline4x, adaptive, aiAnalogHook
++    public var id: Int { rawValue }
++    public var displayName: String {
++        switch self {
++        case .liveHB4x: return "HB 4×"
++        case .hqSinc8x: return "HQ Sinc 8×"
++        case .transientSpline4x: return "Spline 4×"
++        case .adaptive: return "Adaptive"
++        case .aiAnalogHook: return "Live+AI"
++        }
++    }
++}
++
++public struct ProcessorParams: Codable, Equatable {
++    public var input:  Float = 0.0   // dB
++    public var output: Float = 0.0   // dB
++    public var drive:      Float = 0.55
++    public var character:  Float = 0.50
++    public var saturation: Float = 0.45
++    public var presence:   Float = 0.50
++    public var mix:        Float = 1.00
++    public var interpMode: InterpMode = .liveHB4x
++    public var mode:       Int = 1
++}
++
++public struct MojoEQBand: Codable, Equatable {
++    public var lo: Float
++    public var hi: Float
++    public var gain_dB: Float
++}
++
++public struct MojoEQMatch: Codable, Equatable {
++    public var bands: [MojoEQBand]
++}
+*** End Patch
+
+*** a/app/Sources/ProcessorParams.swift
+--- b/app/Sources/ProcessorParams.swift
+@@
+-import Foundation
+-// (Remove any duplicate struct/enum definitions from here)
++import Foundation
++
++// Extension-only file. Canonical types live in SharedTypes.swift
++extension ProcessorParams {
++    /// Example convenience mapping for UI (-12..+12 dB -> 0..1)
++    public var outputNormalized: Float { (output + 12) / 24 }
++}
+*** End Patch
+
+*** a/app/Sources/TopConsumerView.swift
+--- b/app/Sources/TopConsumerView.swift
+@@
+-                    MojoWheel(
+-                             value: $wheelVal,
+-                             houseMacro: houseMacro,
+-                             rms: CGFloat(engine.rmsOut),
+-                             mode: houseMacro ? .app : .steal
+-                    ) { v in
++                    MojoWheel(value: $wheelVal,
++                              rms: CGFloat(engine.rmsOut),
++                              mode: macroMode) { v in
+                         params = (macroMode == .appDecides)
+                             ? MojoMacro.applyAppDecides(v)
+                             : MojoMacro.applyStealMacro(v, base: stealPreset ?? params)
+                         applyParams(params)
+                     }
+@@
+-                    Picker("Mode", selection: $macroMode) {
+-                        Text("App").tag(MojoMacroMode.app)
+-                        Text("Steal").tag(MojoMacroMode.steal)
+-                    }
++                    Picker("Mode", selection: $macroMode) {
++                        Text("App").tag(MojoMacroMode.appDecides)
++                        Text("Steal").tag(MojoMacroMode.stealMacro)
++                    }
+                     .pickerStyle(.segmented)
+                     .frame(width: 220)
+*** End Patch
+
+*** a/app/Sources/StealMojoPanel_SwiftOnly.swift
+--- b/app/Sources/StealMojoPanel_SwiftOnly.swift
+@@
++// macOS 11-safe "prominent" button style
++struct PMXProminent: ButtonStyle {
++    func makeBody(configuration: Configuration) -> some View {
++        configuration.label
++            .padding(.horizontal, 12).padding(.vertical, 6)
++            .background(LinearGradient(colors: [.pink, .purple, .orange],
++                                       startPoint: .leading, endPoint: .trailing))
++            .foregroundColor(.white)
++            .clipShape(Capsule())
++            .opacity(configuration.isPressed ? 0.8 : 1.0)
++    }
++}
+@@
+-                        HStack {
+-                            Button("Analyze") { analyze() }.buttonStyle(.borderedProminent).disabled(refURL == nil)
+-                            if let rec = recommended {
+-                                Button("Apply to Mojo") { onApply?(rec) }.buttonStyle(.borderedProminent)
+-                            }
+-                        }
++                        HStack {
++                            Button("Analyze") { analyze() }
++                                .buttonStyle(PMXProminent())
++                                .disabled(refURL == nil)
++                            if let rec = recommended {
++                                Button("Apply to Mojo") { onApply?(rec) }
++                                    .buttonStyle(PMXProminent())
++                            }
++                        }
+*** End Patch
+
+*** /dev/null
+--- b/scripts/preflight_guard.sh
+@@
++#!/usr/bin/env bash
++set -euo pipefail
++SRC="${1:-app/Sources}"
++
++fail() { echo "❌ $*"; exit 1; }
++
++# 1) InterpMode/ProcessorParams declared exactly once
++IM=$(grep -RIn --include="*.swift" 'enum[[:space:]]\+InterpMode' "$SRC" | wc -l | tr -d ' ')
++PP=$(grep -RIn --include="*.swift" 'struct[[:space:]]\+ProcessorParams\b' "$SRC" | wc -l | tr -d ' ')
++[ "$IM" = "1" ] || fail "InterpMode must be defined exactly once (found $IM)."
++[ "$PP" = "1" ] || fail "ProcessorParams must be defined exactly once (found $PP)."
++
++# 2) No nested ProcessorParams.InterpMode
++grep -RIn --include="*.swift" 'ProcessorParams\.InterpMode' "$SRC" >/dev/null && \
++  fail "Found nested ProcessorParams.InterpMode; use top-level InterpMode instead."
++
++# 3) macOS 11: no .borderedProminent
++grep -RIn --include="*.swift" '\.buttonStyle\(\.borderedProminent\)' "$SRC" >/dev/null && \
++  fail "Found .borderedProminent; use PMXProminent() instead."
++
++# 4) Duplicate overlay/interpolator files
++FPL=$(ls "$SRC"/*Faceplate*.swift 2>/dev/null | wc -l | tr -d ' ')
++INT=$(ls "$SRC"/Interpolator*.swift "$SRC"/Interpolators*.swift 2>/dev/null | wc -l | tr -d ' ')
++[ "$FPL" -le 1 ] || fail "Multiple Faceplate overlays; keep exactly one."
++[ "$INT" -le 1 ] || fail "Multiple Interpolators; keep exactly one."
++
++echo "✅ Preflight guard passed."
+*** End Patch

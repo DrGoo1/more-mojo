@@ -8,35 +8,59 @@
 
 /* Begin PBXBuildFile section */
 		0587D80B9058834B463595B6 /* Interpolators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E8958F55D3BA1BC61E36DA /* Interpolators.swift */; };
+		084AF185469A827F24B6B04C /* StealMojoPanel_SwiftOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B4B7515292EB4862C0B53E /* StealMojoPanel_SwiftOnly.swift */; };
+		08817F9D15AE4C8BCA026CED /* MojoWheel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77D1C61C9C8424C4F563C98 /* MojoWheel.swift */; };
+		10438709035031895C58236E /* UIMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD17F3D5EA0D7E7F8C3EC95 /* UIMode.swift */; };
 		10E9725BBA5F05C0D6FE42CF /* PhotorealControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864F3BA0109F968B90F07B30 /* PhotorealControls.swift */; };
 		12A2158EA46D8BC694B06B98 /* ProcessorParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D40D430B4D2DCF4114641 /* ProcessorParams.swift */; };
+		2EB6196EDBE9B5138FCCAE01 /* PMXPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025788027FD1BA6C4F31F229 /* PMXPalette.swift */; };
 		3DF0E439CBD9899EC5769D5C /* AudioProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */; };
 		3E82DF19BCE97E262DB87EC1 /* MoreMojoContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */; };
 		5298F507D3C463F55C1B12E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */; };
 		5A3775BFA4349C38843F8725 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */; };
 		799B55CC03EC16CF2451E053 /* MojoMakerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B524010831E2FA189338B1 /* MojoMakerView.swift */; };
+		7E117788E090283E0D9C1617 /* TopConsumerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112D95E8E65D1138D94D3BA3 /* TopConsumerView.swift */; };
+		84444255F1A37C819CC122D1 /* ProBritStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CC2E3D41BCF7CF3B910A53C /* ProBritStripView.swift */; };
+		91D09AA68E32D2C18C504EE5 /* RoundKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31DB67D195A093E77BCBF167 /* RoundKnob.swift */; };
 		9876A26CF5231D49F8EB2F9F /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */; };
 		A240BB403455C276AD866516 /* MoreMojoAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */; };
 		A35EE6539C2DB2FB4FC888DC /* MoreMojoStudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */; };
+		C343F7BB9DD00AD00EC28ABA /* FaceplateOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749F257711A4C29EA6018B22 /* FaceplateOverlay.swift */; };
 		CB6810CA4DC8C5FFEC2C13AE /* AnalogInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C9B9570F053053913AB33C /* AnalogInterpolator.swift */; };
+		D909949F0C80899643D0842E /* Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8418A80DECB94FB622C410CE /* Recommendations.swift */; };
+		DECD81054AD1199C197E7B98 /* MojoMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318ABBEB8F7FD9522A0AD512 /* MojoMacro.swift */; };
 		E65DA25B1963174F69649A00 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D323BBD4A967C20E162889E /* AppState.swift */; };
+		F4DC2A02D0B808BE087DFCBD /* StealMojoSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FAAEF726A76CBC5CCA73225 /* StealMojoSwift.swift */; };
+		F7C0FE60A9339E9BC5A25AF7 /* WaveformSimple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061CDD65829E07D931471058 /* WaveformSimple.swift */; };
 		F8CE57765950843BEE376F62 /* MoreMojoSimpleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		025788027FD1BA6C4F31F229 /* PMXPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PMXPalette.swift; sourceTree = "<group>"; };
+		061CDD65829E07D931471058 /* WaveformSimple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformSimple.swift; sourceTree = "<group>"; };
 		0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		112D95E8E65D1138D94D3BA3 /* TopConsumerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopConsumerView.swift; sourceTree = "<group>"; };
+		13B4B7515292EB4862C0B53E /* StealMojoPanel_SwiftOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StealMojoPanel_SwiftOnly.swift; sourceTree = "<group>"; };
 		13C9B9570F053053913AB33C /* AnalogInterpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalogInterpolator.swift; sourceTree = "<group>"; };
 		1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoSimpleView.swift; sourceTree = "<group>"; };
 		2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		318ABBEB8F7FD9522A0AD512 /* MojoMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MojoMacro.swift; sourceTree = "<group>"; };
+		31DB67D195A093E77BCBF167 /* RoundKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundKnob.swift; sourceTree = "<group>"; };
 		3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoStudioApp.swift; sourceTree = "<group>"; };
+		3CC2E3D41BCF7CF3B910A53C /* ProBritStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProBritStripView.swift; sourceTree = "<group>"; };
 		49E8958F55D3BA1BC61E36DA /* Interpolators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolators.swift; sourceTree = "<group>"; };
 		5D323BBD4A967C20E162889E /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoAssets.swift; sourceTree = "<group>"; };
+		6FAAEF726A76CBC5CCA73225 /* StealMojoSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StealMojoSwift.swift; sourceTree = "<group>"; };
 		716D40D430B4D2DCF4114641 /* ProcessorParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessorParams.swift; sourceTree = "<group>"; };
+		749F257711A4C29EA6018B22 /* FaceplateOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceplateOverlay.swift; sourceTree = "<group>"; };
 		820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingView.swift; sourceTree = "<group>"; };
+		8418A80DECB94FB622C410CE /* Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recommendations.swift; sourceTree = "<group>"; };
 		864F3BA0109F968B90F07B30 /* PhotorealControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotorealControls.swift; sourceTree = "<group>"; };
 		B1B524010831E2FA189338B1 /* MojoMakerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MojoMakerView.swift; sourceTree = "<group>"; };
+		B77D1C61C9C8424C4F563C98 /* MojoWheel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MojoWheel.swift; sourceTree = "<group>"; };
 		C7DDF71B6DF52C4CF945F7B9 /* MoreMojoStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoreMojoStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EAD17F3D5EA0D7E7F8C3EC95 /* UIMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIMode.swift; sourceTree = "<group>"; };
 		ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoContainer.swift; sourceTree = "<group>"; };
 		FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -58,14 +82,26 @@
 				2234C9CF20BF0FA3D4F369B1 /* AudioEngine.swift */,
 				820F140ADF8AA55874AD8EE9 /* AudioProcessingView.swift */,
 				0CDA24828CD7CD7CEAC28A3B /* ContentView.swift */,
+				749F257711A4C29EA6018B22 /* FaceplateOverlay.swift */,
 				49E8958F55D3BA1BC61E36DA /* Interpolators.swift */,
+				318ABBEB8F7FD9522A0AD512 /* MojoMacro.swift */,
 				B1B524010831E2FA189338B1 /* MojoMakerView.swift */,
+				B77D1C61C9C8424C4F563C98 /* MojoWheel.swift */,
 				668A1505FA33AB1D0F2CB07F /* MoreMojoAssets.swift */,
 				ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */,
 				1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */,
 				3341347B6DA9956363AB3BEE /* MoreMojoStudioApp.swift */,
 				864F3BA0109F968B90F07B30 /* PhotorealControls.swift */,
+				025788027FD1BA6C4F31F229 /* PMXPalette.swift */,
+				3CC2E3D41BCF7CF3B910A53C /* ProBritStripView.swift */,
 				716D40D430B4D2DCF4114641 /* ProcessorParams.swift */,
+				8418A80DECB94FB622C410CE /* Recommendations.swift */,
+				31DB67D195A093E77BCBF167 /* RoundKnob.swift */,
+				13B4B7515292EB4862C0B53E /* StealMojoPanel_SwiftOnly.swift */,
+				6FAAEF726A76CBC5CCA73225 /* StealMojoSwift.swift */,
+				112D95E8E65D1138D94D3BA3 /* TopConsumerView.swift */,
+				EAD17F3D5EA0D7E7F8C3EC95 /* UIMode.swift */,
+				061CDD65829E07D931471058 /* WaveformSimple.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -157,14 +193,26 @@
 				9876A26CF5231D49F8EB2F9F /* AudioEngine.swift in Sources */,
 				3DF0E439CBD9899EC5769D5C /* AudioProcessingView.swift in Sources */,
 				5A3775BFA4349C38843F8725 /* ContentView.swift in Sources */,
+				C343F7BB9DD00AD00EC28ABA /* FaceplateOverlay.swift in Sources */,
 				0587D80B9058834B463595B6 /* Interpolators.swift in Sources */,
+				DECD81054AD1199C197E7B98 /* MojoMacro.swift in Sources */,
 				799B55CC03EC16CF2451E053 /* MojoMakerView.swift in Sources */,
+				08817F9D15AE4C8BCA026CED /* MojoWheel.swift in Sources */,
 				A240BB403455C276AD866516 /* MoreMojoAssets.swift in Sources */,
 				3E82DF19BCE97E262DB87EC1 /* MoreMojoContainer.swift in Sources */,
 				F8CE57765950843BEE376F62 /* MoreMojoSimpleView.swift in Sources */,
 				A35EE6539C2DB2FB4FC888DC /* MoreMojoStudioApp.swift in Sources */,
+				2EB6196EDBE9B5138FCCAE01 /* PMXPalette.swift in Sources */,
 				10E9725BBA5F05C0D6FE42CF /* PhotorealControls.swift in Sources */,
+				84444255F1A37C819CC122D1 /* ProBritStripView.swift in Sources */,
 				12A2158EA46D8BC694B06B98 /* ProcessorParams.swift in Sources */,
+				D909949F0C80899643D0842E /* Recommendations.swift in Sources */,
+				91D09AA68E32D2C18C504EE5 /* RoundKnob.swift in Sources */,
+				084AF185469A827F24B6B04C /* StealMojoPanel_SwiftOnly.swift in Sources */,
+				F4DC2A02D0B808BE087DFCBD /* StealMojoSwift.swift in Sources */,
+				7E117788E090283E0D9C1617 /* TopConsumerView.swift in Sources */,
+				10438709035031895C58236E /* UIMode.swift in Sources */,
+				F7C0FE60A9339E9BC5A25AF7 /* WaveformSimple.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
