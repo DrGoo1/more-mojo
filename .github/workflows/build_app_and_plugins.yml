@@ -1,0 +1,140 @@
+name: Build App & Plugins (macOS)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  app:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      # Optional: pick a specific Xcode (list with `ls /Applications | grep Xcode`)
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.0.app
+
+      # Guardrails to prevent regressions (optional but recommended)
+      - name: Preflight guard
+        run: |
+          chmod +x scripts/preflight_guard.sh || true
+          [ -x scripts/preflight_guard.sh ] && scripts/preflight_guard.sh app/Sources || true
+
+      - name: Build app (xcodebuild)
+        run: |
+          set -euo pipefail
+          mkdir -p ci_logs
+          xcodebuild -project app/RealFeelStudio.xcodeproj \
+                     -scheme "RealFeel Studio" \
+                     -configuration Release \
+                     -sdk macosx \
+                     -derivedDataPath app/build \
+                     build | tee ci_logs/xcodebuild_app_stdout.log
+
+      - name: Show errors (if build fails)
+        if: failure()
+        run: |
+          set -e
+          if [ -f ci_logs/xcodebuild_app_stdout.log ]; then
+            echo "---- first 60 lines ----"; head -n 60 ci_logs/xcodebuild_app_stdout.log || true
+            echo "---- last 120 lines ----"; tail -n 120 ci_logs/xcodebuild_app_stdout.log || true
+          fi
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RealFeelStudio.app
+          path: app/build/Build/Products/Release/RealFeel\ Studio.app
+          if-no-files-found: warn
+
+      - name: Upload app logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-logs
+          path: ci_logs/xcodebuild_app_stdout.log
+
+  plugin:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch JUCE
+        run: |
+          # Use a cached JUCE or shallow clone for CI
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+
+      # Guard against TARGET_BUNDLE_DIR references
+      - name: Guard against stale custom bundle commands
+        run: |
+          set -euo pipefail
+          if git grep -n "TARGET_BUNDLE_DIR" -- plugin | grep -v '^$'; then
+            echo "❌ Found TARGET_BUNDLE_DIR references; remove custom post-build blocks."
+            exit 1
+          fi
+          echo "✅ No problematic TARGET_BUNDLE_DIR references found."
+
+      - name: Clean CMake cache
+        run: rm -rf plugin/build
+
+      - name: Configure (CMake)
+        run: |
+          mkdir -p ci_logs
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" | tee ci_logs/cmake_stdout.log
+
+      - name: Build (Release)
+        run: |
+          cmake --build plugin/build --config Release | tee ci_logs/build_stdout.log
+
+      - name: Show first hard error
+        if: failure()
+        run: |
+          set -e
+          if [ -d plugin/build ]; then
+            echo "---- CMakeCache.txt (top) ----"
+            head -n 80 plugin/build/CMakeCache.txt || true
+          fi
+          if [ -f ci_logs/cmake_stdout.log ]; then
+            echo "---- CMake output ----"
+            cat ci_logs/cmake_stdout.log || true
+          fi
+          if [ -f ci_logs/build_stdout.log ]; then
+            echo "---- Build output (last 100 lines) ----"
+            tail -n 100 ci_logs/build_stdout.log || true
+          fi
+
+      - name: Upload plugin bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoreMojoPlugin-bundles
+          path: |
+            ~/Library/Audio/Plug-Ins/VST3/MoreMojoPlugin.vst3
+            ~/Library/Audio/Plug-Ins/Components/MoreMojoPlugin.component
+          if-no-files-found: warn
+
+      # Package source for review
+      - name: Package source tree (without .git)
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p source_bundle
+          rsync -a \
+            --exclude='.git' \
+            --exclude='**/build' \
+            --exclude='**/.DS_Store' \
+            --exclude='**/*.xcworkspace' \
+            --exclude='**/DerivedData' \
+            ./ ./source_bundle/
+
+          # Create a single archive for convenience
+          tar -czf source_bundle.tar.gz -C source_bundle .
+
+      - name: Upload source bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-bundle
+          path: source_bundle.tar.gz
+          if-no-files-found: error
+          retention-days: 7
