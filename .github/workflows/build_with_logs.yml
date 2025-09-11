@@ -17,26 +17,11 @@ jobs:
           # If you need a specific version, uncomment:
           # sudo xcode-select -s /Applications/Xcode_15.0.app
 
-      - name: Build App (xcodebuild) with full logs
+      - name: Build App with xcodebuild (logs + xcresult)
         run: |
           set -euo pipefail
-          mkdir -p ci_logs app/build
-          # Build & tee raw log
-          xcodebuild \
-            -project app/RealFeelStudio.xcodeproj \
-            -scheme "RealFeel Studio" \
-            -configuration Release \
-            -sdk macosx \
-            -derivedDataPath app/build \
-            -resultBundlePath app/build/App.xcresult \
-            build 2>&1 | tee ci_logs/xcodebuild_app_stdout.log
-          # Basic context
-          {
-            echo "=== Tooling ==="
-            xcodebuild -version
-            sw_vers
-            swift --version
-          } | tee ci_logs/app_tooling.txt
+          chmod +x scripts/build_app_xcode.sh
+          scripts/build_app_xcode.sh
 
       - name: Upload App logs & result bundle (always)
         if: always()
@@ -76,23 +61,29 @@ jobs:
           git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
           echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
 
-      - name: Build Plugin (CMake) with full logs
+      - name: Clean CMake cache
+        run: rm -rf plugin/build
+
+      - name: Guard CMake for forbidden commands
+        run: |
+          if git grep -n "TARGET_BUNDLE_DIR" -- plugin/CMakeLists.txt | grep -v '^$'; then
+            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD or per-format targets)."
+            exit 1
+          fi
+
+      - name: Configure (CMake)
         env:
           JUCE_DIR: ${{ env.JUCE_DIR }}
         run: |
           set -euo pipefail
           mkdir -p ci_logs
-          rm -rf plugin/build
-          {
-            echo "=== Tooling ==="
-            cmake --version
-            ls /Applications | grep Xcode || true
-          } | tee ci_logs/plugin_tooling.txt
-
           echo "==> CMake configure"
           cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
 
-          echo "==> CMake build (Release)"
+      - name: Build (Release)
+        run: |
+          set -euo pipefail
+          echo "==> CMake build"
           cmake --build plugin/build --config Release 2>&1 | tee ci_logs/cmake_build.log
 
       - name: Upload Plugin logs (always)
