@@ -7,32 +7,8 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "macOS deployment target" FO
 
 find_package(JUCE CONFIG REQUIRED)
 
-# Allow override: -DMOJO_FORMATS="AU;VST3;Standalone"
-set(MOJO_FORMATS "AU;VST3;Standalone" CACHE STRING "Plugin formats to build")
-
 juce_add_plugin(MoreMojoPlugin
     COMPANY_NAME "Umbo Gumbo"
-    FORMATS ${MOJO_FORMATS}
+    FORMATS AU VST3 Standalone
     PRODUCT_NAME "More Mojo by Umbo Gumbo"
-    COPY_PLUGIN_AFTER_BUILD TRUE      # Let JUCE install bundles into ~/Library/Audio/Plug-Ins
-    NEEDS_MIDI_INPUT FALSE
-    NEEDS_MIDI_OUTPUT FALSE
-    IS_MIDI_EFFECT FALSE
-    IS_SYNTH FALSE
-)
-
-target_sources(MoreMojoPlugin PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginProcessor.h
-)
-
-target_compile_definitions(MoreMojoPlugin PRIVATE
-    JUCE_WEB_BROWSER=0
-    JUCE_USE_CURL=0
-    JUCE_VST3_CAN_REPLACE_VST2=0
-)
-
-target_link_libraries(MoreMojoPlugin PRIVATE
-    juce::juce_audio_utils
-    juce::juce_dsp
-)
+    COPY_PLUGIN_AFTER_BUILD TRUE)
