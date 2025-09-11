@@ -18,6 +18,11 @@ echo "==> Tooling"
   swift --version || true
 } | tee "$LOG_DIR/app_tooling.txt"
 
+# Run preflight fixes for common Swift issues
+echo "==> Running preflight fixes"
+chmod +x "$ROOT/scripts/app_preflight_fix.sh"
+"$ROOT/scripts/app_preflight_fix.sh"
+
 echo "==> Debug project and scheme information"
 echo "Available Xcode projects in $APP_DIR:"
 ls -la "$APP_DIR" | grep ".xcodeproj"
