@@ -19,6 +19,15 @@ jobs:
       run: |
         git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
         echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+        
+    - name: Guard against stale custom bundle commands
+      run: |
+        set -euo pipefail
+        if git grep -n "TARGET_BUNDLE_DIR" -- plugin | grep -v '^$'; then
+          echo "❌ Found TARGET_BUNDLE_DIR references; remove custom post-build blocks."
+          exit 1
+        fi
+        echo "✅ No problematic TARGET_BUNDLE_DIR references found."
       
     - name: Build Plugin (script)
       run: |
