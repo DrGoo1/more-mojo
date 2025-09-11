@@ -1,96 +1,108 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
-# Default to Phase 2 if not specified
-if(NOT DEFINED PHASE)
-    set(PHASE 2)
-endif()
+# ---------------------------------------------------------
+# Project
+# ---------------------------------------------------------
+project(MoreMojoPlugin VERSION 0.1.0 LANGUAGES C CXX)
 
-# Project details
-project(MoreMojoPlugin VERSION 0.2.0)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "macOS deployment target" FORCE)
 
-# Find the JUCE library
-if(NOT DEFINED JUCE_DIR)
-    message(FATAL_ERROR "JUCE_DIR must be defined! Please provide the path to your JUCE installation.")
-endif()
+# ---------------------------------------------------------
+# JUCE
+# ---------------------------------------------------------
+# Expect JUCE to be provided via -DJUCE_DIR=... or a submodule in your CMake prefix path.
+# In CI/local builds we pass -DJUCE_DIR=$ENV{JUCE_DIR}
+find_package(JUCE CONFIG REQUIRED)
 
-add_subdirectory(${JUCE_DIR} juce)
+# ---------------------------------------------------------
+# Options (formats can be overridden from the command line)
+# Example: -DMOJO_FORMATS="AU;VST3;Standalone"
+# ---------------------------------------------------------
+set(MOJO_FORMATS "AU;VST3;Standalone" CACHE STRING "Plugin formats to build")
 
-# Set up basic JUCE configuration
+# ---------------------------------------------------------
+# Plugin target
+# The name here is the *base name*. JUCE creates:
+#   <BASE>_VST3, <BASE>_AU, <BASE>_Standalone
+# and COPY_PLUGIN_AFTER_BUILD installs to user folders on macOS.
+# ---------------------------------------------------------
 juce_add_plugin(MoreMojoPlugin
-    COMPANY_NAME "MoreMojo"
-    PLUGIN_MANUFACTURER_CODE Mojo
-    PLUGIN_CODE MMP2
-    FORMATS AU VST3 
-    PRODUCT_NAME "MoreMojo"
-    COMPANY_WEBSITE "https://more-mojo.com"
-    COMPANY_EMAIL "info@more-mojo.com"
-    IS_SYNTH FALSE
+    COMPANY_NAME "Umbo Gumbo"
+    FORMATS ${MOJO_FORMATS}
+    PRODUCT_NAME "More Mojo by Umbo Gumbo"
+    COPY_PLUGIN_AFTER_BUILD TRUE       # <— Let JUCE install to ~/Library automatically
+    # If you provide an editor class, set this to TRUE and add PluginEditor files below
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
-    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
-    COPY_PLUGIN_AFTER_BUILD TRUE
-    VST3_CATEGORIES "Fx" "Distortion" "Dynamics"
-    AU_MAIN_TYPE "kAudioUnitType_Effect"
-    PLUGIN_NAME "MoreMojo"
-    PLUGIN_DESCRIPTION "MoreMojo analog shaper with multiple interpolation modes"
-    PLUGIN_AU_EXPORT_PREFIX "MoreMojoAU"
+    IS_SYNTH FALSE
 )
 
-# Tell CMake about the Phase
-add_compile_definitions(PHASE=${PHASE})
-
-# Source files
-target_sources(MoreMojoPlugin
-    PRIVATE
-        Source/PluginProcessor.cpp
+# ---------------------------------------------------------
+# Sources
+# Keep this minimal; JUCE provides a generic editor if you don't add your own.
+# ---------------------------------------------------------
+target_sources(MoreMojoPlugin PRIVATE
+    Source/PluginProcessor.cpp
+    Source/PluginProcessor.h
+    # If you have a custom editor, uncomment these lines:
+    # Source/PluginEditor.cpp
+    # Source/PluginEditor.h
 )
 
-# Include directories
-target_include_directories(MoreMojoPlugin
-    PRIVATE
-        Source
+# ---------------------------------------------------------
+# Compile definitions (tweak to taste)
+# ---------------------------------------------------------
+target_compile_definitions(MoreMojoPlugin PRIVATE
+    JUCE_WEB_BROWSER=0
+    JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-# Set C++ standard
-target_compile_features(MoreMojoPlugin PRIVATE cxx_std_17)
-
-# Link against JUCE modules
-target_link_libraries(MoreMojoPlugin
-    PRIVATE
-        juce::juce_audio_basics
-        juce::juce_audio_devices
-        juce::juce_audio_formats
-        juce::juce_audio_plugin_client
-        juce::juce_audio_processors
-        juce::juce_audio_utils
-        juce::juce_core
-        juce::juce_data_structures
-        juce::juce_dsp
-        juce::juce_events
-        juce::juce_graphics
-        juce::juce_gui_basics
-        juce::juce_gui_extra
-    PUBLIC
-        juce::juce_recommended_config_flags
-        juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags
+# ---------------------------------------------------------
+# Link JUCE modules
+# ---------------------------------------------------------
+target_link_libraries(MoreMojoPlugin PRIVATE
+    juce::juce_audio_utils
+    juce::juce_dsp
 )
 
-# Add optimization flags
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    target_compile_options(MoreMojoPlugin PRIVATE -O3)
-endif()
-
-# Add version information
-set_target_properties(MoreMojoPlugin PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
-)
-
-# Plugin installations are handled by JUCE via COPY_PLUGIN_AFTER_BUILD
-# COPY_PLUGIN_AFTER_BUILD is already enabled in the juce_add_plugin call above
-# This will automatically copy plugins to the user's standard plugin directories:
-#  - AU components to ~/Library/Audio/Plug-Ins/Components
-#  - VST3 plugins to ~/Library/Audio/Plug-Ins/VST3
-#  - Standalone app will be in the build output directory
+# ---------------------------------------------------------
+# (Optional) Extra: leave a deploy/ mirror for CI artifacts
+# If you want a deploy folder as well as JUCE's auto-install,
+# uncomment the block below. Note: always target the *per-format*
+# bundle names, never the base target.
+# ---------------------------------------------------------
+# set(PLUGIN_BASE_NAME MoreMojoPlugin)
+#
+# if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_VST3)
+#   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_VST3 POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E make_directory
+#             "${CMAKE_BINARY_DIR}/deploy/VST3"
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory
+#             "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_VST3>"
+#             "${CMAKE_BINARY_DIR}/deploy/VST3/${PLUGIN_BASE_NAME}.vst3"
+#     COMMENT "Deploying ${PLUGIN_BASE_NAME}.vst3")
+# endif()
+#
+# if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_AU)
+#   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_AU POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E make_directory
+#             "${CMAKE_BINARY_DIR}/deploy/AU"
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory
+#             "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_AU>"
+#             "${CMAKE_BINARY_DIR}/deploy/AU/${PLUGIN_BASE_NAME}.component"
+#     COMMENT "Deploying ${PLUGIN_BASE_NAME}.component")
+# endif()
+#
+# if (APPLE AND TARGET ${PLUGIN_BASE_NAME}_Standalone)
+#   add_custom_command(TARGET ${PLUGIN_BASE_NAME}_Standalone POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E make_directory
+#             "${CMAKE_BINARY_DIR}/deploy/Standalone"
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory
+#             "$<TARGET_BUNDLE_DIR:${PLUGIN_BASE_NAME}_Standalone>"
+#             "${CMAKE_BINARY_DIR}/deploy/Standalone/${PLUGIN_BASE_NAME}.app"
+#     COMMENT "Deploying ${PLUGIN_BASE_NAME}.app")
+# endif()
