@@ -14,7 +14,7 @@ juce_add_plugin(MoreMojoPlugin
     COMPANY_NAME "Umbo Gumbo"
     FORMATS ${MOJO_FORMATS}
     PRODUCT_NAME "More Mojo by Umbo Gumbo"
-    COPY_PLUGIN_AFTER_BUILD TRUE     # Let JUCE install to ~/Library
+    COPY_PLUGIN_AFTER_BUILD TRUE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
@@ -24,8 +24,6 @@ juce_add_plugin(MoreMojoPlugin
 target_sources(MoreMojoPlugin PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginProcessor.h
-    # Source/PluginEditor.cpp
-    # Source/PluginEditor.h
 )
 
 target_compile_definitions(MoreMojoPlugin PRIVATE

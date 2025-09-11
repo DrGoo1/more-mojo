@@ -7,18 +7,30 @@ SRC="$ROOT/app/Sources"
 
 echo "== MoreMojo App Preflight Fix =="
 
-# 1. Add necessary import for SharedTypes
-echo "Fixing imports for SharedTypes..."
-IMPORT_LINE="import Foundation"
-FILES_TO_CHECK=$(grep -r "ProcessorParams" "$SRC" --include="*.swift" | grep -v "SharedTypes\|ProcessorParams+Ext" | cut -d: -f1 | sort -u)
+# 1. Move SharedTypes to app module or create umbrella header
+echo "Setting up shared module approach..."
+
+# First ensure SharedTypes is properly imported in all files that use it
+echo "import Foundation" > "$SRC/MojoTypes.swift"
+echo "// Umbrella header for all shared types" >> "$SRC/MojoTypes.swift"
+
+# Add the shared type definitions to the module file
+cat "$SRC/SharedTypes.swift" >> "$SRC/MojoTypes.swift"
+
+# Update all files that need to import the shared types
+FILES_TO_CHECK=$(grep -r "ProcessorParams\|MojoEQBand" "$SRC" --include="*.swift" | grep -v "SharedTypes\|ProcessorParams+Ext\|MojoTypes" | cut -d: -f1 | sort -u)
 
 for FILE in $FILES_TO_CHECK; do
-  if ! grep -q "import \"SharedTypes.swift\"" "$FILE" && ! grep -q "import SharedTypes" "$FILE"; then
-    echo "Adding import for SharedTypes in $FILE"
-    sed -i '' "1 a\\
-import \"SharedTypes.swift\"
-" "$FILE"
+  echo "Adding proper import for $FILE"
+  # Check if import is already there
+  if ! grep -q "^import Foundation" "$FILE"; then
+    # Add import at the top after any existing imports
+    sed -i '' '1s/^/import Foundation\n/' "$FILE"
   fi
+  
+  # Ensure SharedTypes contents are directly available
+  echo "// Added by preflight fix" >> "$SRC/MojoTypes.swift"
+  cat "$FILE" >> "$SRC/MojoTypes.swift"
 done
 
 # 2. Create MojoMacroMode enum if it doesn't exist
