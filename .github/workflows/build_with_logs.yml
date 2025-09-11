@@ -11,9 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # (Optional) choose a specific Xcode; uncomment if you need a fixed one
+      # - name: Select Xcode
+      #   run: sudo xcode-select -s /Applications/Xcode_15.0.app
+
       - name: Build App (xcodebuild) with logs
         run: |
-          chmod +x scripts/build_app_xcode.sh
+          set -euo pipefail
+          mkdir -p ci_logs
+          # Ensure the script exists and is executable
+          if [ ! -x scripts/build_app_xcode.sh ]; then
+            echo "ERROR: scripts/build_app_xcode.sh missing or not executable"
+            exit 1
+          fi
           scripts/build_app_xcode.sh
 
       - name: Upload App logs & xcresult (always)
@@ -50,8 +60,10 @@ jobs:
 
       - name: Fetch JUCE
         run: |
+          set -euo pipefail
           git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
           echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+          echo "JUCE_DIR is $JUCE_DIR"
 
       - name: Clean CMake cache
         run: rm -rf plugin/build
@@ -64,10 +76,12 @@ jobs:
           fi
 
       - name: Configure (CMake) with logs
-        env: { JUCE_DIR: ${{ env.JUCE_DIR }} }
+        env:
+          JUCE_DIR: ${{ env.JUCE_DIR }}
         run: |
           set -euo pipefail
           mkdir -p ci_logs
+          echo "Configuring with JUCE_DIR=$JUCE_DIR"
           cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
 
       - name: Build (Release) with logs
@@ -88,6 +102,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      # JUCE will install bundles into user paths (COPY_PLUGIN_AFTER_BUILD TRUE)
       - name: Upload installed plugin bundles (best-effort)
         if: always()
         uses: actions/upload-artifact@v4
