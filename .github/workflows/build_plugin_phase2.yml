@@ -29,22 +29,36 @@ jobs:
     - name: Package Plugins
       run: |
         mkdir -p dist
-        # Use the deploy directory created by build_plugin.sh
-        if [ -d "plugin/build/deploy/AU" ]; then
-          cp -R plugin/build/deploy/AU/*.component dist/ || true
-        fi
-        if [ -d "plugin/build/deploy/VST3" ]; then
-          cp -R plugin/build/deploy/VST3/*.vst3 dist/ || true
-        fi
-        if [ -d "plugin/build/deploy/Standalone" ]; then
-          cp -R plugin/build/deploy/Standalone/*.app dist/ || true
+        
+        # Find plugin bundles in standard JUCE output locations
+        # First try macOS build structure
+        if [ -d "plugin/build/MoreMojoPlugin_artefacts" ]; then
+          find "plugin/build/MoreMojoPlugin_artefacts" -type d -name "*.component" -exec cp -R {} dist/ \;
+          find "plugin/build/MoreMojoPlugin_artefacts" -type d -name "*.vst3" -exec cp -R {} dist/ \;
+          find "plugin/build/MoreMojoPlugin_artefacts" -type d -name "*.app" -exec cp -R {} dist/ \;
         fi
         
-        # Fallback to Release directory if deploy doesn't exist
-        if [ ! -d "plugin/build/deploy" ]; then
-          cp -R plugin/build/Release/*.component dist/ || true
-          cp -R plugin/build/Release/*.vst3 dist/ || true
+        # Fallback to Release directory
+        find "plugin/build" -path "*/Release/*.component" -exec cp -R {} dist/ \; || true
+        find "plugin/build" -path "*/Release/*.vst3" -exec cp -R {} dist/ \; || true
+        
+        # If user plugin folder has content, try that too (files may exist if COPY_PLUGIN_AFTER_BUILD worked)
+        COMPONENT_DIR="$HOME/Library/Audio/Plug-Ins/Components/MoreMojoPlugin.component"
+        VST3_DIR="$HOME/Library/Audio/Plug-Ins/VST3/MoreMojoPlugin.vst3"
+        
+        if [ -d "$COMPONENT_DIR" ]; then
+          cp -R "$COMPONENT_DIR" dist/
+          echo "Found AU component in user plugin folder"
         fi
+        
+        if [ -d "$VST3_DIR" ]; then
+          cp -R "$VST3_DIR" dist/
+          echo "Found VST3 plugin in user plugin folder"
+        fi
+        
+        # Show what we found
+        echo "Found plugin artifacts:"
+        find dist -type d -maxdepth 1
         
         # Archive component and vst3 separately for easier extraction
         cd dist
