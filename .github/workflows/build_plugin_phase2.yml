@@ -49,13 +49,35 @@ jobs:
         
         # Run CMake directly instead of through script
         echo "==> Configuring CMake"
-        cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_PATH" -DPHASE=2
+        mkdir -p ci_logs
+        cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_PATH" -DPHASE=2 | tee ci_logs/cmake_stdout.log
         
         echo "==> Building (Release)"
-        cmake --build plugin/build --config Release
+        cmake --build plugin/build --config Release | tee ci_logs/build_stdout.log
         
         echo "==> Build complete"
         find plugin/build -name "*.component" -o -name "*.vst3"
+        
+    - name: Show first hard error
+      if: failure()
+      run: |
+        set -e
+        if [ -f ci_logs/xcodebuild_app_stdout.log ]; then
+          echo "---- first 60 lines ----"; head -n 60 ci_logs/xcodebuild_app_stdout.log || true
+          echo "---- last 120 lines ----"; tail -n 120 ci_logs/xcodebuild_app_stdout.log || true
+        fi
+        if [ -d plugin/build ]; then
+          echo "---- CMakeCache.txt (top) ----"
+          head -n 80 plugin/build/CMakeCache.txt || true
+        fi
+        if [ -f ci_logs/cmake_stdout.log ]; then
+          echo "---- CMake output ----"
+          cat ci_logs/cmake_stdout.log || true
+        fi
+        if [ -f ci_logs/build_stdout.log ]; then
+          echo "---- Build output (last 100 lines) ----"
+          tail -n 100 ci_logs/build_stdout.log || true
+        fi
     
     - name: Package Plugins
       run: |
