@@ -15,10 +15,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Pull JUCE (or use submodule)
+    - name: Pull JUCE
       run: |
-        git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+        git clone --depth=1 https://github.com/juce-framework/JUCE.git
         echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+        # Verify JUCE was cloned properly
+        ls -la "$PWD/JUCE"
+        echo "JUCE directory: $PWD/JUCE"
         
     - name: Guard against stale custom bundle commands
       run: |
@@ -29,13 +32,30 @@ jobs:
         fi
         echo "✅ No problematic TARGET_BUNDLE_DIR references found."
       
-    - name: Build Plugin (script)
+    - name: Build Plugin
       run: |
-        chmod +x scripts/build_plugin.sh
         # Clean build directory to avoid cached generator expressions
         rm -rf plugin/build
-        # Pass PHASE=2 to the build script
-        PHASE=2 ./scripts/build_plugin.sh
+        
+        # Define JUCE path explicitly
+        JUCE_PATH="$PWD/JUCE"
+        echo "Using JUCE at: $JUCE_PATH"
+        
+        # Verify JUCE directory exists
+        if [ ! -d "$JUCE_PATH" ]; then
+          echo "❌ JUCE directory not found: $JUCE_PATH"
+          exit 1
+        fi
+        
+        # Run CMake directly instead of through script
+        echo "==> Configuring CMake"
+        cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_PATH" -DPHASE=2
+        
+        echo "==> Building (Release)"
+        cmake --build plugin/build --config Release
+        
+        echo "==> Build complete"
+        find plugin/build -name "*.component" -o -name "*.vst3"
     
     - name: Package Plugins
       run: |
