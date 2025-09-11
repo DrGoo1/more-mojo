@@ -56,10 +56,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch JUCE (or use your cached path)
+      - name: Fetch JUCE
         run: |
-          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
-          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+          # Make sure JUCE dir exists and is in a known location
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git
+          echo "JUCE_DIR=$PWD/JUCE"
+          # Create .env file for steps that don't inherit environment properly
+          echo "JUCE_DIR=$PWD/JUCE" > juce_env.txt
 
       - name: Clean CMake cache
         run: rm -rf plugin/build
@@ -72,12 +75,16 @@ jobs:
           fi
 
       - name: Configure (CMake)
-        env:
-          JUCE_DIR: ${{ env.JUCE_DIR }}
         run: |
           set -euo pipefail
           mkdir -p ci_logs
+          
+          # Make sure we have JUCE_DIR defined
+          JUCE_DIR=$(cat juce_env.txt | grep JUCE_DIR | cut -d= -f2)
+          echo "Using JUCE_DIR=$JUCE_DIR"
+          
           echo "==> CMake configure"
+          # Pass JUCE_DIR explicitly on command line
           cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
 
       - name: Build (Release)
