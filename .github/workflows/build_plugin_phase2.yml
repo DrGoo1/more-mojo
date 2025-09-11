@@ -23,6 +23,8 @@ jobs:
     - name: Build Plugin (script)
       run: |
         chmod +x scripts/build_plugin.sh
+        # Clean build directory to avoid cached generator expressions
+        rm -rf plugin/build
         # Pass PHASE=2 to the build script
         PHASE=2 ./scripts/build_plugin.sh
     
