@@ -22,8 +22,8 @@ XCRESULT="$DERIVED/App.xcresult"
 mkdir -p "$DERIVED"
 
 # Capture build output to both stdout and log file
-xcodebuild -project "RealFeelStudio.xcodeproj" \
-  -scheme "RealFeel Studio" \
+xcodebuild -project "MoreMojoStudio.xcodeproj" \
+  -scheme "MoreMojoStudio" \
   -configuration Release \
   -derivedDataPath "$DERIVED" \
   -resultBundlePath "$XCRESULT" \
@@ -34,11 +34,11 @@ xcodebuild -project "RealFeelStudio.xcodeproj" \
 echo "==> Package artifact if present" | tee -a ci_logs/build_steps.log
 cd "$ROOT"
 mkdir -p dist
-APP="app/build/Build/Products/Release/RealFeel Studio.app"
+APP="app/build/Build/Products/Release/MoreMojoStudio.app"
 if [ -d "$APP" ]; then
-  rm -rf "dist/RealFeel Studio.app"
+  rm -rf "dist/MoreMojoStudio.app"
   cp -R "$APP" dist/
-  echo "OK: App artifact at dist/RealFeel Studio.app" | tee -a ci_logs/build_steps.log
+  echo "OK: App artifact at dist/MoreMojoStudio.app" | tee -a ci_logs/build_steps.log
 else
   echo "WARN: no .app found at expected path" | tee -a ci_logs/xcodebuild_app.log
 fi

@@ -54,7 +54,7 @@ else
 fi
 echo_success "App build completed"
 
-# Replace legacy swiftc build script with a wrapper that calls Xcode build
+# MoreMojoStudio legacy swiftc build script with a wrapper that calls Xcode build
 cat > "${TARGET_DIR}/build_xcode.sh" << 'EOFBuildScript'
 #!/bin/bash
 set -euo pipefail

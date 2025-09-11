@@ -48,17 +48,17 @@ else
   exit 1
 fi
 
-echo "Building RealFeelStudio SwiftUI app with Xcode (see ../scripts/build_app_xcode.sh)"
+echo "Building MoreMojoStudio SwiftUI app with Xcode (see ../scripts/build_app_xcode.sh)"
 
 # Final packaging
 echo_info "Running final packaging..."
 DIST_DIR="${BASE_DIR}/dist"
 mkdir -p "${DIST_DIR}"
 
-APP_PATH="${BASE_DIR}/app/build/Build/Products/Release/RealFeel Studio.app"
+APP_PATH="${BASE_DIR}/app/build/Build/Products/Release/MoreMojoStudio.app"
 if [ -d "$APP_PATH" ]; then
   cp -R "$APP_PATH" "${DIST_DIR}/"
-  echo_success "App copied to ${DIST_DIR}/RealFeel Studio.app"
+  echo_success "App copied to ${DIST_DIR}/MoreMojoStudio.app"
 else
   echo_error "App not found at expected path: $APP_PATH"
   exit 1

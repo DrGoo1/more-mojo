@@ -26,19 +26,19 @@ chmod +x "$ROOT/scripts/app_preflight_fix.sh"
 echo "==> Debug project and scheme information"
 echo "Available Xcode projects in $APP_DIR:"
 ls -la "$APP_DIR" | grep ".xcodeproj"
-if [ -d "$APP_DIR/RealFeelStudio.xcodeproj" ]; then
+if [ -d "$APP_DIR/MoreMojoStudio.xcodeproj" ]; then
   echo "==> List schemes in project"
-  xcodebuild -project "$APP_DIR/RealFeelStudio.xcodeproj" -list | tee "$LOG_DIR/xcode_schemes.log"
+  xcodebuild -project "$APP_DIR/MoreMojoStudio.xcodeproj" -list | tee "$LOG_DIR/xcode_schemes.log"
 fi
 
 echo "==> xcodebuild (Release)"
 xcodebuild \
-  -project "$APP_DIR/RealFeelStudio.xcodeproj" \
-  -scheme "RealFeel Studio" \
+  -project "$APP_DIR/MoreMojoStudio.xcodeproj" \
+  -scheme "MoreMojoStudio" \
   -configuration Release \
   -sdk macosx \
   -derivedDataPath "$DERIVED" \
   -resultBundlePath "$XCRESULT" \
   build 2>&1 | tee "$LOG_DIR/xcodebuild_app_stdout.log"
 
-echo "==> Done. App at: $DERIVED/Build/Products/Release/RealFeel Studio.app"
+echo "==> Done. App at: $DERIVED/Build/Products/Release/MoreMojoStudio.app"
