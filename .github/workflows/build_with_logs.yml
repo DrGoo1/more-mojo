@@ -11,41 +11,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Select Xcode (list and optionally select)
+      - name: Build App (xcodebuild) with logs
         run: |
-          echo "Available Xcodes:"; ls /Applications | grep Xcode || true
-          # If you need a specific version, uncomment:
-          # sudo xcode-select -s /Applications/Xcode_15.0.app
-
-      - name: Build App with xcodebuild (logs + xcresult)
-        run: |
-          set -euo pipefail
           chmod +x scripts/build_app_xcode.sh
           scripts/build_app_xcode.sh
 
-      - name: Upload App logs & result bundle (always)
+      - name: Upload App logs & xcresult (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-build-logs
           path: |
             ci_logs/**
-            app/build/Build/Logs/**           # classic Xcode logs
-            app/build/App.xcresult/**         # result bundle
+            app/build/Build/Logs/**
+            app/build/App.xcresult/**
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload App artifact (if built)
+      - name: Upload App bundle (if built)
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: RealFeelStudio.app
-          path: app/build/Build/Products/Release/RealFeel\ Studio.app
+          name: MoreMojoStudio.app
+          path: app/build/Build/Products/Release/MoreMojoStudio.app
           if-no-files-found: error
           retention-days: 7
 
-      # Surface the first errors inline on the run page
-      - name: Show last lines of app log (on failure)
+      - name: Tail app log (on failure)
         if: failure()
         run: |
           echo "----- Tail of app build log -----"
@@ -58,11 +50,8 @@ jobs:
 
       - name: Fetch JUCE
         run: |
-          # Make sure JUCE dir exists and is in a known location
-          git clone --depth=1 https://github.com/juce-framework/JUCE.git
-          echo "JUCE_DIR=$PWD/JUCE"
-          # Create .env file for steps that don't inherit environment properly
-          echo "JUCE_DIR=$PWD/JUCE" > juce_env.txt
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
+          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
 
       - name: Clean CMake cache
         run: rm -rf plugin/build
@@ -70,27 +59,20 @@ jobs:
       - name: Guard CMake for forbidden commands
         run: |
           if git grep -n "TARGET_BUNDLE_DIR" -- plugin/CMakeLists.txt | grep -v '^$'; then
-            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD or per-format targets)."
+            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD ONLY)."
             exit 1
           fi
 
-      - name: Configure (CMake)
+      - name: Configure (CMake) with logs
+        env: { JUCE_DIR: ${{ env.JUCE_DIR }} }
         run: |
           set -euo pipefail
           mkdir -p ci_logs
-          
-          # Make sure we have JUCE_DIR defined
-          JUCE_DIR=$(cat juce_env.txt | grep JUCE_DIR | cut -d= -f2)
-          echo "Using JUCE_DIR=$JUCE_DIR"
-          
-          echo "==> CMake configure"
-          # Pass JUCE_DIR explicitly on command line
           cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
 
-      - name: Build (Release)
+      - name: Build (Release) with logs
         run: |
           set -euo pipefail
-          echo "==> CMake build"
           cmake --build plugin/build --config Release 2>&1 | tee ci_logs/cmake_build.log
 
       - name: Upload Plugin logs (always)
@@ -106,7 +88,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      # If you're using COPY_PLUGIN_AFTER_BUILD TRUE, upload installed bundles:
       - name: Upload installed plugin bundles (best-effort)
         if: always()
         uses: actions/upload-artifact@v4
@@ -118,36 +99,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Show last lines of plugin logs (on failure)
+      - name: Tail plugin logs (on failure)
         if: failure()
         run: |
           echo "----- Tail of CMake configure -----"
           tail -n 200 ci_logs/cmake_configure.log || true
           echo "----- Tail of CMake build -----"
           tail -n 200 ci_logs/cmake_build.log || true
-
-      # Package source for review
-      - name: Package source tree (without .git)
-        if: always()
-        run: |
-          set -euo pipefail
-          mkdir -p source_bundle
-          rsync -a \
-            --exclude='.git' \
-            --exclude='**/build' \
-            --exclude='**/.DS_Store' \
-            --exclude='**/*.xcworkspace' \
-            --exclude='**/DerivedData' \
-            ./ ./source_bundle/
-
-          # Create a single archive for convenience
-          tar -czf source_bundle.tar.gz -C source_bundle .
-
-      - name: Upload source bundle
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-bundle
-          path: source_bundle.tar.gz
-          if-no-files-found: error
-          retention-days: 7

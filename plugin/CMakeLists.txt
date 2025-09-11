@@ -14,7 +14,7 @@ juce_add_plugin(MoreMojoPlugin
     COMPANY_NAME "Umbo Gumbo"
     FORMATS ${MOJO_FORMATS}
     PRODUCT_NAME "More Mojo by Umbo Gumbo"
-    COPY_PLUGIN_AFTER_BUILD TRUE
+    COPY_PLUGIN_AFTER_BUILD TRUE      # Let JUCE install bundles into ~/Library/Audio/Plug-Ins
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
