@@ -119,3 +119,28 @@ jobs:
         text: "Plugin build ${{ github.workflow }} completed with status: ${{ job.status }}\nSee details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: Package source tree (without .git)
+      if: always()
+      run: |
+        set -euo pipefail
+        mkdir -p source_bundle
+        rsync -a \
+          --exclude='.git' \
+          --exclude='**/build' \
+          --exclude='**/.DS_Store' \
+          --exclude='**/*.xcworkspace' \
+          --exclude='**/DerivedData' \
+          ./ ./source_bundle/
+
+        # Create a single archive for convenience
+        tar -czf source_bundle.tar.gz -C source_bundle .
+
+    - name: Upload source bundle
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: source-bundle
+        path: source_bundle.tar.gz
+        if-no-files-found: error
+        retention-days: 7
