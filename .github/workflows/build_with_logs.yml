@@ -62,7 +62,10 @@ jobs:
         run: |
           set -euo pipefail
           git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
-          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
+          # export for THIS step:
+          export JUCE_DIR="$PWD/JUCE"
+          # export for NEXT steps:
+          echo "JUCE_DIR=$JUCE_DIR" >> $GITHUB_ENV
           echo "JUCE_DIR is $JUCE_DIR"
 
       - name: Clean CMake cache
@@ -76,8 +79,6 @@ jobs:
           fi
 
       - name: Configure (CMake) with logs
-        env:
-          JUCE_DIR: ${{ env.JUCE_DIR }}
         run: |
           set -euo pipefail
           mkdir -p ci_logs
