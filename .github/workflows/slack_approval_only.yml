@@ -30,7 +30,10 @@ jobs:
         with:
           status: ${{ job.status }}
           fields: repo,commit
-          text: ":white_check_mark: *Approval requested* for `${{ github.repository }}` on `${{ github.ref_name }}`.\n*Workflow:* ${{ github.workflow }} • *Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\n*PR:* ${{ github.event.pull_request.html_url || 'n/a' }}"
+          text: |
+            :white_check_mark: *Approval requested* for `${{ github.repository }}` on `${{ github.ref_name }}`. 
+            *Workflow:* ${{ github.workflow }} • *Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}> 
+            *Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
