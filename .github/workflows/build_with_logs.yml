@@ -11,6 +11,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # List available Xcode versions
+      - name: List available Xcode versions
+        run: |
+          set -e
+          echo "=== Available Xcode Versions ==="
+          ls -la /Applications/Xcode* || true
+          echo "Current Xcode version:"
+          xcodebuild -version || true
+      
+      # Try to select Xcode 16.x if available
+      - name: Try to select Xcode 16.x
+        run: |
+          set -e
+          echo "Attempting to select Xcode 16.x..."
+          if [ -d "/Applications/Xcode_16.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          else
+            echo "No Xcode 16.x found, will try to continue with current version"
+          fi
+          echo "Selected Xcode version:"
+          xcodebuild -version
+            
       # Guard against raw swiftc usage
       - name: Guard against raw swiftc usage
         run: |
@@ -78,6 +102,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # List and select Xcode version
+      - name: List and select Xcode version
+        run: |
+          set -e
+          echo "=== Available Xcode Versions ==="
+          ls -la /Applications/Xcode* || true
+          echo "Current Xcode version:"
+          xcodebuild -version || true
+          
+          # Try to select Xcode 16.x if available
+          echo "Attempting to select Xcode 16.x..."
+          if [ -d "/Applications/Xcode_16.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          else
+            echo "No Xcode 16.x found, will try to continue with current version"
+          fi
+          echo "Selected Xcode version:"
+          xcodebuild -version
+          
       - name: Fetch JUCE
         run: |
           set -euo pipefail
