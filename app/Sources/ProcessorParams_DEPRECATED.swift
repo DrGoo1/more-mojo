@@ -5,7 +5,8 @@ import Foundation
 
 // This will cause a compile error if SharedTypes already has ProcessorParams
 #if !SHARED_TYPES_DEFINED
-public struct ProcessorParams: Codable, Equatable {
+public // DEPRECATED duplicate removed
+// struct ProcessorParams: Codable, Equatable {
     public var drive: Float = 0.5
     public var tone: Float = 0.5
     public var output: Float = 0.5
@@ -17,6 +18,7 @@ public struct ProcessorParams: Codable, Equatable {
         self.output = output
         self.mix = mix
     }
+
     
     public static func ==(lhs: ProcessorParams, rhs: ProcessorParams) -> Bool {
         return lhs.drive == rhs.drive && lhs.tone == rhs.tone && 
