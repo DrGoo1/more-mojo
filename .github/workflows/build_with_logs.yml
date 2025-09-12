@@ -236,14 +236,24 @@ jobs:
       - name: Run autofix
         run: |
           set -euo pipefail
-          if [ ! -x scripts/autofix_build.sh ]; then
-            echo "No scripts/autofix_build.sh – skipping automated changes."
-            exit 0
+          if [ -x scripts/autofix_build.sh ]; then
+            # Never let a non-critical exit block PR creation
+            bash scripts/autofix_build.sh || echo "Autofix returned non-zero – continuing to PR step"
+          else
+            echo "No scripts/autofix_build.sh – skipping."
           fi
-          chmod +x scripts/autofix_build.sh
-          scripts/autofix_build.sh
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create PR with fixes
+        if: steps.diff.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "Autofix: CI build cleanup"
