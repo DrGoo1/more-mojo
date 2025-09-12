@@ -19,12 +19,14 @@ echo "==> Tooling"
 
 echo "==> xcodebuild (Release)"
 xcodebuild \
-  -project "$APP_DIR/MoreMojoStudio.xcodeproj" \
-  -scheme "MoreMojoStudio" \
+  -project "$APP_DIR/RealFeelStudio.xcodeproj" \
+  -scheme "RealFeel Studio" \
   -configuration Release \
   -sdk macosx \
   -derivedDataPath "$DERIVED" \
   -resultBundlePath "$XCRESULT" \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
+  OTHER_CODE_SIGN_FLAGS="--keychain none" \
   build 2>&1 | tee "$LOG_DIR/xcodebuild_app_stdout.log"
 
-echo "==> Done. App at: $DERIVED/Build/Products/Release/MoreMojoStudio.app"
+echo "==> Done. App at: $DERIVED/Build/Products/Release/RealFeel Studio.app"

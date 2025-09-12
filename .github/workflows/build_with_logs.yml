@@ -7,13 +7,31 @@ on:
 
 jobs:
   app:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
-      # (Optional) choose a specific Xcode; uncomment if you need a fixed one
-      # - name: Select Xcode
-      #   run: sudo xcode-select -s /Applications/Xcode_15.0.app
+      # Guard against raw swiftc usage
+      - name: Guard against raw swiftc usage
+        run: |
+          set -euo pipefail
+          if [ -f build_part4_swift.sh ]; then
+            echo "❌ build_part4_swift.sh still present — remove it (git rm)."
+            exit 1
+          fi
+          BAD=$(grep -RIn --exclude-dir=.git --exclude-dir=plugin --include="*.sh" -E '\bswiftc\b' || true)
+          if [ -n "$BAD" ]; then
+            echo "❌ Found swiftc calls in scripts:"
+            echo "$BAD"
+            exit 1
+          fi
+          
+      # List Xcode schemes for diagnostics
+      - name: List Xcode schemes (diagnostic)
+        run: |
+          set -e
+          echo "=== xcodebuild -list ==="
+          xcodebuild -project app/RealFeelStudio.xcodeproj -list
 
       - name: Build App (xcodebuild) with logs
         run: |
@@ -42,8 +60,8 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: MoreMojoStudio.app
-          path: app/build/Build/Products/Release/MoreMojoStudio.app
+          name: RealFeelStudio.app
+          path: app/build/Build/Products/Release/RealFeel\ Studio.app
           if-no-files-found: error
           retention-days: 7
 
@@ -54,7 +72,7 @@ jobs:
           tail -n 200 ci_logs/xcodebuild_app_stdout.log || true
 
   plugin:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
@@ -73,17 +91,23 @@ jobs:
 
       - name: Guard CMake for forbidden commands
         run: |
-          if git grep -n "TARGET_BUNDLE_DIR" -- plugin/CMakeLists.txt | grep -v '^$'; then
-            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD ONLY)."
+          set -euo pipefail
+          if grep -RIn '\$<TARGET_BUNDLE_DIR:MoreMojoPlugin>' plugin/CMakeLists.txt; then
+            echo "❌ Remove custom add_custom_command on base target; use COPY_PLUGIN_AFTER_BUILD or per-format targets."
             exit 1
           fi
 
       - name: Configure (CMake) with logs
+        env:
+          JUCE_DIR: ${{ env.JUCE_DIR }}
         run: |
           set -euo pipefail
           mkdir -p ci_logs
           echo "Configuring with JUCE_DIR=$JUCE_DIR"
-          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
+          cmake -B plugin/build -S plugin \
+            -DJUCE_DIR="$JUCE_DIR" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0" \
+            2>&1 | tee ci_logs/cmake_configure.log
 
       - name: Build (Release) with logs
         run: |
