@@ -1,0 +1,34 @@
+name: ChatOps
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  chatops:
+    runs-on: macos-14
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+      - name: Extract command
+        id: cmd
+        run: |
+          BODY="${{ github.event.comment.body }}"
+          if echo "$BODY" | grep -qi '^/rebuild'; then
+            echo "cmd=rebuild" >> $GITHUB_OUTPUT
+          elif echo "$BODY" | grep -qi '^/autofix'; then
+            echo "cmd=autofix" >> $GITHUB_OUTPUT
+          else
+            echo "No command" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger workflow
+        if: steps.cmd.outputs.cmd == 'rebuild'
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Build App & Plugins (macOS) with Logs
+
+      - name: Trigger autofix workflow
+        if: steps.cmd.outputs.cmd == 'autofix'
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Autofix on Build Failure

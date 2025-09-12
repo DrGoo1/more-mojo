@@ -1,0 +1,50 @@
+name: Autofix on Build Failure
+
+on:
+  workflow_run:
+    workflows: ["Build App & Plugins (macOS) with Logs"]
+    types: [completed]
+
+jobs:
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: macos-14
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Download build logs from failed run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          path: ./failed_artifacts
+
+      - name: Run autofix
+        run: |
+          set -euo pipefail
+          chmod +x scripts/autofix_build.sh || true
+          if [ -x scripts/autofix_build.sh ]; then
+            scripts/autofix_build.sh
+          else
+            echo "No scripts/autofix_build.sh present; skipping."
+          fi
+
+      - name: Create PR with fixes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Autofix: build cleanup (CI-driven)"
+          title: "Autofix: CI build cleanup"
+          body: |
+            This PR was created by the Autofix workflow after a failed CI run.
+            It includes:
+            - unify core types (SharedTypes.swift)
+            - fix wheel call sites & enum cases
+            - macOS 11-safe button style
+            - clean JUCE CMake (COPY_PLUGIN_AFTER_BUILD)
+            Please review and merge to trigger a fresh build.
+          branch: "autofix/ci-fixes-${{ github.run_id }}"
+          labels: "autofix"

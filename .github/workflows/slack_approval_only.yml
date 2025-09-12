@@ -1,0 +1,39 @@
+name: Deploy with Approval (Slack)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build step
+        run: echo "Building application..."
+
+  deploy:
+    needs: build
+    runs-on: macos-14
+    environment:
+      name: production
+      url: https://example.com/production
+    steps:
+      - uses: actions/checkout@v4
+      
+      # ✅ Send ONLY the approval request notification
+      - name: Request approval in Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,commit
+          text: ":white_check_mark: *Approval requested* for `${{ github.repository }}` on `${{ github.ref_name }}`.\n*Workflow:* ${{ github.workflow }} • *Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\n*PR:* ${{ github.event.pull_request.html_url || 'n/a' }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # This step will wait for environment approval
+      - name: Deploy (after approval)
+        run: echo "Deploying to production..."
