@@ -19,9 +19,11 @@ jobs:
             echo "❌ build_part4_swift.sh still present — remove it (git rm)."
             exit 1
           fi
-          BAD=$(grep -RIn --exclude-dir=.git --exclude-dir=plugin --include="*.sh" -E '\bswiftc\b' || true)
+          # Only match real commands, not comments:
+          # ^[[:space:]]*swiftc\b  → line begins (ignoring whitespace) with 'swiftc'
+          BAD=$(grep -RIn --exclude-dir=.git --exclude-dir=plugin --include="*.sh" -E '^[[:space:]]*swiftc\b' || true)
           if [ -n "$BAD" ]; then
-            echo "❌ Found swiftc calls in scripts:"
+            echo "❌ Found real swiftc calls in scripts:"
             echo "$BAD"
             exit 1
           fi
