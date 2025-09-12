@@ -213,3 +213,46 @@ jobs:
           tail -n 200 ci_logs/cmake_configure.log || true
           echo "----- Tail of CMake build -----"
           tail -n 200 ci_logs/cmake_build.log || true
+
+  autofix:
+    # Run iff app or plugin failed
+    if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
+    runs-on: macos-14
+    needs: [app, plugin]
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # On PRs, fix the head branch; on pushes, use the push SHA
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Download build logs from this run (optional)
+        uses: actions/download-artifact@v4
+        with:
+          path: ./failed_artifacts
+
+      - name: Run autofix
+        run: |
+          set -euo pipefail
+          if [ ! -x scripts/autofix_build.sh ]; then
+            echo "No scripts/autofix_build.sh – skipping automated changes."
+            exit 0
+          fi
+          chmod +x scripts/autofix_build.sh
+          scripts/autofix_build.sh
+
+      - name: Create PR with fixes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Autofix: CI build cleanup"
+          title: "Autofix: CI build cleanup"
+          body: |
+            Autofix ran because the build failed.
+            Changes include:
+            - Xcode app build path (no raw `swiftc`)
+            - Clean JUCE CMake (COPY_PLUGIN_AFTER_BUILD)
+            - Guardrails and small Swift fixes
+          branch: "autofix/ci-fixes-${{ github.run_id }}"
+          labels: "autofix"
