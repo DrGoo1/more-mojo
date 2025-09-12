@@ -33,7 +33,7 @@ jobs:
         run: |
           set -e
           echo "=== xcodebuild -list ==="
-          xcodebuild -project app/RealFeelStudio.xcodeproj -list
+          xcodebuild -project app/MoreMojoStudio.xcodeproj -list
 
       - name: Build App (xcodebuild) with logs
         run: |
@@ -62,8 +62,8 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: RealFeelStudio.app
-          path: app/build/Build/Products/Release/RealFeel\ Studio.app
+          name: MoreMojoStudio.app
+          path: app/build/Build/Products/Release/MoreMojoStudio.app
           if-no-files-found: error
           retention-days: 7
 
