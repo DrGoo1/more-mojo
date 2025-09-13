@@ -258,14 +258,8 @@ jobs:
             echo "No changes detected by autofix."
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Autofix produced changes."
-            # Ensure an author is set so commit doesn't fail on some runners
-            git config user.name  "more-mojo-autofix-bot"
-            git config user.email "autofix@users.noreply.github.com"
-            # Stage everything in case the script didn't
+            echo "Autofix produced changes; staging for PR commit."
             git add -A
-            # Make a single commit (create-pull-request can also commit for you, but this makes diffs deterministic)
-            git commit -m "Autofix: CI build cleanup"
           fi
 
       - name: Create PR with fixes
@@ -282,6 +276,7 @@ jobs:
             - Guardrails and small Swift fixes
           branch: "autofix/ci-fixes-${{ github.run_id }}"
           labels: "autofix"
+          commit-message: "Autofix: CI build cleanup"
 
       - name: Log PR link
         if: steps.diff.outputs.changed == 'true'
