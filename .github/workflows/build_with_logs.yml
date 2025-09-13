@@ -42,53 +42,103 @@ jobs:
             echo "❌ Found real swiftc calls in scripts:"; echo "$BAD"; exit 1
           fi
 
-      # Build App with xcodebuild; if the project format is too new, regenerate with XcodeGen
+      # Build App with xcodebuild; fallback to target when no schemes found
       - name: Build App (auto-recover project format)
         run: |
           set -euo pipefail
           mkdir -p ci_logs app/build
-          # Detect project path (repo has used both)
+
+          # Detect project file
           PROJ=""
           if [ -f app/MoreMojoStudio.xcodeproj/project.pbxproj ]; then PROJ="app/MoreMojoStudio.xcodeproj"; fi
           if [ -f app/RealFeelStudio.xcodeproj/project.pbxproj ]; then PROJ="app/RealFeelStudio.xcodeproj"; fi
           if [ -z "$PROJ" ]; then echo "❌ No .xcodeproj found under app/"; exit 74; fi
           echo "Using project: $PROJ" | tee ci_logs/app_preflight.txt
 
+          # Preflight: list (and JSON) to detect schemes/targets
           echo "=== xcodebuild -list ===" >> ci_logs/app_preflight.txt
-          if ! xcodebuild -project "$PROJ" -list >> ci_logs/app_preflight.txt 2>&1; then
-            if grep -q "future Xcode project file format" ci_logs/app_preflight.txt; then
-              echo "Regenerating .xcodeproj with XcodeGen…" | tee -a ci_logs/app_preflight.txt
-              if ! command -v xcodegen >/dev/null 2>&1; then brew update || true; brew install xcodegen; fi
-              if [ -f app/project.yml ]; then
-                (cd app && xcodegen generate)
-              else
-                echo "❌ app/project.yml missing — cannot regenerate .xcodeproj" | tee -a ci_logs/app_preflight.txt
-                exit 74
-              fi
+          xcodebuild -project "$PROJ" -list >> ci_logs/app_preflight.txt 2>&1 || true
+
+          echo "=== xcodebuild -list -json ===" >> ci_logs/app_preflight.txt
+          xcodebuild -project "$PROJ" -list -json > ci_logs/app_list.json 2>> ci_logs/app_preflight.txt || true
+
+          SCHEME=$(python3 - <<'PY'
+          import json,sys
+          try:
+            d=json.load(open("ci_logs/app_list.json"))
+            sch=d.get("project",{}).get("schemes",[]) or []
+            # pick first non-empty scheme
+            print(next((s for s in sch if str(s).strip()), ""))
+          except Exception as e:
+            print("")
+          PY
+          )
+
+          TARGET=$(python3 - <<'PY'
+          import json,sys
+          try:
+            d=json.load(open("ci_logs/app_list.json"))
+            tg=d.get("project",{}).get("targets",[]) or []
+            print(next((t for t in tg if str(t).strip()), ""))
+          except Exception:
+            print("")
+          PY
+          )
+
+          # If project format is too new, regenerate with XcodeGen
+          if grep -qi "future Xcode project file format" ci_logs/app_preflight.txt; then
+            echo "Project format too new; regenerating with XcodeGen…" | tee -a ci_logs/app_preflight.txt
+            which xcodegen >/dev/null 2>&1 || (brew update || true; brew install xcodegen)
+            if [ -f app/project.yml ]; then
+              (cd app && xcodegen generate)
+              # Re-list after regeneration
+              xcodebuild -project "$PROJ" -list -json > ci_logs/app_list.json 2>> ci_logs/app_preflight.txt || true
+              SCHEME=$(python3 - <<'PY'
+          import json; d=json.load(open("ci_logs/app_list.json")); sch=d.get("project",{}).get("schemes",[]) or []
+          print(next((s for s in sch if str(s).strip()), ""))
+          PY
+          )
+              TARGET=$(python3 - <<'PY'
+          import json; d=json.load(open("ci_logs/app_list.json")); tg=d.get("project",{}).get("targets",[]) or []
+          print(next((t for t in tg if str(t).strip()), ""))
+          PY
+          )
             else
-              echo "❌ xcodebuild -list failed for another reason"; tail -n 120 ci_logs/app_preflight.txt; exit 74
+              echo "⚠️ app/project.yml not found; will build by target if possible." | tee -a ci_logs/app_preflight.txt
             fi
           fi
 
-          # Choose the scheme from the project (fallbacks)
-          SCHEME="RealFeel Studio"
-          if ! xcodebuild -project "$PROJ" -list | grep -q "$SCHEME"; then
-            SCHEME=$(xcodebuild -project "$PROJ" -list 2>/dev/null | awk '/Schemes:/{flag=1; next} /^$/{flag=0} flag' | head -n1 | tr -d '\r')
-            if [ -z "$SCHEME" ]; then echo "❌ No shared scheme found in $PROJ"; exit 74; fi
-            echo "Detected scheme: $SCHEME" | tee -a ci_logs/app_preflight.txt
-          fi
+          echo "Detected SCHEME='${SCHEME}' TARGET='${TARGET}'" | tee -a ci_logs/app_preflight.txt
 
           echo "=== Building (Release) ===" | tee ci_logs/xcodebuild_app_stdout.log
-          xcodebuild \
-            -project "$PROJ" \
-            -scheme "$SCHEME" \
-            -configuration Release \
-            -sdk macosx \
-            -destination 'platform=macOS' \
-            -derivedDataPath app/build \
-            -resultBundlePath app/build/App.xcresult \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
-            build 2>&1 | tee -a ci_logs/xcodebuild_app_stdout.log
+          if [ -n "$SCHEME" ]; then
+            echo "→ Building by scheme: $SCHEME" | tee -a ci_logs/xcodebuild_app_stdout.log
+            xcodebuild \
+              -project "$PROJ" \
+              -scheme "$SCHEME" \
+              -configuration Release \
+              -sdk macosx \
+              -destination 'platform=macOS' \
+              -derivedDataPath app/build \
+              -resultBundlePath app/build/App.xcresult \
+              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
+              build 2>&1 | tee -a ci_logs/xcodebuild_app_stdout.log
+          elif [ -n "$TARGET" ]; then
+            echo "→ No schemes found; building by target: $TARGET" | tee -a ci_logs/xcodebuild_app_stdout.log
+            xcodebuild \
+              -project "$PROJ" \
+              -target "$TARGET" \
+              -configuration Release \
+              -sdk macosx \
+              -destination 'platform=macOS' \
+              -derivedDataPath app/build \
+              -resultBundlePath app/build/App.xcresult \
+              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
+              build 2>&1 | tee -a ci_logs/xcodebuild_app_stdout.log
+          else
+            echo "❌ No schemes and no targets detected; cannot build." | tee -a ci_logs/xcodebuild_app_stdout.log
+            exit 74
+          fi
 
       - name: Upload App logs & xcresult (always)
         if: always()
