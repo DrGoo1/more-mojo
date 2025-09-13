@@ -243,26 +243,48 @@ jobs:
             echo "No scripts/autofix_build.sh – skipping."
           fi
 
+      - name: Show working tree status
+        run: |
+          echo "=== git status ==="
+          git status --porcelain=v1 || true
+          echo "=== git diff (stat) ==="
+          git diff --stat || true
+
       - name: Check for changes
         id: diff
         run: |
           if git diff --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected by autofix."
           else
             echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Autofix produced changes."
+            # Ensure an author is set so commit doesn't fail on some runners
+            git config user.name  "more-mojo-autofix-bot"
+            git config user.email "autofix@users.noreply.github.com"
+            # Stage everything in case the script didn't
+            git add -A
+            # Make a single commit (create-pull-request can also commit for you, but this makes diffs deterministic)
+            git commit -m "Autofix: CI build cleanup"
           fi
 
       - name: Create PR with fixes
         if: steps.diff.outputs.changed == 'true'
+        id: create_pr
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "Autofix: CI build cleanup"
           title: "Autofix: CI build cleanup"
           body: |
-            Autofix ran because the build failed.
-            Changes include:
+            Automated fixes after a failed CI run.
+            Includes:
             - Xcode app build path (no raw `swiftc`)
             - Clean JUCE CMake (COPY_PLUGIN_AFTER_BUILD)
             - Guardrails and small Swift fixes
           branch: "autofix/ci-fixes-${{ github.run_id }}"
           labels: "autofix"
+
+      - name: Log PR link
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          echo "PR #: ${{ steps.create_pr.outputs.pull-request-number }}"
+          echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
