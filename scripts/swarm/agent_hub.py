@@ -28,22 +28,40 @@ def write(p: pathlib.Path, s: str) -> bool:
 def stage_all(): sh("git add -A", check=False)
 def has_changes() -> bool: return subprocess.run("git diff --quiet", shell=True).returncode != 0
 
-def read_any(*candidates):
-    acc = ""
-    for c in candidates:
-        for p in (c if isinstance(c, list) else [c]):
-            try:
-                if isinstance(p, pathlib.Path) and p.exists():
-                    acc += p.read_text(errors="ignore")
+def read_globs(*globs):
+    buf = ""
+    for g in globs:
+        for p in ROOT.glob(g):
+            try: buf += p.read_text(errors="ignore")
             except: pass
-    return acc
+    return buf
+
+def read_artifact_logs():
+    # app logs
+    app = ""
+    app += read_globs("ci_logs/xcodebuild_app_stdout.log",
+                      "ci_logs/app_preflight.txt")
+    app += read_globs("failed_artifacts/app-build-logs/**/xcodebuild_app_stdout.log",
+                      "failed_artifacts/app-build-logs/**/app_preflight.txt",
+                      "failed_artifacts/app-build-logs/**/*.log")
+    # plugin logs
+    plug = ""
+    plug += read_globs("ci_logs/cmake_configure.log", "ci_logs/cmake_build.log")
+    plug += read_globs("failed_artifacts/plugin-build-logs/**/cmake_configure.log",
+                       "failed_artifacts/plugin-build-logs/**/cmake_build.log",
+                       "failed_artifacts/plugin-build-logs/**/CMake*.log")
+    return app, plug
 
 # ------------------------ Agents ------------------------
 class ProjectAgent:
-    PAT = "future Xcode project file format"
+    PATTERNS = [
+        "future Xcode project file format",
+        "Unable to read project",
+        "The project .* cannot be opened because it is in a future Xcode project file format",
+    ]
     @staticmethod
     def wants(app_logs:str)->bool:
-        return ("Unable to read project" in app_logs and "future Xcode project file format" in app_logs) or ProjectAgent.PAT in app_logs
+        return any(pat in app_logs for pat in ProjectAgent.PATTERNS)
     @staticmethod
     def run():
         print("ProjectAgent: attempting XcodeGen regeneration (if project.yml exists)")
@@ -59,7 +77,10 @@ class SwiftAgent:
         "buttonStyle(.borderedProminent)",
         "cannot infer contextual base in reference to member 'init'",
         "could not build Objective-C module 'CoreData'",
-        "'Foundation/Foundation.h' file not found"
+        "'Foundation/Foundation.h' file not found",
+        "xcodebuild: error:",                # generic xcodebuild error
+        "error: Scheme .* is not currently configured for the build action",
+        "error: No shared schemes found"
     ]
     SHARED = """import Foundation
 public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
@@ -184,37 +205,28 @@ target_link_libraries(MoreMojoPlugin PRIVATE
             stage_all()
 
 def main():
-    # collect logs
-    app_log = read_any(LOGS_CI/"xcodebuild_app_stdout.log",
-                       LOGS_CI/"app_preflight.txt") + \
-              read_any(*LOGS_DL.glob("**/xcodebuild_app_stdout.log")) + \
-              read_any(*LOGS_DL.glob("**/app_preflight.txt"))
-    plugin_log = read_any(LOGS_CI/"cmake_configure.log",
-                          LOGS_CI/"cmake_build.log") + \
-                 read_any(*LOGS_DL.glob("**/cmake_configure.log")) + \
-                 read_any(*LOGS_DL.glob("**/cmake_build.log"))
+    # collect logs from artifacts using the new read_artifact_logs function
+    app_log, plugin_log = read_artifact_logs()
 
     decisions = {
         "ProjectAgent": ProjectAgent.wants(app_log),
         "SwiftAgent":   SwiftAgent.wants(app_log),
         "CMakeAgent":   CMakeAgent.wants(plugin_log),
     }
-    summary = ["# Swarm decisions",
-               f"- ProjectAgent: {'YES' if decisions['ProjectAgent'] else 'no'} (pattern: {ProjectAgent.PAT in app_log})",
-               f"- SwiftAgent:   {'YES' if decisions['SwiftAgent'] else 'no'} (keys matched: {', '.join([k for k in SwiftAgent.KEYS if k in app_log]) or 'none'})",
-               f"- CMakeAgent:   {'YES' if decisions['CMakeAgent'] else 'no'}",
-               "", "## Actions"]
-    acted = False
-    if decisions["ProjectAgent"]: ProjectAgent.run(); summary.append("- Ran ProjectAgent"); acted=True
-    if decisions["SwiftAgent"]:   SwiftAgent.run();   summary.append("- Ran SwiftAgent");   acted=True
-    if decisions["CMakeAgent"]:   CMakeAgent.run();   summary.append("- Ran CMakeAgent");   acted=True
-    summary.append("")
-    summary.append(f"changes_staged = {'YES' if has_changes() else 'no'}; actions_ran = {'YES' if acted else 'no'}")
+    summary_lines = ["# Swarm decisions"]
+    summary_lines.append(f"- ProjectAgent: {'YES' if decisions['ProjectAgent'] else 'no'}")
+    summary_lines.append(f"- SwiftAgent:   {'YES' if decisions['SwiftAgent'] else 'no'}")
+    summary_lines.append(f"- CMakeAgent:   {'YES' if decisions['CMakeAgent'] else 'no'}")
+    summary_lines += ["", "## Hints", "- app log bytes: " + str(len(app_log)), "- plugin log bytes: " + str(len(plugin_log)), ""]
 
-    write(SUMMARY, "\n".join(summary))
-    # Also print to stdout for raw logs
-    print("\n".join(summary))
-    # Exit 0 — PR step decides based on git diff
+    acted = False
+    if decisions["ProjectAgent"]: ProjectAgent.run(); summary_lines.append("- Ran ProjectAgent"); acted = True
+    if decisions["SwiftAgent"]:   SwiftAgent.run();   summary_lines.append("- Ran SwiftAgent");   acted = True
+    if decisions["CMakeAgent"]:   CMakeAgent.run();   summary_lines.append("- Ran CMakeAgent");   acted = True
+
+    summary_lines.append(f"changes_staged = {'YES' if has_changes() else 'no'}; actions_ran = {'YES' if acted else 'no'}")
+    write(SUMMARY, "\n".join(summary_lines))
+    print("\n".join(summary_lines))
     sys.exit(0)
 
 if __name__ == "__main__":

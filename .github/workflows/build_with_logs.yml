@@ -218,6 +218,16 @@ jobs:
           else
             echo "_No swarm_summary.md generated_" >> $GITHUB_STEP_SUMMARY
           fi
+          
+      - name: Swarm diagnostic tails (app/plugin)
+        if: always()
+        run: |
+          echo "=== app preflight ==="
+          ls -R failed_artifacts/app-build-logs || true
+          grep -RniE "future Xcode|Unable to read project|xcodebuild: error|Scheme .* not" failed_artifacts/app-build-logs || true
+          echo "=== plugin cmake ==="
+          ls -R failed_artifacts/plugin-build-logs || true
+          grep -RniE "CMake Error|TARGET_BUNDLE_DIR|Could not find JUCE|No CMakeLists" failed_artifacts/plugin-build-logs || true
 
       - name: Show working tree status
         run: |
