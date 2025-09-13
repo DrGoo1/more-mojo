@@ -125,11 +125,18 @@ public struct MojoEQMatch: Codable, Equatable { public var bands: [MojoEQBand] }
     def run():
         changed = False
         changed |= write(SRC/"SharedTypes.swift", SwiftAgent.SHARED)
-        # quarantine duplicates
+        # Remove duplicate ProcessorParams.swift to prevent type duplication
         pp = SRC/"ProcessorParams.swift"
-        if pp.exists() and re.search(r'\b(struct|enum)\s+(ProcessorParams|InterpMode)\b', pp.read_text(errors="ignore")):
-            (SRC/"ProcessorParams_DEPRECATED.swift").write_text("// DEPRECATED\n"+pp.read_text(errors="ignore"))
-            pp.unlink(); changed = True
+        if pp.exists():
+            print("Removing duplicate ProcessorParams.swift (now in SharedTypes.swift)")
+            try:
+                # Try both approaches - regular deletion or git removal
+                (SRC/"ProcessorParams_DEPRECATED.swift").write_text("// DEPRECATED\n"+pp.read_text(errors="ignore"))
+                pp.unlink()
+                sh("git rm -f app/Sources/ProcessorParams.swift", check=False)
+                changed = True
+            except Exception as e:
+                print(f"Note: Could not remove ProcessorParams.swift: {e}")
         changed |= write(SRC/"ProcessorParams+Ext.swift", SwiftAgent.EXT)
         # normalize nested refs & wheel enums
         for f in SRC.glob("*.swift"):

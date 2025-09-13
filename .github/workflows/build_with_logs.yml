@@ -42,6 +42,10 @@ jobs:
             echo "❌ Found real swiftc calls in scripts:"; echo "$BAD"; exit 1
           fi
 
+      # Clean derived data to remove stale file warnings
+      - name: Clean derived data
+        run: rm -rf app/build
+
       # Build App with xcodebuild; fallback to target when no schemes found
       - name: Build App (auto-recover project format)
         run: |
@@ -119,6 +123,7 @@ jobs:
               -configuration Release \
               -sdk macosx \
               -destination 'platform=macOS' \
+              -arch arm64 \
               -derivedDataPath app/build \
               -resultBundlePath app/build/App.xcresult \
               CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
@@ -131,6 +136,7 @@ jobs:
               -configuration Release \
               -sdk macosx \
               -destination 'platform=macOS' \
+              -arch arm64 \
               -derivedDataPath app/build \
               -resultBundlePath app/build/App.xcresult \
               CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
@@ -161,13 +167,43 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Tail app logs (on failure)
+      - name: Extract errors from xcresult (inline)
         if: failure()
         run: |
-          echo "----- Tail of xcodebuild_app_stdout.log -----"
-          tail -n 150 ci_logs/xcodebuild_app_stdout.log || true
-          echo "----- Tail of app_preflight.txt -----"
-          tail -n 80 ci_logs/app_preflight.txt || true
+          set -euo pipefail
+          if ! command -v jq >/dev/null 2>&1; then
+            brew update || true
+            brew install jq
+          fi
+          if [ -d app/build/App.xcresult ]; then
+            echo "----- xcresult error summaries -----"
+            xcrun xcresulttool get --path app/build/App.xcresult --format json \
+              | jq -r '
+                  .issues.errorSummaries? // []
+                  | .[] 
+                  | "• " + (.message?.userDescription // .message // "error") + 
+                    (if .documentLocationInCreatingWorkspace?.url then
+                       "  (" + (.documentLocationInCreatingWorkspace.url | sub("file://.*?/more-mojo/"; "")) + ")"
+                     else "" end)
+                ' || true
+            echo "----- xcresult warnings (first 10) -----"
+            xcrun xcresulttool get --path app/build/App.xcresult --format json \
+              | jq -r '
+                  .issues.warningSummaries? // [] 
+                  | .[0:10][] 
+                  | "• " + (.message?.userDescription // .message // "warn")
+                ' || true
+          else
+            echo "xcresult bundle not found."
+          fi
+
+      - name: Tail app logs (bigger)
+        if: failure()
+        run: |
+          echo "----- Tail of xcodebuild_app_stdout.log (last 500) -----"
+          tail -n 500 ci_logs/xcodebuild_app_stdout.log || true
+          echo "----- Tail of app_preflight.txt (last 120) -----"
+          tail -n 120 ci_logs/app_preflight.txt || true
 
   plugin:
     runs-on: macos-14
