@@ -203,10 +203,21 @@ jobs:
         with:
           path: ./failed_artifacts
 
-      - name: Run AgentHub (swarm autofix)
+      - name: Run AgentHub
         run: |
           set -euo pipefail
-          python3 scripts/swarm/agent_hub.py || echo "AgentHub returned non-zero — continuing"
+          python3 scripts/swarm/agent_hub.py || echo "AgentHub exit non-zero — continuing"
+
+      - name: Publish swarm summary
+        if: always()
+        run: |
+          echo "## Swarm summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f swarm_summary.md ]; then
+            cat swarm_summary.md >> $GITHUB_STEP_SUMMARY
+            cat swarm_summary.md
+          else
+            echo "_No swarm_summary.md generated_" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Show working tree status
         run: |
@@ -231,11 +242,7 @@ jobs:
           title: "Swarm Autofix: CI build cleanup"
           body: |
             Automated fixes after failed CI run.
-            Agents:
-            - ProjectAgent (XcodeGen regeneration)
-            - SwiftAgent (SharedTypes, wheel enum, macOS-11 style, EQ bands)
-            - CMakeAgent (clean JUCE Option-A)
-            - GuardAgent (no raw swiftc / forbidden CMake)
+            See swarm summary in the build job.
           branch: "swarm/autofix-${{ github.run_id }}"
           labels: "autofix"
           commit-message: "Swarm Autofix: CI build cleanup"
@@ -243,5 +250,6 @@ jobs:
       - name: Log PR link
         if: steps.diff.outputs.changed == 'true'
         run: |
-          echo "PR #:  ${{ steps.create_pr.outputs.pull-request-number }}"
-          echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
+          echo "PR #:  ${{ steps.create_pr.outputs['pull-request-number'] }}"
+          echo "PR URL: ${{ steps.create_pr.outputs['pull-request-url'] }}"
+          echo "PR link created: ${{ steps.create_pr.outputs['pull-request-url'] }}" >> $GITHUB_STEP_SUMMARY
