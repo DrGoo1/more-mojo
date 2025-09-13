@@ -233,15 +233,10 @@ jobs:
         with:
           path: ./failed_artifacts
 
-      - name: Run autofix
+      - name: Run AgentHub
         run: |
           set -euo pipefail
-          if [ -x scripts/autofix_build.sh ]; then
-            # Never let a non-critical exit block PR creation
-            bash scripts/autofix_build.sh || echo "Autofix returned non-zero – continuing to PR step"
-          else
-            echo "No scripts/autofix_build.sh – skipping."
-          fi
+          python3 scripts/swarm/agent_hub.py
 
       - name: Show working tree status
         run: |
@@ -267,16 +262,17 @@ jobs:
         id: create_pr
         uses: peter-evans/create-pull-request@v6
         with:
-          title: "Autofix: CI build cleanup"
+          title: "Swarm Autofix: CI build cleanup"
           body: |
-            Automated fixes after a failed CI run.
-            Includes:
-            - Xcode app build path (no raw `swiftc`)
-            - Clean JUCE CMake (COPY_PLUGIN_AFTER_BUILD)
-            - Guardrails and small Swift fixes
-          branch: "autofix/ci-fixes-${{ github.run_id }}"
+            Automated fixes after failed CI run.
+            Agents:
+            - ProjectAgent (XcodeGen regeneration)
+            - SwiftAgent (SharedTypes, wheel enum, macOS-11 style, EQ bands)
+            - CMakeAgent (clean JUCE Option-A)
+            - GuardAgent (no raw swiftc / forbidden CMake)
+          branch: "swarm/autofix-${{ github.run_id }}"
           labels: "autofix"
-          commit-message: "Autofix: CI build cleanup"
+          commit-message: "Swarm Autofix: CI build cleanup"
 
       - name: Log PR link
         if: steps.diff.outputs.changed == 'true'
