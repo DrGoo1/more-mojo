@@ -161,13 +161,13 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Tail app log (on failure)
+      - name: Tail app logs (on failure)
         if: failure()
         run: |
-          echo "----- Tail of app build log -----"
-          tail -n 200 ci_logs/xcodebuild_app_stdout.log || true
-          echo "----- Preflight -----"
-          tail -n 120 ci_logs/app_preflight.txt || true
+          echo "----- Tail of xcodebuild_app_stdout.log -----"
+          tail -n 150 ci_logs/xcodebuild_app_stdout.log || true
+          echo "----- Tail of app_preflight.txt -----"
+          tail -n 80 ci_logs/app_preflight.txt || true
 
   plugin:
     runs-on: macos-14
@@ -235,9 +235,11 @@ jobs:
         if: failure()
         run: |
           echo "----- Tail of CMake configure -----"
-          tail -n 200 ci_logs/cmake_configure.log || true
+          tail -n 150 ci_logs/cmake_configure.log || true
           echo "----- Tail of CMake build -----"
-          tail -n 200 ci_logs/cmake_build.log || true
+          tail -n 150 ci_logs/cmake_build.log || true
+          echo "----- CMake cache contents -----"
+          cat plugin/build/CMakeCache.txt | grep -E '^(CMAKE_|JUCE_)' || true
 
   autofix:
     if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
