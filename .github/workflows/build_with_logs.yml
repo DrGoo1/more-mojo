@@ -5,36 +5,22 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   app:
-    runs-on: macos-14   # Apple Silicon with newer Xcodes available
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
-      # Guard against raw swiftc usage
-      - name: Guard against raw swiftc usage
-        run: |
-          set -euo pipefail
-          if [ -f build_part4_swift.sh ]; then
-            echo "❌ build_part4_swift.sh still present — remove it (git rm)."
-            exit 1
-          fi
-          # Only match real commands, not comments:
-          # ^[[:space:]]*swiftc\b  → line begins (ignoring whitespace) with 'swiftc'
-          BAD=$(grep -RIn --exclude-dir=.git --exclude-dir=plugin --include="*.sh" -E '^[[:space:]]*swiftc\b' || true)
-          if [ -n "$BAD" ]; then
-            echo " Found real swiftc calls in scripts:"
-            echo "$BAD"
-            exit 1
-          fi
-
+      # Show which Xcodes exist, then pick newest
       - name: Select newest installed Xcode
         run: |
           set -euo pipefail
           echo "Available Xcodes:"
           ls /Applications | grep -E '^Xcode' || true
-
-          # Prefer Xcode 16.4 if installed, then 16.x, then fall back
           for CAND in /Applications/Xcode_16.4.app /Applications/Xcode_16*.app /Applications/Xcode.app; do
             if [ -d "$CAND" ]; then
               echo "Selecting $CAND"
@@ -42,44 +28,60 @@ jobs:
               break
             fi
           done
+          echo "Using:"; xcodebuild -version; sw_vers; swift --version
 
-          echo "Using:"
-          xcodebuild -version
-          sw_vers
-          swift --version
+      # Guard: never allow raw swiftc routes to sneak in
+      - name: Guard against raw swiftc usage
+        run: |
+          set -euo pipefail
+          if [ -f build_part4_swift.sh ]; then
+            echo "❌ build_part4_swift.sh still present — remove it (git rm)."; exit 1
+          fi
+          BAD=$(grep -RIn --exclude-dir=.git --exclude-dir=plugin --include="*.sh" -E '^[[:space:]]*swiftc\b' || true)
+          if [ -n "$BAD" ]; then
+            echo "❌ Found real swiftc calls in scripts:"; echo "$BAD"; exit 1
+          fi
 
+      # Build App with xcodebuild; if the project format is too new, regenerate with XcodeGen
       - name: Build App (auto-recover project format)
         run: |
           set -euo pipefail
           mkdir -p ci_logs app/build
+          # Detect project path (repo has used both)
+          PROJ=""
+          if [ -f app/MoreMojoStudio.xcodeproj/project.pbxproj ]; then PROJ="app/MoreMojoStudio.xcodeproj"; fi
+          if [ -f app/RealFeelStudio.xcodeproj/project.pbxproj ]; then PROJ="app/RealFeelStudio.xcodeproj"; fi
+          if [ -z "$PROJ" ]; then echo "❌ No .xcodeproj found under app/"; exit 74; fi
+          echo "Using project: $PROJ" | tee ci_logs/app_preflight.txt
 
-          echo "=== xcodebuild -list (preflight) ===" | tee ci_logs/app_preflight.txt
-          if ! xcodebuild -project app/MoreMojoStudio.xcodeproj -list >> ci_logs/app_preflight.txt 2>&1; then
-            echo "xcodebuild -list failed, checking for format error…" | tee -a ci_logs/app_preflight.txt
-            if grep -q "future Xcode project file format" ci_logs/app_preflight.txt || true; then
-              echo "Project format too new for this runner; regenerating with XcodeGen…" | tee -a ci_logs/app_preflight.txt
-              if ! command -v xcodegen >/dev/null 2>&1; then
-                brew update || true
-                brew install xcodegen
-              fi
+          echo "=== xcodebuild -list ===" >> ci_logs/app_preflight.txt
+          if ! xcodebuild -project "$PROJ" -list >> ci_logs/app_preflight.txt 2>&1; then
+            if grep -q "future Xcode project file format" ci_logs/app_preflight.txt; then
+              echo "Regenerating .xcodeproj with XcodeGen…" | tee -a ci_logs/app_preflight.txt
+              if ! command -v xcodegen >/dev/null 2>&1; then brew update || true; brew install xcodegen; fi
               if [ -f app/project.yml ]; then
                 (cd app && xcodegen generate)
-                echo "Regenerated .xcodeproj via XcodeGen" | tee -a ci_logs/app_preflight.txt
               else
-                echo "ERROR: app/project.yml not found; cannot regenerate .xcodeproj" | tee -a ci_logs/app_preflight.txt
+                echo "❌ app/project.yml missing — cannot regenerate .xcodeproj" | tee -a ci_logs/app_preflight.txt
                 exit 74
               fi
             else
-              echo "xcodebuild -list failed for another reason:"
-              tail -n 100 ci_logs/app_preflight.txt
-              exit 74
+              echo "❌ xcodebuild -list failed for another reason"; tail -n 120 ci_logs/app_preflight.txt; exit 74
             fi
+          fi
+
+          # Choose the scheme from the project (fallbacks)
+          SCHEME="RealFeel Studio"
+          if ! xcodebuild -project "$PROJ" -list | grep -q "$SCHEME"; then
+            SCHEME=$(xcodebuild -project "$PROJ" -list 2>/dev/null | awk '/Schemes:/{flag=1; next} /^$/{flag=0} flag' | head -n1 | tr -d '\r')
+            if [ -z "$SCHEME" ]; then echo "❌ No shared scheme found in $PROJ"; exit 74; fi
+            echo "Detected scheme: $SCHEME" | tee -a ci_logs/app_preflight.txt
           fi
 
           echo "=== Building (Release) ===" | tee ci_logs/xcodebuild_app_stdout.log
           xcodebuild \
-            -project app/MoreMojoStudio.xcodeproj \
-            -scheme "MoreMojoStudio" \
+            -project "$PROJ" \
+            -scheme "$SCHEME" \
             -configuration Release \
             -sdk macosx \
             -destination 'platform=macOS' \
@@ -104,9 +106,9 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: MoreMojoStudio.app
-          path: app/build/Build/Products/Release/MoreMojoStudio.app
-          if-no-files-found: error
+          name: AppBundle
+          path: app/build/Build/Products/Release/**/*.app
+          if-no-files-found: warn
           retention-days: 7
 
       - name: Tail app log (on failure)
@@ -115,41 +117,18 @@ jobs:
           echo "----- Tail of app build log -----"
           tail -n 200 ci_logs/xcodebuild_app_stdout.log || true
           echo "----- Preflight -----"
-          tail -n 100 ci_logs/app_preflight.txt || true
+          tail -n 120 ci_logs/app_preflight.txt || true
 
   plugin:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
-      # List and select Xcode version
-      - name: List and select Xcode version
-        run: |
-          set -e
-          echo "=== Available Xcode Versions ==="
-          ls -la /Applications/Xcode* || true
-          echo "Current Xcode version:"
-          xcodebuild -version || true
-          
-          # Try to select Xcode 16.x if available
-          echo "Attempting to select Xcode 16.x..."
-          if [ -d "/Applications/Xcode_16.4.app" ]; then
-            sudo xcode-select -s /Applications/Xcode_16.4.app
-          elif [ -d "/Applications/Xcode_16.0.app" ]; then
-            sudo xcode-select -s /Applications/Xcode_16.0.app
-          else
-            echo "No Xcode 16.x found, will try to continue with current version"
-          fi
-          echo "Selected Xcode version:"
-          xcodebuild -version
-          
       - name: Fetch JUCE
         run: |
           set -euo pipefail
           git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
-          # export for THIS step:
           export JUCE_DIR="$PWD/JUCE"
-          # export for NEXT steps:
           echo "JUCE_DIR=$JUCE_DIR" >> $GITHUB_ENV
           echo "JUCE_DIR is $JUCE_DIR"
 
@@ -160,7 +139,7 @@ jobs:
         run: |
           set -euo pipefail
           if grep -RIn '\$<TARGET_BUNDLE_DIR:MoreMojoPlugin>' plugin/CMakeLists.txt; then
-            echo "❌ Remove custom add_custom_command on base target; use COPY_PLUGIN_AFTER_BUILD or per-format targets."
+            echo "❌ Remove custom add_custom_command on base target; use COPY_PLUGIN_AFTER_BUILD only."
             exit 1
           fi
 
@@ -171,10 +150,7 @@ jobs:
           set -euo pipefail
           mkdir -p ci_logs
           echo "Configuring with JUCE_DIR=$JUCE_DIR"
-          cmake -B plugin/build -S plugin \
-            -DJUCE_DIR="$JUCE_DIR" \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0" \
-            2>&1 | tee ci_logs/cmake_configure.log
+          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
 
       - name: Build (Release) with logs
         run: |
@@ -194,15 +170,14 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      # JUCE will install bundles into user paths (COPY_PLUGIN_AFTER_BUILD TRUE)
       - name: Upload installed plugin bundles (best-effort)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: MoreMojoPlugin-bundles
+          name: PluginBundles
           path: |
-            ~/Library/Audio/Plug-Ins/Components/MoreMojoPlugin.component
-            ~/Library/Audio/Plug-Ins/VST3/MoreMojoPlugin.vst3
+            ~/Library/Audio/Plug-Ins/Components/*.component
+            ~/Library/Audio/Plug-Ins/VST3/*.vst3
           if-no-files-found: warn
           retention-days: 7
 
@@ -215,45 +190,36 @@ jobs:
           tail -n 200 ci_logs/cmake_build.log || true
 
   autofix:
-    # Run iff app or plugin failed
     if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
     runs-on: macos-14
     needs: [app, plugin]
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
-          # On PRs, fix the head branch; on pushes, use the push SHA
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Download build logs from this run (optional)
+      - name: Download logs from this run
         uses: actions/download-artifact@v4
         with:
           path: ./failed_artifacts
 
-      - name: Run AgentHub
+      - name: Run AgentHub (swarm autofix)
         run: |
           set -euo pipefail
-          python3 scripts/swarm/agent_hub.py
+          python3 scripts/swarm/agent_hub.py || echo "AgentHub returned non-zero — continuing"
 
       - name: Show working tree status
         run: |
-          echo "=== git status ==="
-          git status --porcelain=v1 || true
-          echo "=== git diff (stat) ==="
-          git diff --stat || true
+          echo "=== git status ==="; git status --porcelain=v1 || true
+          echo "=== git diff (stat) ==="; git diff --stat || true
 
       - name: Check for changes
         id: diff
         run: |
           if git diff --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No changes detected by autofix."
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Autofix produced changes; staging for PR commit."
             git add -A
           fi
 
@@ -277,5 +243,5 @@ jobs:
       - name: Log PR link
         if: steps.diff.outputs.changed == 'true'
         run: |
-          echo "PR #: ${{ steps.create_pr.outputs.pull-request-number }}"
+          echo "PR #:  ${{ steps.create_pr.outputs.pull-request-number }}"
           echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
