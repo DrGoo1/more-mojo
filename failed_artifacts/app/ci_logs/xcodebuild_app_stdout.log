@@ -37,8 +37,8 @@ ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 8cefc8a44629e3b4c0ebd05c9daf8ef9
-Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/8cefc8a44629e3b4c0ebd05c9daf8ef9.xcbuilddata
+Build description signature: 21ff4a2e62fa628101d7d9e1bf002c25
+Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/21ff4a2e62fa628101d7d9e1bf002c25.xcbuilddata
 ClangStatCache /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -o /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
@@ -63,13 +63,13 @@ CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Inte
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
 
-WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio_const_extract_protocols.json (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
-    cd /Users/runner/work/more-mojo/more-mojo/app
-    write-file /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio_const_extract_protocols.json
-
 WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio.SwiftFileList (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
     cd /Users/runner/work/more-mojo/more-mojo/app
     write-file /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio_const_extract_protocols.json (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
+    cd /Users/runner/work/more-mojo/more-mojo/app
+    write-file /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio_const_extract_protocols.json
 
 WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio.SwiftConstValuesFileList (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
     cd /Users/runner/work/more-mojo/more-mojo/app
