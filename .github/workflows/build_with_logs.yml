@@ -374,12 +374,12 @@ jobs:
           echo "PR URL: ${{ steps.create_pr.outputs['pull-request-url'] }}"
           echo "PR link created: ${{ steps.create_pr.outputs['pull-request-url'] }}" >> $GITHUB_STEP_SUMMARY
 
-      # (Optional) Auto-approve if your protection rules require a review.
-      # You can add a BOT_TOKEN secret if needed for branch protection requirements
-      - name: Approve PR (optional)
+      # (Optional) Auto-approve with a separate bot identity to avoid self-approval issues
+      # Requires a BOT_TOKEN secret from a separate GitHub account
+      - name: Approve PR (bot user)
         if: steps.diff.outputs.changed == 'true'
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           gh pr review ${{ steps.create_pr.outputs.pull-request-number }} --approve
 
