@@ -325,30 +325,57 @@ jobs:
             echo "----- xcresult error summaries -----"
             xcrun xcresulttool get --path "$RES" --format json \
               | jq -r '
-                  .issues.errorSummaries? // []
-                  | .[]
-                  | "• " + (
-                      .message?.userDescription
-                      // .message
-                      // "error"
-                    )
-                    + (
-                      if .documentLocationInCreatingWorkspace?.url
-                      then "  (" + (.documentLocationInCreatingWorkspace.url | sub("file://.*?/more-mojo/"; "")) + ")"
-                      else ""
-                      end
-                    )
-                '
+                  # Try the canonical error summaries
+                  (.issues.errorSummaries // []) as $errs
+                  | if ($errs|length) > 0 then
+                      $errs[]
+                      | "- \(.issueType // "error"): \(
+                          .message?.text
+                          // .message?.userDescription
+                          // .message
+                          // "no message"
+                        ) \(
+                          ( .documentLocationInCreatingWorkspace?.url
+                            // .documentLocationInResultBundle?.url
+                            // ""
+                          )
+                          | sub("file://[^ ]*/more-mojo/"; "")
+                        )"
+                    else
+                      # Fall back to any message-like fields we can find
+                      [ paths(scalars) as $p
+                        | select( (getpath($p)|type) == "string"
+                                  and ( ($p[-1]|tostring|test("message|localized|description"; "i"))
+                                        or (getpath($p)|test("error:|failed|cannot|no such file|undefined reference"; "i")) )
+                                )
+                        | getpath($p)
+                      ] | unique
+                      | .[0:10]
+                      | .[]
+                      | "- \(. | gsub("\\n"; " "))"
+                    end
+                ' || true
+
             echo "----- xcresult warnings (first 10) -----"
             xcrun xcresulttool get --path "$RES" --format json \
               | jq -r '
-                  .issues.warningSummaries? // []
-                  | .[0:10][] 
-                  | "• " + (.message?.userDescription // .message // "warn")
-                '
+                  (.issues.warningSummaries // []) | .[0:10][]
+                  | "- " + (
+                      .message?.text
+                      // .message?.userDescription
+                      // .message
+                      // "warn"
+                    )
+                ' || true
           else
             echo "No xcresult bundle found at $RES"
           fi
+
+          # Always show last compiler lines as a fallback
+          echo "----- tail of xcodebuild_app_stdout.log (last 400) -----"
+          tail -n 400 failed_artifacts/app/ci_logs/xcodebuild_app_stdout.log || true
+          echo "----- grep of error lines (last 80) -----"
+          grep -nE "^[[:space:]]*error: " failed_artifacts/app/ci_logs/xcodebuild_app_stdout.log | tail -n 80 || true
       
       - name: Run AgentHub
         run: |
@@ -427,10 +454,11 @@ jobs:
 
       # Merge PR when all checks pass without needing branch protection
       - name: Merge when checks pass
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.create_pr.outputs.pull-request-number
         continue-on-error: true   # don't fail the autofix job if merge API fails
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
+          # Enable auto-merge so it merges when all checks pass
           gh pr merge ${{ steps.create_pr.outputs.pull-request-number }} --squash --auto --delete-branch
-          echo "PR set to auto-merge when checks pass" >> $GITHUB_STEP_SUMMARY
+          echo "PR #${{ steps.create_pr.outputs.pull-request-number }} set to auto-merge when checks pass" >> $GITHUB_STEP_SUMMARY
