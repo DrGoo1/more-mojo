@@ -25,6 +25,6 @@ Call Stack (most recent call first):
   CMakeLists.txt:24 (juce_add_plugin)
 
 
--- Configuring done (32.8s)
+-- Configuring done (34.7s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/runner/work/more-mojo/more-mojo/plugin/build
