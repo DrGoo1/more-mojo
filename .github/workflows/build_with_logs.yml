@@ -234,7 +234,10 @@ jobs:
           set -euo pipefail
           mkdir -p ci_logs
           echo "Configuring with JUCE_DIR=$JUCE_DIR"
-          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
+          # Ensure CMake will search the JUCE clone
+          cmake -B plugin/build -S plugin \
+            -DCMAKE_PREFIX_PATH="$JUCE_DIR" \
+            2>&1 | tee ci_logs/cmake_configure.log
 
       - name: Build (Release) with logs
         run: |
