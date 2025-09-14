@@ -383,10 +383,11 @@ jobs:
         run: |
           gh pr review ${{ steps.create_pr.outputs.pull-request-number }} --approve
 
-      # Enable GitHub auto-merge (squash) so it merges itself once checks are green
-      - name: Enable auto-merge
+      # Merge PR when all checks pass without needing branch protection
+      - name: Merge when checks pass
         if: steps.diff.outputs.changed == 'true'
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
-          merge-method: squash
+        env:
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          gh pr merge ${{ steps.create_pr.outputs.pull-request-number }} --squash --auto --delete-branch
+          echo "PR set to auto-merge when checks pass" >> $GITHUB_STEP_SUMMARY
