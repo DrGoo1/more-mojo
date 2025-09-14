@@ -315,6 +315,41 @@ jobs:
           name: plugin-build-logs
           path: failed_artifacts/plugin
 
+      - name: Extract errors from downloaded xcresult (inline)
+        if: always()
+        run: |
+          set -euo pipefail
+          brew install jq || true
+          RES="failed_artifacts/app/app/build/App.xcresult"
+          if [ -d "$RES" ]; then
+            echo "----- xcresult error summaries -----"
+            xcrun xcresulttool get --path "$RES" --format json \
+              | jq -r '
+                  .issues.errorSummaries? // []
+                  | .[]
+                  | "• " + (
+                      .message?.userDescription
+                      // .message
+                      // "error"
+                    )
+                    + (
+                      if .documentLocationInCreatingWorkspace?.url
+                      then "  (" + (.documentLocationInCreatingWorkspace.url | sub("file://.*?/more-mojo/"; "")) + ")"
+                      else ""
+                      end
+                    )
+                '
+            echo "----- xcresult warnings (first 10) -----"
+            xcrun xcresulttool get --path "$RES" --format json \
+              | jq -r '
+                  .issues.warningSummaries? // []
+                  | .[0:10][] 
+                  | "• " + (.message?.userDescription // .message // "warn")
+                '
+          else
+            echo "No xcresult bundle found at $RES"
+          fi
+      
       - name: Run AgentHub
         run: |
           set -euo pipefail
