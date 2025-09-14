@@ -282,6 +282,9 @@ jobs:
     if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
     runs-on: macos-14
     needs: [app, plugin]
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -367,3 +370,20 @@ jobs:
           echo "PR #:  ${{ steps.create_pr.outputs['pull-request-number'] }}"
           echo "PR URL: ${{ steps.create_pr.outputs['pull-request-url'] }}"
           echo "PR link created: ${{ steps.create_pr.outputs['pull-request-url'] }}" >> $GITHUB_STEP_SUMMARY
+
+      # (Optional) Auto-approve if your protection rules require a review.
+      # You can add a BOT_TOKEN secret if needed for branch protection requirements
+      - name: Approve PR (optional)
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh pr review ${{ steps.create_pr.outputs.pull-request-number }} --approve
+
+      # Enable GitHub auto-merge (squash) so it merges itself once checks are green
+      - name: Enable auto-merge
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          merge-method: squash
