@@ -1,0 +1,23 @@
+Using project: app/MoreMojoStudio.xcodeproj
+=== xcodebuild -list ===
+Command line invocation:
+    /Applications/Xcode_16.1.app/Contents/Developer/usr/bin/xcodebuild -project app/MoreMojoStudio.xcodeproj -list
+
+User defaults from command line:
+    IDEPackageSupportUseBuiltinSCM = YES
+
+Information about project "MoreMojoStudio":
+    Targets:
+        MoreMojoStudio
+
+    Build Configurations:
+        Debug
+        Release
+
+    If no build configuration is specified and -scheme is not passed then "Debug" is used.
+
+    Schemes:
+        MoreMojoStudio
+
+=== xcodebuild -list -json ===
+Detected SCHEME='MoreMojoStudio' TARGET='MoreMojoStudio'
