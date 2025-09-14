@@ -123,7 +123,6 @@ jobs:
               -configuration Release \
               -sdk macosx \
               -destination 'platform=macOS' \
-              -arch arm64 \
               -derivedDataPath app/build \
               -resultBundlePath app/build/App.xcresult \
               CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
@@ -136,7 +135,6 @@ jobs:
               -configuration Release \
               -sdk macosx \
               -destination 'platform=macOS' \
-              -arch arm64 \
               -derivedDataPath app/build \
               -resultBundlePath app/build/App.xcresult \
               CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM="" \
