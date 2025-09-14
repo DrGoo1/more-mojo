@@ -33,8 +33,7 @@ struct TopConsumerView: View {
                         .fontWeight(.bold)
                         .foregroundColor(PMXPalette.highlight)
                     
-                    MojoWheel(value: $wheelVal,
-                              rms: CGFloat(audioEngine.rmsOut),
+                    MojoWheel(value: $wheelVal, rms: CGFloat(engine.rmsOut), mode: macroMode),
                               mode: macroMode) { v in
                         params = (macroMode == .appDecides)
                             ? MojoMacro.applyAppDecides(v)
