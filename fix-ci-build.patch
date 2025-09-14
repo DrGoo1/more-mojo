@@ -1,0 +1,221 @@
+*** a/plugin/CMakeLists.txt
+--- b/plugin/CMakeLists.txt
+@@
+-cmake_minimum_required(VERSION 3.15)
+-
+-project(MoreMojoPlugin VERSION 0.1.0)
+-set(CMAKE_CXX_STANDARD 17)
+-
+-find_package(JUCE CONFIG REQUIRED)
+-
+-# (Old custom add_custom_command blocks and TARGET_BUNDLE_DIR references removed)
+-# .....
+-
+-juce_add_plugin(MoreMojoPlugin
+-    COMPANY_NAME "Umbo Gumbo"
+-    FORMATS AU VST3 Standalone
+-    PRODUCT_NAME "More Mojo by Umbo Gumbo")
+-
+-target_sources(MoreMojoPlugin PRIVATE
+-    Source/PluginProcessor.cpp
+-    Source/PluginProcessor.h
+-)
+-
+-target_link_libraries(MoreMojoPlugin PRIVATE
+-    juce::juce_audio_utils
+-    juce::juce_dsp
+-)
++cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
++
++project(MoreMojoPlugin VERSION 0.1.0 LANGUAGES C CXX)
++set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CXX_STANDARD_REQUIRED ON)
++set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "macOS deployment target" FORCE)
++
++find_package(JUCE CONFIG REQUIRED)
++
++# Allow override: -DMOJO_FORMATS="AU;VST3;Standalone"
++set(MOJO_FORMATS "AU;VST3;Standalone" CACHE STRING "Plugin formats to build")
++
++juce_add_plugin(MoreMojoPlugin
++    COMPANY_NAME "Umbo Gumbo"
++    FORMATS ${MOJO_FORMATS}
++    PRODUCT_NAME "More Mojo by Umbo Gumbo"
++    COPY_PLUGIN_AFTER_BUILD TRUE
++    NEEDS_MIDI_INPUT FALSE
++    NEEDS_MIDI_OUTPUT FALSE
++    IS_MIDI_EFFECT FALSE
++    IS_SYNTH FALSE
++)
++
++target_sources(MoreMojoPlugin PRIVATE
++    Source/PluginProcessor.cpp
++    Source/PluginProcessor.h
++)
++
++target_compile_definitions(MoreMojoPlugin PRIVATE
++    JUCE_WEB_BROWSER=0
++    JUCE_USE_CURL=0
++    JUCE_VST3_CAN_REPLACE_VST2=0
++)
++
++target_link_libraries(MoreMojoPlugin PRIVATE
++    juce::juce_audio_utils
++    juce::juce_dsp
++)
+
+*** /dev/null
+--- b/scripts/build_app_xcode.sh
+@@
++#!/usr/bin/env bash
++set -euo pipefail
++
++# Build the SwiftUI app using Xcode (not raw swiftc), capturing logs and xcresult.
++ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++APP_DIR="$ROOT/app"
++LOG_DIR="$ROOT/ci_logs"
++DERIVED="$APP_DIR/build"
++XCRESULT="$DERIVED/App.xcresult"
++
++mkdir -p "$LOG_DIR" "$DERIVED"
++
++echo "==> Tooling"
++{
++  echo "=== Tooling ==="
++  xcodebuild -version || true
++  sw_vers || true
++  swift --version || true
++} | tee "$LOG_DIR/app_tooling.txt"
++
++echo "==> xcodebuild (Release)"
++xcodebuild \
++  -project "$APP_DIR/RealFeelStudio.xcodeproj" \
++  -scheme "RealFeel Studio" \
++  -configuration Release \
++  -sdk macosx \
++  -derivedDataPath "$DERIVED" \
++  -resultBundlePath "$XCRESULT" \
++  build 2>&1 | tee "$LOG_DIR/xcodebuild_app_stdout.log"
++
++echo "==> Done. App at: $DERIVED/Build/Products/Release/RealFeel Studio.app"
+
+*** /dev/null
+--- b/.github/workflows/build_with_logs.yml
+@@
++name: Build App & Plugins (macOS) with Logs
++
++on:
++  push:
++  pull_request:
++  workflow_dispatch:
++
++jobs:
++  app:
++    runs-on: macos-13
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Select Xcode (optional)
++        run: |
++          echo "Available Xcodes:"; ls /Applications | grep Xcode || true
++          # sudo xcode-select -s /Applications/Xcode_15.0.app
++
++      - name: Build App with xcodebuild (logs + xcresult)
++        run: |
++          set -euo pipefail
++          chmod +x scripts/build_app_xcode.sh
++          scripts/build_app_xcode.sh
++
++      - name: Upload App logs & xcresult (always)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: app-build-logs
++          path: |
++            ci_logs/**
++            app/build/Build/Logs/**
++            app/build/App.xcresult/**
++          if-no-files-found: warn
++          retention-days: 7
++
++      - name: Upload App bundle (if built)
++        if: success()
++        uses: actions/upload-artifact@v4
++        with:
++          name: RealFeelStudio.app
++          path: app/build/Build/Products/Release/RealFeel\ Studio.app
++          if-no-files-found: error
++          retention-days: 7
++
++      - name: Tail app log (on failure)
++        if: failure()
++        run: |
++          echo "----- Tail of app build log -----"
++          tail -n 200 ci_logs/xcodebuild_app_stdout.log || true
++
++  plugin:
++    runs-on: macos-13
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Fetch JUCE (or use your cached path)
++        run: |
++          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
++          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
++
++      - name: Clean CMake cache
++        run: rm -rf plugin/build
++
++      - name: Guard CMake for forbidden commands
++        run: |
++          if git grep -n "TARGET_BUNDLE_DIR" -- plugin/CMakeLists.txt | grep -v '^$'; then
++            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD or per-format targets)."
++            exit 1
++          fi
++
++      - name: Configure (CMake)
++        env: { JUCE_DIR: ${{ env.JUCE_DIR }} }
++        run: |
++          set -euo pipefail
++          mkdir -p ci_logs
++          echo "==> CMake configure"
++          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
++
++      - name: Build (Release)
++        run: |
++          set -euo pipefail
++          echo "==> CMake build"
++          cmake --build plugin/build --config Release 2>&1 | tee ci_logs/cmake_build.log
++
++      - name: Upload Plugin logs (always)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: plugin-build-logs
++          path: |
++            ci_logs/**
++            plugin/build/**/CMakeCache.txt
++            plugin/build/**/CMakeFiles/CMakeOutput.log
++            plugin/build/**/CMakeFiles/CMakeError.log
++          if-no-files-found: warn
++          retention-days: 7
++
++      # If COPY_PLUGIN_AFTER_BUILD TRUE is set, JUCE installs into user plug-in folders:
++      - name: Upload installed bundles (best-effort)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: MoreMojoPlugin-bundles
++          path: |
++            ~/Library/Audio/Plug-Ins/Components/MoreMojoPlugin.component
++            ~/Library/Audio/Plug-Ins/VST3/MoreMojoPlugin.vst3
++          if-no-files-found: warn
++          retention-days: 7
++
++      - name: Tail plugin logs (on failure)
++        if: failure()
++        run: |
++          echo "----- Tail of CMake configure -----"
++          tail -n 200 ci_logs/cmake_configure.log || true
++          echo "----- Tail of CMake build -----"
++          tail -n 200 ci_logs/cmake_build.log || true

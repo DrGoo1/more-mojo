@@ -1,0 +1,218 @@
+*** a/plugin/CMakeLists.txt
+--- b/plugin/CMakeLists.txt
+@@
+-cmake_minimum_required(VERSION 3.15)
+-
+-project(MoreMojoPlugin VERSION 0.1.0)
+-set(CMAKE_CXX_STANDARD 17)
+-
+-find_package(JUCE CONFIG REQUIRED)
+-
+-juce_add_plugin(MoreMojoPlugin
+-    COMPANY_NAME "Umbo Gumbo"
+-    FORMATS AU VST3 Standalone
+-    PRODUCT_NAME "More Mojo by Umbo Gumbo")
+-
+-target_sources(MoreMojoPlugin PRIVATE
+-    Source/PluginProcessor.cpp
+-    Source/PluginProcessor.h
+-)
+-
+-target_link_libraries(MoreMojoPlugin PRIVATE
+-    juce::juce_audio_utils
+-    juce::juce_dsp
+-)
++cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
++
++project(MoreMojoPlugin VERSION 0.1.0 LANGUAGES C CXX)
++set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CXX_STANDARD_REQUIRED ON)
++set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "macOS deployment target" FORCE)
++
++find_package(JUCE CONFIG REQUIRED)
++
++# Allow override at configure time:
++#   -DMOJO_FORMATS="AU;VST3;Standalone"
++set(MOJO_FORMATS "AU;VST3;Standalone" CACHE STRING "Plugin formats to build")
++
++juce_add_plugin(MoreMojoPlugin
++    COMPANY_NAME "Umbo Gumbo"
++    FORMATS ${MOJO_FORMATS}
++    PRODUCT_NAME "More Mojo by Umbo Gumbo"
++    COPY_PLUGIN_AFTER_BUILD TRUE     # Let JUCE install to ~/Library
++    NEEDS_MIDI_INPUT FALSE
++    NEEDS_MIDI_OUTPUT FALSE
++    IS_MIDI_EFFECT FALSE
++    IS_SYNTH FALSE
++)
++
++target_sources(MoreMojoPlugin PRIVATE
++    Source/PluginProcessor.cpp
++    Source/PluginProcessor.h
++)
++
++target_compile_definitions(MoreMojoPlugin PRIVATE
++    JUCE_WEB_BROWSER=0
++    JUCE_USE_CURL=0
++    JUCE_VST3_CAN_REPLACE_VST2=0
++)
++
++target_link_libraries(MoreMojoPlugin PRIVATE
++    juce::juce_audio_utils
++    juce::juce_dsp
++)
+
+*** /dev/null
+--- b/scripts/build_app_xcode.sh
+@@
++#!/usr/bin/env bash
++set -euo pipefail
++
++# Build the SwiftUI app with Xcode (no raw swiftc), capture logs and xcresult.
++ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++APP_DIR="$ROOT/app"
++LOG_DIR="$ROOT/ci_logs"
++DERIVED="$APP_DIR/build"
++XCRESULT="$DERIVED/App.xcresult"
++
++mkdir -p "$LOG_DIR" "$DERIVED"
++
++echo "==> Tooling"
++{
++  echo "=== Tooling ==="
++  xcodebuild -version || true
++  sw_vers || true
++  swift --version || true
++} | tee "$LOG_DIR/app_tooling.txt"
++
++echo "==> xcodebuild (Release)"
++xcodebuild \
++  -project "$APP_DIR/RealFeelStudio.xcodeproj" \
++  -scheme "RealFeel Studio" \
++  -configuration Release \
++  -sdk macosx \
++  -derivedDataPath "$DERIVED" \
++  -resultBundlePath "$XCRESULT" \
++  build 2>&1 | tee "$LOG_DIR/xcodebuild_app_stdout.log"
++
++echo "==> Done. App at: $DERIVED/Build/Products/Release/RealFeel Studio.app"
+
+*** a/build_master.sh
+--- b/build_master.sh
+@@
+-# Part 4: Swift integration and compilation
+-echo_info "Starting Part 4: Swift integration and compilation..."
+-"${BASE_DIR}/build_part4_swift.sh"
+-echo_success "Part 4 completed successfully"
++# Part 4: App build via Xcode (preferred over raw swiftc)
++echo_info "Starting Part 4: Building app with Xcode..."
++if [ -x "${BASE_DIR}/scripts/build_app_xcode.sh" ]; then
++  "${BASE_DIR}/scripts/build_app_xcode.sh"
++else
++  if [ -x "${BASE_DIR}/../scripts/build_app_xcode.sh" ]; then
++    "${BASE_DIR}/../scripts/build_app_xcode.sh"
++  else
++    echo_error "scripts/build_app_xcode.sh not found; please add it and re-run."
++    exit 1
++  fi
++fi
++echo_success "App build completed"
+@@
+-# Create build script
+-cat > "${TARGET_DIR}/build.sh" << 'EOFBuildScript'
+-#!/bin/bash
+-# Script to build the SwiftUI app
+-
+-set -e  # Exit on error
+-
+-echo "Building RealFeelStudio SwiftUI app..."
+-
+-# Detect Xcode path
+-XCODE_PATH=$(xcode-select -p)
+-if [ -z "$XCODE_PATH" ]; then
+-    echo "Error: Xcode not found"
+-    exit 1
+-fi
+-
+-# Use swiftc to build the app
+-SWIFT_FILES="swift/*.swift"
+-OUTPUT_FILE="build/RealFeelStudioMain"
+-
+-# Create build directory
+-mkdir -p build
+-
+-# Build the app
+-echo "Compiling Swift files..."
+-swiftc -o "$OUTPUT_FILE" $SWIFT_FILES \
+-    -sdk $(xcrun --show-sdk-path) \
+-    -target x86_64-apple-macosx10.15 \
+-    -F /System/Library/Frameworks \
+-    -framework AppKit \
+-    -framework SwiftUI \
+-    -framework AVFoundation \
+-    -framework CoreGraphics \
+-    -framework Accelerate \
+-    -framework Foundation \
+-    -framework CoreAudio \
+-    -framework MetalKit || {
+-        echo "Build failed, but creating launcher script anyway"
+-    }
+-
+-echo "Build process complete"
+-EOFBuildScript
+-chmod +x "${TARGET_DIR}/build.sh"
++# Replace legacy swiftc build script with a wrapper that calls Xcode build
++cat > "${TARGET_DIR}/build_xcode.sh" << 'EOFBuildScript'
++#!/bin/bash
++set -euo pipefail
++REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++if [ -x "$REPO_ROOT/scripts/build_app_xcode.sh" ]; then
++  "$REPO_ROOT/scripts/build_app_xcode.sh"
++else
++  echo "scripts/build_app_xcode.sh not found"
++  exit 1
++fi
++EOFBuildScript
++chmod +x "${TARGET_DIR}/build_xcode.sh"
+
+*** a/run_build_process.sh
+--- b/run_build_process.sh
+@@
+-# Part 4: Swift integration and compilation
+-echo_info "Running Part 4: Swift integration and compilation..."
+-"${BASE_DIR}/build_part4_swift.sh"
++# Part 4: App build via Xcode (preferred)
++echo_info "Running Part 4: App build via Xcode..."
++if [ -x "${BASE_DIR}/scripts/build_app_xcode.sh" ]; then
++  "${BASE_DIR}/scripts/build_app_xcode.sh"
++elif [ -x "${BASE_DIR}/../scripts/build_app_xcode.sh" ]; then
++  "${BASE_DIR}/../scripts/build_app_xcode.sh"
++else
++  echo_error "scripts/build_app_xcode.sh not found"
++  exit 1
++fi
+@@
+-# Use swiftc to build the app if Swift files exist
+-SWIFT_FILES="swift/*.swift"
+-OUTPUT_FILE="build/RealFeelStudioMain"
+-
+-# Check if Swift files exist
+-if ls $SWIFT_FILES 1> /dev/null 2>&1; then
+-    echo "Compiling Swift files..."
+-    swiftc -o "$OUTPUT_FILE" $SWIFT_FILES \
+-        -sdk $(xcrun --show-sdk-path) \
+-        -target x86_64-apple-macosx10.15 \
+-        -F /System/Library/Frameworks \
+-        -framework AppKit \
+-        -framework SwiftUI \
+-        -framework AVFoundation \
+-        -framework CoreGraphics \
+-        -framework Accelerate \
+-        -framework Foundation \
+-        -framework CoreAudio || {
+-            echo "Build failed, but continuing with launcher script"
+-        }
+-else
+-    echo "No Swift files found. Skipping compilation."
+-fi
++echo "Building RealFeelStudio SwiftUI app with Xcode (see ../scripts/build_app_xcode.sh)"

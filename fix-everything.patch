@@ -1,0 +1,360 @@
+*** a/plugin/CMakeLists.txt
+--- b/plugin/CMakeLists.txt
+@@
+-cmake_minimum_required(VERSION 3.15)
+-
+-project(MoreMojoPlugin VERSION 0.1.0)
+-set(CMAKE_CXX_STANDARD 17)
+-
+-find_package(JUCE CONFIG REQUIRED)
+-
+-juce_add_plugin(MoreMojoPlugin
+-    COMPANY_NAME "Umbo Gumbo"
+-    FORMATS AU VST3 Standalone
+-    PRODUCT_NAME "More Mojo by Umbo Gumbo")
+-
+-target_sources(MoreMojoPlugin PRIVATE
+-    Source/PluginProcessor.cpp
+-    Source/PluginProcessor.h
+-)
+-
+-target_link_libraries(MoreMojoPlugin PRIVATE
+-    juce::juce_audio_utils
+-    juce::juce_dsp
+-)
++cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
++
++project(MoreMojoPlugin VERSION 0.1.0 LANGUAGES C CXX)
++set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CXX_STANDARD_REQUIRED ON)
++set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "macOS deployment target" FORCE)
++
++find_package(JUCE CONFIG REQUIRED)
++
++# Allow override: -DMOJO_FORMATS="AU;VST3;Standalone"
++set(MOJO_FORMATS "AU;VST3;Standalone" CACHE STRING "Plugin formats to build")
++
++juce_add_plugin(MoreMojoPlugin
++    COMPANY_NAME "Umbo Gumbo"
++    FORMATS ${MOJO_FORMATS}
++    PRODUCT_NAME "More Mojo by Umbo Gumbo"
++    COPY_PLUGIN_AFTER_BUILD TRUE
++    NEEDS_MIDI_INPUT FALSE
++    NEEDS_MIDI_OUTPUT FALSE
++    IS_MIDI_EFFECT FALSE
++    IS_SYNTH FALSE
++)
++
++target_sources(MoreMojoPlugin PRIVATE
++    Source/PluginProcessor.cpp
++    Source/PluginProcessor.h
++)
++
++target_compile_definitions(MoreMojoPlugin PRIVATE
++    JUCE_WEB_BROWSER=0
++    JUCE_USE_CURL=0
++    JUCE_VST3_CAN_REPLACE_VST2=0
++)
++
++target_link_libraries(MoreMojoPlugin PRIVATE
++    juce::juce_audio_utils
++    juce::juce_dsp
++)
+
+*** /dev/null
+--- b/app/Sources/SharedTypes.swift
+@@
++import Foundation
++
++public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
++    case liveHB4x = 0, hqSinc8x, transientSpline4x, adaptive, aiAnalogHook
++    public var id: Int { rawValue }
++    public var displayName: String {
++        switch self {
++        case .liveHB4x: return "HB 4×"
++        case .hqSinc8x: return "HQ Sinc 8×"
++        case .transientSpline4x: return "Spline 4×"
++        case .adaptive: return "Adaptive"
++        case .aiAnalogHook: return "Live+AI"
++        }
++    }
++}
++
++public struct ProcessorParams: Codable, Equatable {
++    public var input:  Float = 0.0   // dB
++    public var output: Float = 0.0   // dB
++    public var drive:      Float = 0.55
++    public var character:  Float = 0.50
++    public var saturation: Float = 0.45
++    public var presence:   Float = 0.50
++    public var mix:        Float = 1.00
++    public var interpMode: InterpMode = .liveHB4x
++    public var mode:       Int = 1
++}
++
++public struct MojoEQBand: Codable, Equatable {
++    public var lo: Float
++    public var hi: Float
++    public var gain_dB: Float
++}
++
++public struct MojoEQMatch: Codable, Equatable {
++    public var bands: [MojoEQBand]
++}
+
+*** a/app/Sources/ProcessorParams.swift
+--- b/app/Sources/ProcessorParams+Ext.swift
+@@
+-import Foundation
+-// (Remove any duplicate struct/enum definitions from here)
++import Foundation
++// Extension-only file. Canonical types live in SharedTypes.swift
++extension ProcessorParams {
++    public var outputNormalized: Float { (output + 12) / 24 }
++}
+
+*** a/app/Sources/TopConsumerView.swift
+--- b/app/Sources/TopConsumerView.swift
+@@
+-                    MojoWheel(
+-                             value: $wheelVal,
+-                             houseMacro: houseMacro,
+-                             rms: CGFloat(engine.rmsOut),
+-                             mode: houseMacro ? .app : .steal
+-                    ) { v in
++                    MojoWheel(value: $wheelVal,
++                              rms: CGFloat(engine.rmsOut),
++                              mode: macroMode) { v in
+                         params = (macroMode == .appDecides)
+                             ? MojoMacro.applyAppDecides(v)
+                             : MojoMacro.applyStealMacro(v, base: stealPreset ?? params)
+                         applyParams(params)
+                     }
+@@
+-                    Picker("Mode", selection: $macroMode) {
+-                        Text("App").tag(MojoMacroMode.app)
+-                        Text("Steal").tag(MojoMacroMode.steal)
+-                    }
++                    Picker("Mode", selection: $macroMode) {
++                        Text("App").tag(MojoMacroMode.appDecides)
++                        Text("Steal").tag(MojoMacroMode.stealMacro)
++                    }
+                     .pickerStyle(.segmented)
+                     .frame(width: 220)
+
+*** a/app/Sources/StealMojoSwift.swift
+--- b/app/Sources/StealMojoSwift.swift
+@@
+-    // compress to bands
+-    var bands: [MojoEQBand] = []
+-    let edges = stride(from: 0, to: fGrid.count, by: fGrid.count / bands.clampedCount(8)).map{ Int($0) }
+-    let N = 8
+-    let e = (0...N).map { i -> Int in Int(Float(i)/Float(N) * Float(fGrid.count-1)) }
+-    for i in 0..<N {
+-        let i0 = e[i], i1 = e[i+1]
+-        if i1 <= i0 { continue }
+-        let gains = diff[i0...i1]
+-        let midGain = gains.sorted()[gains.count/2]
+-        bands.append(.init(lo: fGrid[i0], hi: fGrid[i1], gain_dB: midGain))
+-    }
+-    return MojoEQMatch(bands: bands)
++    // compress to bands (explicit types to satisfy the compiler)
++    var bands: [MojoEQBand] = []
++    let N = 8
++    let e = (0...N).map { i in Int(Float(i)/Float(N) * Float(fGrid.count-1)) }
++    for i in 0..<N {
++        let i0 = e[i], i1 = e[i+1]
++        if i1 <= i0 { continue }
++        let gains = diff[i0...i1]
++        let midGain = gains.sorted()[gains.count/2]
++        bands.append(MojoEQBand(lo: fGrid[i0], hi: fGrid[i1], gain_dB: midGain))
++    }
++    return MojoEQMatch(bands: bands)
+
+*** a/app/Sources/StealMojoPanel_SwiftOnly.swift
+--- b/app/Sources/StealMojoPanel_SwiftOnly.swift
+@@
++struct PMXProminent: ButtonStyle {
++    func makeBody(configuration: Configuration) -> some View {
++        configuration.label
++            .padding(.horizontal, 12).padding(.vertical, 6)
++            .background(LinearGradient(colors: [.pink, .purple, .orange],
++                                       startPoint: .leading, endPoint: .trailing))
++            .foregroundColor(.white)
++            .clipShape(Capsule())
++            .opacity(configuration.isPressed ? 0.8 : 1.0)
++    }
++}
+@@
+-                        HStack {
+-                            Button("Analyze") { analyze() }.buttonStyle(.borderedProminent).disabled(refURL == nil)
+-                            if let rec = recommended {
+-                                Button("Apply to Mojo") { onApply?(rec) }.buttonStyle(.borderedProminent)
+-                            }
+-                        }
++                        HStack {
++                            Button("Analyze") { analyze() }
++                                .buttonStyle(PMXProminent()).disabled(refURL == nil)
++                            if let rec = recommended {
++                                Button("Apply to Mojo") { onApply?(rec) }
++                                    .buttonStyle(PMXProminent())
++                            }
++                        }
+
+*** /dev/null
+--- b/scripts/build_app_xcode.sh
+@@
++#!/usr/bin/env bash
++set -euo pipefail
++
++ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++APP_DIR="$ROOT/app"
++LOG_DIR="$ROOT/ci_logs"
++DERIVED="$APP_DIR/build"
++XCRESULT="$DERIVED/App.xcresult"
++mkdir -p "$LOG_DIR" "$DERIVED"
++
++echo "==> Tooling"
++{
++  echo "=== Tooling ==="
++  xcodebuild -version || true
++  sw_vers || true
++  swift --version || true
++} | tee "$LOG_DIR/app_tooling.txt"
++
++echo "==> xcodebuild (Release)"
++xcodebuild \
++  -project "$APP_DIR/RealFeelStudio.xcodeproj" \
++  -scheme "RealFeel Studio" \
++  -configuration Release \
++  -sdk macosx \
++  -derivedDataPath "$DERIVED" \
++  -resultBundlePath "$XCRESULT" \
++  build 2>&1 | tee "$LOG_DIR/xcodebuild_app_stdout.log"
++
++echo "==> Done. App at: $DERIVED/Build/Products/Release/RealFeel Studio.app"
+
+*** /dev/null
+--- b/scripts/preflight_guard.sh
+@@
++#!/usr/bin/env bash
++set -euo pipefail
++SRC="${1:-app/Sources}"
++fail(){ echo "❌ $*"; exit 1; }
++
++IM=$(grep -RIn --include="*.swift" 'enum[[:space:]]\+InterpMode' "$SRC" | wc -l | tr -d ' ')
++PP=$(grep -RIn --include="*.swift" 'struct[[:space:]]\+ProcessorParams\b' "$SRC" | wc -l | tr -d ' ')
++[ "$IM" = "1" ] || fail "InterpMode duplicates ($IM)."
++[ "$PP" = "1" ] || fail "ProcessorParams duplicates ($PP)."
++
++grep -RIn --include="*.swift" 'ProcessorParams\.InterpMode' "$SRC" >/dev/null && \
++  fail "Use top-level InterpMode (found nested reference)."
++
++grep -RIn --include="*.swift" '\.buttonStyle\(\.borderedProminent\)' "$SRC" >/dev/null && \
++  fail "Use PMXProminent() (macOS 11-safe)."
++
++FPL=$(ls "$SRC"/*Faceplate*.swift 2>/dev/null | wc -l | tr -d ' ')
++INT=$(ls "$SRC"/Interpolator*.swift "$SRC"/Interpolators*.swift 2>/dev/null | wc -l | tr -d ' ')
++[ "$FPL" -le 1 ] || fail "Multiple Faceplate overlays; keep exactly one."
++[ "$INT" -le 1 ] || fail "Multiple Interpolator sources; keep exactly one."
++
++echo "✅ Preflight guard passed."
+
+*** /dev/null
+--- b/.github/workflows/build_with_logs.yml
+@@
++name: Build App & Plugins (macOS) with Logs
++
++on:
++  push:
++  pull_request:
++  workflow_dispatch:
++
++jobs:
++  app:
++    runs-on: macos-13
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Preflight guard
++        run: |
++          chmod +x scripts/preflight_guard.sh
++          scripts/preflight_guard.sh app/Sources
++
++      - name: Build App (xcodebuild) with logs
++        run: |
++          chmod +x scripts/build_app_xcode.sh
++          scripts/build_app_xcode.sh
++
++      - name: Upload App logs & xcresult (always)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: app-build-logs
++          path: |
++            ci_logs/**
++            app/build/Build/Logs/**
++            app/build/App.xcresult/**
++          if-no-files-found: warn
++
++      - name: Upload App bundle (if built)
++        if: success()
++        uses: actions/upload-artifact@v4
++        with:
++          name: RealFeelStudio.app
++          path: app/build/Build/Products/Release/RealFeel\ Studio.app
++          if-no-files-found: error
++
++  plugin:
++    runs-on: macos-13
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Fetch JUCE
++        run: |
++          git clone --depth=1 https://github.com/juce-framework/JUCE.git || true
++          echo "JUCE_DIR=$PWD/JUCE" >> $GITHUB_ENV
++
++      - name: Clean CMake cache
++        run: rm -rf plugin/build
++
++      - name: Guard CMake for forbidden commands
++        run: |
++          if git grep -n "TARGET_BUNDLE_DIR" -- plugin/CMakeLists.txt | grep -v '^$'; then
++            echo "❌ Remove custom TARGET_BUNDLE_DIR blocks (use COPY_PLUGIN_AFTER_BUILD ONLY)."
++            exit 1
++          fi
++
++      - name: Configure (CMake)
++        env: { JUCE_DIR: ${{ env.JUCE_DIR }} }
++        run: |
++          set -euo pipefail
++          mkdir -p ci_logs
++          cmake -B plugin/build -S plugin -DJUCE_DIR="$JUCE_DIR" 2>&1 | tee ci_logs/cmake_configure.log
++
++      - name: Build (Release)
++        run: |
++          set -euo pipefail
++          cmake --build plugin/build --config Release 2>&1 | tee ci_logs/cmake_build.log
++
++      - name: Upload Plugin logs (always)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: plugin-build-logs
++          path: |
++            ci_logs/**
++            plugin/build/**/CMakeCache.txt
++            plugin/build/**/CMakeFiles/CMakeOutput.log
++            plugin/build/**/CMakeFiles/CMakeError.log
++          if-no-files-found: warn
++
++      - name: Upload installed plugin bundles (best-effort)
++        if: always()
++        uses: actions/upload-artifact@v4
++        with:
++          name: MoreMojoPlugin-bundles
++          path: |
++            ~/Library/Audio/Plug-Ins/Components/MoreMojoPlugin.component
++            ~/Library/Audio/Plug-Ins/VST3/MoreMojoPlugin.vst3
++          if-no-files-found: warn

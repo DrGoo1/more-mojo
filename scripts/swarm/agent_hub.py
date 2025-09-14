@@ -67,7 +67,9 @@ class ProjectAgent:
         sh("which xcodegen || (brew update || true; brew install xcodegen)", check=False)
         projy = ROOT/"app"/"project.yml"
         if projy.exists():
-            sh(f"(cd {ROOT/'app'} && xcodegen generate)", check=False)
+            # Properly quote paths that might contain spaces
+            app_path = str(ROOT/'app').replace(" ", "\ ")
+            sh(f"(cd \"{ROOT/'app'}\" && xcodegen generate)", check=False)
 
 class SchemeAgent:
     """Fix missing/unshared scheme by regenerating the project with XcodeGen."""
@@ -85,7 +87,8 @@ class SchemeAgent:
         sh("which xcodegen || (brew update || true; brew install xcodegen)", check=False)
         projy = ROOT/"app"/"project.yml"
         if projy.exists():
-            sh(f"(cd {ROOT/'app'} && xcodegen generate)", check=False)
+            # Properly quote paths that might contain spaces
+            sh(f"(cd \"{ROOT/'app'}\" && xcodegen generate)", check=False)
         # no-op if project.yml absent (workflow step already chooses first available scheme)
 
 class SwiftAgent:

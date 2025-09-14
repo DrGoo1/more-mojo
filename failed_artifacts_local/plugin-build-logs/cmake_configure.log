@@ -1,0 +1,10 @@
+-- Configuring MoreMojoPlugin...
+-- Found JUCE: /Users/runner/work/more-mojo/more-mojo/JUCE/extras/Build/CMake/JUCEConfig.cmake
+CMake Error at CMakeLists.txt:41 (add_library):
+  Error evaluating generator expression:
+
+    $<TARGET_BUNDLE_DIR:MoreMojoPlugin>
+
+  $<TARGET_BUNDLE_DIR:...> may only be used with binary targets.
+-- Configuring incomplete, errors occurred!
+See also "/Volumes/MP 1/MoreMojo/ChatGPT/plugin/build/CMakeFiles/CMakeOutput.log".

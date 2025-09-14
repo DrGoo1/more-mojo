@@ -1,0 +1,10 @@
+xcodebuild: error: The project named "MoreMojoStudio" does not contain a scheme named "MoreMojoStudio". 
+The schemes in the project are: (none)
+Information about project "MoreMojoStudio":
+  Targets:
+      MoreMojoStudio
+  Configurations:
+      Debug
+      Release
+  Schemes:
+      (none)
