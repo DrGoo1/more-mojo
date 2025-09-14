@@ -68,7 +68,7 @@ class ProjectAgent:
         projy = ROOT/"app"/"project.yml"
         if projy.exists():
             # Properly quote paths that might contain spaces
-            app_path = str(ROOT/'app').replace(" ", "\ ")
+            app_path = str(ROOT/'app').replace(" ", r"\ ")
             sh(f"(cd \"{ROOT/'app'}\" && xcodegen generate)", check=False)
 
 class SchemeAgent:

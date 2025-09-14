@@ -5,6 +5,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -345,11 +349,14 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          if git diff --quiet; then
+          # Exclude swarm_summary.md from the diff check so it's not treated as a code change
+          if git diff --quiet -- . ':(exclude)swarm_summary.md'; then
             echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No actionable code changes detected by swarm."
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            git add -A
+            # Stage everything except the summary file
+            git add -A ':!swarm_summary.md'
           fi
 
       - name: Create PR with fixes
@@ -386,6 +393,7 @@ jobs:
       # Merge PR when all checks pass without needing branch protection
       - name: Merge when checks pass
         if: steps.diff.outputs.changed == 'true'
+        continue-on-error: true   # don't fail the autofix job if merge API fails
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
