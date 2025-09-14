@@ -37,8 +37,8 @@ ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 0aedcde0a246ccc3c0ac902d33f634a6
-Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/0aedcde0a246ccc3c0ac902d33f634a6.xcbuilddata
+Build description signature: 204171e70b66d1200edd0832403c90f2
+Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/204171e70b66d1200edd0832403c90f2.xcbuilddata
 ClangStatCache /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -o /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
@@ -55,13 +55,13 @@ WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Interm
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     write-file /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio-63276c1610c3561c8ad18e17421ee524-VFS/all-product-headers.yaml
 
-CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
-    cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
-    builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
-
 CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release
+
+CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
+    cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
+    builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
 
 WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio.build/Objects-normal/x86_64/MoreMojoStudio_const_extract_protocols.json (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
     cd /Users/runner/work/more-mojo/more-mojo/app
