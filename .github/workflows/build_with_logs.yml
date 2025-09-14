@@ -285,7 +285,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # Checkout the branch, not a detached SHA
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Prepare artifact dirs
         run: |
@@ -357,6 +358,8 @@ jobs:
           branch: "swarm/autofix-${{ github.run_id }}"
           labels: "autofix"
           commit-message: "Swarm Autofix: CI build cleanup"
+          # Explicit base is required when the checkout is on a detached HEAD
+          base: ${{ github.event.pull_request.base.ref || github.ref_name }}
 
       - name: Log PR link
         if: steps.diff.outputs.changed == 'true'
