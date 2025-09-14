@@ -37,8 +37,12 @@ ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 3aeaee68637f89cc7ff43d2b3dd04897
-Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/3aeaee68637f89cc7ff43d2b3dd04897.xcbuilddata
+Build description signature: 84085d4de573742d32ad588ee38d96a1
+Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/84085d4de573742d32ad588ee38d96a1.xcbuilddata
+ClangStatCache /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
+    cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
+    /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -o /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
+
 CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products
@@ -46,10 +50,6 @@ CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Prod
 CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex
-
-ClangStatCache /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
-    cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
-    /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -o /Users/runner/work/more-mojo/more-mojo/app/build/SDKStatCaches.noindex/macosx15.1-24B75-e9bd6b24234ea854f230c6ba307e68e6.sdkstatcache
 
 WriteAuxiliaryFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Release/MoreMojoStudio-63276c1610c3561c8ad18e17421ee524-VFS/all-product-headers.yaml
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
