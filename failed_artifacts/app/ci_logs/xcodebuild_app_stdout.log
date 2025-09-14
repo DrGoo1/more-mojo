@@ -37,8 +37,8 @@ ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: bcea8882bc97038a3cf3ebfb3c64ee17
-Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/bcea8882bc97038a3cf3ebfb3c64ee17.xcbuilddata
+Build description signature: 7f59e702b5aac6547be06343ff4f5d9c
+Build description path: /Users/runner/work/more-mojo/more-mojo/app/build/Build/Intermediates.noindex/XCBuildData/7f59e702b5aac6547be06343ff4f5d9c.xcbuilddata
 CreateBuildDirectory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products
     cd /Users/runner/work/more-mojo/more-mojo/app/MoreMojoStudio.xcodeproj
     builtin-create-build-directory /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products
@@ -147,13 +147,13 @@ MkDir /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/Mo
     cd /Users/runner/work/more-mojo/more-mojo/app
     /bin/mkdir -p /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app
 
-ProcessInfoPlistFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Info.plist /Users/runner/work/more-mojo/more-mojo/app/Info.plist (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
-    cd /Users/runner/work/more-mojo/more-mojo/app
-    builtin-infoPlistUtility /Users/runner/work/more-mojo/more-mojo/app/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Info.plist
-
 CpResource /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Resources/Assets.xcassets /Users/runner/work/more-mojo/more-mojo/app/Assets.xcassets (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
     cd /Users/runner/work/more-mojo/more-mojo/app
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/more-mojo/more-mojo/app/Assets.xcassets /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Resources
+
+ProcessInfoPlistFile /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Info.plist /Users/runner/work/more-mojo/more-mojo/app/Info.plist (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
+    cd /Users/runner/work/more-mojo/more-mojo/app
+    builtin-infoPlistUtility /Users/runner/work/more-mojo/more-mojo/app/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /Users/runner/work/more-mojo/more-mojo/app/build/Build/Products/Release/MoreMojoStudio.app/Contents/Info.plist
 
 SwiftDriver\ Compilation\ Requirements MoreMojoStudio normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'MoreMojoStudio' from project 'MoreMojoStudio')
     cd /Users/runner/work/more-mojo/more-mojo/app
