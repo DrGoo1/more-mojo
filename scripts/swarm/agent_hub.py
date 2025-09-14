@@ -209,14 +209,14 @@ def main():
     # read logs from artifacts and inline
     app_log = read_globs("ci_logs/xcodebuild_app_stdout.log",
                          "ci_logs/app_preflight.txt",
-                         "failed_artifacts/app-build-logs/**/xcodebuild_app_stdout.log",
-                         "failed_artifacts/app-build-logs/**/app_preflight.txt",
-                         "failed_artifacts/app-build-logs/**/*.log")
+                         "failed_artifacts/app/**/xcodebuild_app_stdout.log",
+                         "failed_artifacts/app/**/app_preflight.txt",
+                         "failed_artifacts/app/**/*.log")
     plugin_log = read_globs("ci_logs/cmake_configure.log",
                             "ci_logs/cmake_build.log",
-                            "failed_artifacts/plugin-build-logs/**/cmake_configure.log",
-                            "failed_artifacts/plugin-build-logs/**/cmake_build.log",
-                            "failed_artifacts/plugin-build-logs/**/CMake*.log")
+                            "failed_artifacts/plugin/**/cmake_configure.log",
+                            "failed_artifacts/plugin/**/cmake_build.log",
+                            "failed_artifacts/plugin/**/CMake*.log")
 
     # decisions
     decisions = {

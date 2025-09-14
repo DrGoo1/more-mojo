@@ -286,10 +286,22 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Download logs from this run
+      - name: Prepare artifact dirs
+        run: |
+          rm -rf failed_artifacts
+          mkdir -p failed_artifacts/app failed_artifacts/plugin
+
+      - name: Download app logs
         uses: actions/download-artifact@v4
         with:
-          path: ./failed_artifacts
+          name: app-build-logs
+          path: failed_artifacts/app
+
+      - name: Download plugin logs
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-build-logs
+          path: failed_artifacts/plugin
 
       - name: Run AgentHub
         run: |
@@ -311,11 +323,11 @@ jobs:
         if: always()
         run: |
           echo "=== app preflight ==="
-          ls -R failed_artifacts/app-build-logs || true
-          grep -RniE "future Xcode|Unable to read project|xcodebuild: error|Scheme .* not" failed_artifacts/app-build-logs || true
+          ls -R failed_artifacts/app || true
+          grep -RniE "future Xcode|Unable to read project|xcodebuild: error|Scheme .* not" failed_artifacts/app || true
           echo "=== plugin cmake ==="
-          ls -R failed_artifacts/plugin-build-logs || true
-          grep -RniE "CMake Error|TARGET_BUNDLE_DIR|Could not find JUCE|No CMakeLists" failed_artifacts/plugin-build-logs || true
+          ls -R failed_artifacts/plugin || true
+          grep -RniE "CMake Error|TARGET_BUNDLE_DIR|Could not find JUCE|No CMakeLists" failed_artifacts/plugin || true
 
       - name: Show working tree status
         run: |
