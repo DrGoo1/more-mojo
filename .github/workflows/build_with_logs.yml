@@ -2,7 +2,17 @@ name: Build App & Plugins (macOS) with Logs
 
 on:
   push:
+    paths:
+      - 'app/**'
+      - 'plugin/**'
+      - 'scripts/**'
+      - '.github/workflows/build_with_logs.yml'
   pull_request:
+    paths:
+      - 'app/**'
+      - 'plugin/**'
+      - 'scripts/**'
+      - '.github/workflows/build_with_logs.yml'
   workflow_dispatch:
 
 concurrency:
@@ -283,7 +293,8 @@ jobs:
           cat plugin/build/CMakeCache.txt | grep -E '^(CMAKE_|JUCE_)' || true
 
   autofix:
-    if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
+    # Skip autofix if this is running on a PR that was itself created by the autofix job
+    if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') && !contains(github.head_ref || '', 'swarm/autofix-') }}
     runs-on: macos-14
     needs: [app, plugin]
     # IMPORTANT: These permissions require setting "Read and write permissions" and 
