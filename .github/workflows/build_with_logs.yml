@@ -349,7 +349,7 @@ jobs:
           RES="failed_artifacts/app/app/build/App.xcresult"
           if [ -d "$RES" ]; then
             echo "----- xcresult error summaries -----"
-            xcrun xcresulttool get --legacy --path "$RES" --format json \
+            xcrun xcresulttool get object --legacy --path "$RES" --format json \
               | jq -r '
                   # Try the canonical error summaries
                   (.issues.errorSummaries // []) as $errs
@@ -383,7 +383,7 @@ jobs:
                 ' || true
 
             echo "----- xcresult warnings (first 10) -----"
-            xcrun xcresulttool get --legacy --path "$RES" --format json \
+            xcrun xcresulttool get object --legacy --path "$RES" --format json \
               | jq -r '
                   (.issues.warningSummaries // []) | .[0:10][]
                   | "- " + (
