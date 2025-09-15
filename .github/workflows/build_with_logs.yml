@@ -349,32 +349,28 @@ jobs:
           RES="failed_artifacts/app/app/build/App.xcresult"
           if [ -d "$RES" ]; then
             echo "----- xcresult error summaries -----"
-            xcrun xcresulttool get --legacy --path "$RES" --format json \
-              | jq -r '
-                  (.issues.errorSummaries // []) as $errs
-                  | if ($errs|length) > 0 then
-                      $errs[]
-                      | "- " + (.issueType // "error") + ": " +
-                        ( .message?.text
-                          // .message?.userDescription
-                          // .message
-                          // "no message"
-                        ) +
-                        ( if .documentLocationInCreatingWorkspace?.url
-                          then " (" + (.documentLocationInCreatingWorkspace.url | sub("file://[^ ]*/more-mojo/"; "")) + ")"
-                          else "" end )
-                    else
-                      "no error summaries in xcresult"
-                    end
-              ' || true
-
-            echo "----- xcresult warnings (first 10) -----"
-            xcrun xcresulttool get --legacy --path "$RES" --format json \
-              | jq -r '( .issues.warningSummaries // [] ) | .[0:10][] | "- " + ( .message?.text // .message?.userDescription // .message // "warn")' || true
+            # Try modern form, fall back to legacy, fall back to console grep
+            if xcrun xcresulttool get --path "$RES" --format json >/tmp/xc.json 2>/dev/null; then
+              cat /tmp/xc.json | jq -r '
+                (.issues.errorSummaries // []) as $errs
+                | if ($errs|length) > 0 then
+                    $errs[] | "- " + (.issueType // "error") + ": " +
+                    ( .message?.text // .message?.userDescription // .message // "no message" ) +
+                    ( if .documentLocationInCreatingWorkspace?.url
+                      then " (" + (.documentLocationInCreatingWorkspace.url | sub("file://[^ ]*/more-mojo/"; "")) + ")"
+                      else "" end )
+                  else "no error summaries in xcresult" end'
+            elif xcrun xcresulttool get --legacy --path "$RES" --format json >/tmp/xc.json 2>/dev/null; then
+              cat /tmp/xc.json | jq -r '
+                (.issues.errorSummaries // [])[] | "- " + (.issueType // "error") + ": " +
+                ( .message?.text // .message?.userDescription // .message // "no message" )'
+            else
+              echo "xcresulttool did not produce JSON; grepping console output below."
+            fi
           else
-            echo "No xcresult bundle found at $RES"
+            echo "No xcresult bundle at $RES"
           fi
-          
+
           echo "----- tail of xcodebuild_app_stdout.log (last 400) -----"
           tail -n 400 failed_artifacts/app/ci_logs/xcodebuild_app_stdout.log || true
           echo "----- grep 'error:' (last 80) -----"
