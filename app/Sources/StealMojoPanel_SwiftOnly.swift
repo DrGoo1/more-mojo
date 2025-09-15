@@ -76,7 +76,7 @@ struct StealMojoPanel_SwiftOnly: View {
                         }
                     }
                 }
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .ifAvailableBackground()
             }
             .padding(16)
     }
@@ -93,7 +93,7 @@ struct StealMojoPanel_SwiftOnly: View {
     private func analyze() {
         guard let ref = refURL else { return }
         status = "Analyzing…"
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInitiated).async(execute: {
             do {
                 // Swift-only HPSS separation + features
                 let (harm, _, sr) = try SwiftMojoAnalyzer.separateHPSS(url: ref)
@@ -121,6 +121,21 @@ struct StealMojoPanel_SwiftOnly: View {
             } catch {
                 DispatchQueue.main.async { self.status = "Analysis failed: \(error.localizedDescription)" }
             }
+        })
+    }
+}
+
+// Extension to handle .ultraThinMaterial availability for macOS 11
+extension View {
+    @ViewBuilder
+    func ifAvailableBackground() -> some View {
+        if #available(macOS 12.0, *) {
+            self.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        } else {
+            self.background(
+                RoundedRectangle(cornerRadius: 12)
+                  .fill(Color.black.opacity(0.2))
+            )
         }
     }
 }

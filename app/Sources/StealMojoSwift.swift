@@ -5,27 +5,25 @@ import AVFoundation
 
 // MARK: - Swift-only HPSS (vDSP) + features + recommendation + EQ match
 
-public enum SwiftMojoAnalyzer {
-struct MojoFingerprint: Codable {
-    struct Features: Codable {
-        var crest_dB: Float
-        var rms: Float
-        var band_low: Float
-        var band_mid: Float
-        var band_high: Float
-        var zcr_mean: Float
-        var centroid_mean: Float
-        var flat_mean: Float
-        var flux_mean: Float
+extension SwiftMojoAnalyzer {
+    struct MojoFingerprint: Codable {
+        struct Features: Codable {
+            var crest_dB: Float
+            var rms: Float
+            var band_low: Float
+            var band_mid: Float
+            var band_high: Float
+            var zcr_mean: Float
+            var centroid_mean: Float
+            var flat_mean: Float
+            var flux_mean: Float
+        }
+        var source: String
+        var part: String
+        var features: Features
+        var recommendation: MojoRecommendation
+        var eq_match: MojoEQMatch?
     }
-    var source: String
-    var part: String
-    var features: Features
-    var recommendation: MojoRecommendation
-    var eq_match: MojoEQMatch?
-}
-
-enum SwiftMojoAnalyzer {
 
     // Simple STFT-based HPSS (median filter masks); mono only for analysis
     static func separateHPSS(url: URL, srOut: Double = 48000) throws -> (harm: [Float], perc: [Float], sr: Double) {
@@ -66,7 +64,19 @@ enum SwiftMojoAnalyzer {
         }
         for t in 0..<nFrames {
             let start = t*hop
-            tempIn[0..<nFFT] = Array(x[start..<min(start+nFFT, n)])
+            // Fix slice assignment with safe copy
+            let end = min(start + nFFT, n)
+            let count = end - start
+            tempIn.withUnsafeMutableBufferPointer { tb in
+                if count > 0 { _ = x[start..<end].withContiguousStorageIfAvailable { src in
+                    src.baseAddress!.withMemoryRebound(to: Float.self, capacity: count) {
+                        memcpy(tb.baseAddress!, $0, count * MemoryLayout<Float>.size)
+                    }
+                }}
+                if count < nFFT {
+                    memset(tb.baseAddress! + count, 0, (nFFT - count) * MemoryLayout<Float>.size)
+                }
+            }
             vDSP_vmul(tempIn, 1, win, 1, &tempIn, 1, vDSP_Length(nFFT))
             tempIn.withUnsafeBufferPointer { ptr in
                 ptr.baseAddress!.withMemoryRebound(to: DSPComplex.self, capacity: nFFT/2) { _ in }
@@ -189,8 +199,8 @@ enum SwiftMojoAnalyzer {
         let low = band(lo: 20, hi: 200)
         let mid = band(lo: 200, hi: 2000)
         let high = band(lo: 4000, hi: 12000)
-        // centroid (rough)
-        var idx = [Float](0..<Float(M))
+        // centroid (rough) - fix idx array creation
+        let idx = (0..<M).map { Float($0) }
         var num: Float = 0, den: Float = 1e-9
         vDSP_dotpr(idx, 1, mag, 1, &num, vDSP_Length(M))
         vDSP_sve(mag, 1, &den, vDSP_Length(M))
@@ -198,7 +208,8 @@ enum SwiftMojoAnalyzer {
 
         // flatness (geometric mean / arithmetic mean)
         var amean: Float = 0; vDSP_meamgv(mag, 1, &amean, vDSP_Length(M))
-        var gmean: Float = 0; vDSP_geoMean(mag, result: &gmean)
+        // Use geometric mean helper in case vDSP_geoMean is not available
+        var gmean: Float = geometricMean(mag)
         let flat = gmean / max(1e-9, amean)
 
         // flux: mean positive diff
@@ -222,8 +233,15 @@ enum SwiftMojoAnalyzer {
         else if p.contains("vocal") { presence = max(presence, 0.6); saturation = min(saturation, 0.6) }
         else if p.contains("drum") { drive = max(drive, 0.5); saturation = max(saturation, 0.6) }
 
-        return .init(interpMode: "adaptive", drive: drive, saturation: saturation,
-                     character: character, presence: presence, mix: 1.0, output: 0.0)
+        return MojoRecommendation(
+            interpMode: "adaptive", 
+            drive: drive, 
+            saturation: saturation,
+            character: character, 
+            presence: presence, 
+            mix: 1.0, 
+            output: 0.0
+        )
     }
 
     static func eqMatchBands(srcURL: URL, refURL: URL, bands: Int = 8) -> MojoEQMatch? {
@@ -251,17 +269,36 @@ enum SwiftMojoAnalyzer {
                 x += Array(repeating: 0, count: max(0, nFFT - n))
                 var win = [Float](repeating: 0, count: nFFT); vDSP_hann_window(&win, vDSP_Length(nFFT), Int32(vDSP_HANN_NORM))
                 vDSP_vmul(x, 1, win, 1, &x, 1, vDSP_Length(nFFT))
-                var re = [Float](repeating: 0, count: nFFT/2), im = re
-                var split = DSPSplitComplex(realp: &re, imagp: &im)
+                var re = [Float](repeating: 0, count: nFFT/2), im = [Float](repeating: 0, count: nFFT/2)
                 let setup = vDSP_DFT_zop_CreateSetup(nil, vDSP_Length(nFFT), .FORWARD)!
                 defer { vDSP_DFT_DestroySetup(setup) }
-                vDSP_ctoz(UnsafePointer<DSPComplex>(OpaquePointer(x)), 2, &split, 1, vDSP_Length(nFFT/2))
-                vDSP_DFT_Execute(setup, split.realp, split.imagp, split.realp, split.imagp)
+                
+                // Use withUnsafeMutableBufferPointer for pointer lifetime safety
                 var mag = [Float](repeating: 0, count: nFFT/2)
-                vDSP_zvabs(&split, 1, &mag, 1, vDSP_Length(nFFT/2))
-                var one: Float = 1e-9; vDSP_vsadd(mag, 1, &one, &mag, 1, vDSP_Length(nFFT/2))
                 var logmag = [Float](repeating: 0, count: nFFT/2)
+                var one: Float = 1e-9
+                
+                re.withUnsafeMutableBufferPointer { reBuf in
+                    im.withUnsafeMutableBufferPointer { imBuf in
+                        var split = DSPSplitComplex(realp: reBuf.baseAddress!, imagp: imBuf.baseAddress!)
+                        
+                        // Safe conversion from array to raw bytes
+                        x.withUnsafeBytes { rawBuf in
+                            let complexPtr = rawBuf.baseAddress!.assumingMemoryBound(to: DSPComplex.self)
+                            vDSP_ctoz(complexPtr, 2, &split, 1, vDSP_Length(nFFT/2))
+                        }
+                        
+                        vDSP_DFT_Execute(setup, split.realp, split.imagp, split.realp, split.imagp)
+                        
+                        // Calculate magnitude while split pointers are still valid
+                        vDSP_zvabs(&split, 1, &mag, 1, vDSP_Length(nFFT/2))
+                    }
+                }
+                
+                // Post-processing after pointer work is done
+                vDSP_vsadd(mag, 1, &one, &mag, 1, vDSP_Length(nFFT/2))
                 vDSP_vdbcon(mag, 1, &one, &logmag, 1, vDSP_Length(nFFT/2), 0)
+                
                 let df = Float(sr)/Float(nFFT)
                 return ((0..<nFFT/2).map{ Float($0)*df }, logmag, sr)
             }
@@ -303,4 +340,15 @@ enum SwiftMojoAnalyzer {
 
 fileprivate extension Array {
     func clampedCount(_ n: Int) -> Int { Swift.max(1, Swift.min(self.count, n)) }
+}
+
+// Helper for geometric mean calculation
+private func geometricMean(_ a: [Float]) -> Float {
+    var sum: Float = 0
+    var count: Float = 0
+    for v in a where v > 0 {
+        sum += logf(v)
+        count += 1
+    }
+    return count > 0 ? expf(sum / count) : 0
 }

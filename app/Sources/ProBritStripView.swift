@@ -81,13 +81,17 @@ struct ProBritStripView: View {
                         HStack(spacing: 100) {
                             // Switches
                             VStack {
-                                Toggle("HP", isOn: $switchValues["hp"]!)
+                                Toggle("HP", isOn: Binding(
+                                    get: { switchValues["hp", default: false] },
+                                    set: { switchValues["hp"] = $0; updateParams() }
+                                ))
                                     .toggleStyle(SwitchToggleStyle(tint: PMXPalette.mojoBlue))
-                                    .onChange(of: switchValues["hp"]!) { _ in updateParams() }
                                 
-                                Toggle("TP", isOn: $switchValues["tp"]!)
+                                Toggle("TP", isOn: Binding(
+                                    get: { switchValues["tp", default: false] },
+                                    set: { switchValues["tp"] = $0; updateParams() }
+                                ))
                                     .toggleStyle(SwitchToggleStyle(tint: PMXPalette.mojoRed))
-                                    .onChange(of: switchValues["tp"]!) { _ in updateParams() }
                             }
                             
                             // Interp mode selector
