@@ -26,5 +26,42 @@ public struct ProcessorParams: Codable, Equatable {
     public var mode:       Int = 1
 }
 
-public struct MojoEQBand: Codable, Equatable { public var lo: Float; public var hi: Float; public var gain_dB: Float }
-public struct MojoEQMatch: Codable, Equatable { public var bands: [MojoEQBand] }
+public struct MojoEQBand: Codable, Equatable {
+    public var lo: Float
+    public var hi: Float
+    public var gain_dB: Float
+    
+    public init(lo: Float, hi: Float, gain_dB: Float) {
+        self.lo = lo
+        self.hi = hi
+        self.gain_dB = gain_dB
+    }
+}
+
+public struct MojoEQMatch: Codable, Equatable {
+    public var bands: [MojoEQBand]
+    
+    public init(bands: [MojoEQBand]) {
+        self.bands = bands
+    }
+}
+
+public struct MojoRecommendation: Codable, Equatable {
+    public var interpMode: String
+    public var drive: Float
+    public var saturation: Float
+    public var character: Float
+    public var presence: Float
+    public var mix: Float
+    public var output: Float
+    
+    public init(interpMode: String, drive: Float, saturation: Float, character: Float, presence: Float, mix: Float, output: Float) {
+        self.interpMode = interpMode
+        self.drive = drive
+        self.saturation = saturation
+        self.character = character
+        self.presence = presence
+        self.mix = mix
+        self.output = output
+    }
+}

@@ -1,6 +1,32 @@
 import SwiftUI
+import Foundation
 
-struct MojoMacro: View {
+enum MojoMacro {
+    static func applyAppDecides(_ v: Double) -> ProcessorParams {
+        var p = ProcessorParams()
+        p.drive      = Float(pow(v, 0.9))
+        p.saturation = Float(min(1, pow(v, 1.1) * 0.85))
+        p.character  = Float(0.35 + 0.55 * v)
+        p.presence   = Float(0.25 + 0.55 * v)
+        p.mix        = 1.0
+        p.output     = 0.0
+        p.interpMode = v < 0.33 ? .liveHB4x : (v < 0.66 ? .transientSpline4x : .hqSinc8x)
+        return p
+    }
+
+    static func applyStealMacro(_ v: Double, base: ProcessorParams) -> ProcessorParams {
+        var p = base
+        p.drive      = base.drive      * Float(v)
+        p.saturation = base.saturation * Float(v)
+        p.character  = (0.3 + base.character * 0.7) * Float(v)
+        p.presence   = (0.2 + base.presence   * 0.8) * Float(v)
+        p.mix        = 1.0
+        p.output     = 0.0
+        return p
+    }
+}
+
+struct MojoMacroView: View {
     @Binding var house: Bool
     @State private var curve: [CGPoint] = []
     

@@ -1,25 +1,23 @@
 import Foundation
 import AVFoundation
+import Accelerate
 
 /// Mock implementation of the SwiftMojoAnalyzer for CI builds
 enum SwiftMojoAnalyzer {
-    
-    struct MojoRecommendation {
-        var drive: Float = 0.5
-        var character: Float = 0.5
-        var saturation: Float = 0.5
-        var presence: Float = 0.5
-        var mix: Float = 1.0
-        var output: Float = 0.0
-        var interpMode: String = "liveHB4x"
-    }
     
     static func separateHPSS(url: URL) throws -> ([Float], [Float], Double) {
         // Mock implementation that returns empty arrays
         return ([], [], 44100.0)
     }
     
-    static func features(from harmonic: [Float], sr: Double) -> [String: Double] {
+    static func features(from y: [Float], sr: Double) -> [String: Double] {
+        let n = y.count
+        
+        // FIX: peak magnitude using Accelerate C API (Swift 6 friendly)
+        var peak: Float = 0
+        vDSP_maxmgv(y, 1, &peak, vDSP_Length(n))
+        
+        // For mock implementation, just return sample values
         return [
             "spectralCentroid": 1200.0,
             "spectralSpread": 800.0,
@@ -30,56 +28,71 @@ enum SwiftMojoAnalyzer {
     }
     
     static func recommend(from features: [String: Double], part: String) -> MojoRecommendation {
-        var rec = MojoRecommendation()
+        // Create recommendation using the SharedTypes version
+        var interpMode = "liveHB4x"
+        var drive: Float = 0.5
+        var character: Float = 0.5
+        var saturation: Float = 0.5
+        var presence: Float = 0.5
         
         // Different presets based on instrument type
         switch part.lowercased() {
         case "bass":
-            rec.drive = 0.6
-            rec.character = 0.7
-            rec.saturation = 0.4
-            rec.presence = 0.3
-            rec.interpMode = "hqSinc8x"
+            drive = 0.6
+            character = 0.7
+            saturation = 0.4
+            presence = 0.3
+            interpMode = "hqSinc8x"
         case "drums":
-            rec.drive = 0.5
-            rec.character = 0.4
-            rec.saturation = 0.6
-            rec.presence = 0.7
-            rec.interpMode = "transientSpline4x"
+            drive = 0.5
+            character = 0.4
+            saturation = 0.6
+            presence = 0.7
+            interpMode = "transientSpline4x"
         case "vocal":
-            rec.drive = 0.4
-            rec.character = 0.6
-            rec.saturation = 0.5
-            rec.presence = 0.6
-            rec.interpMode = "adaptive"
+            drive = 0.4
+            character = 0.6
+            saturation = 0.5
+            presence = 0.6
+            interpMode = "adaptive"
         default:
-            rec.drive = 0.5
-            rec.character = 0.5
-            rec.saturation = 0.5
-            rec.presence = 0.5
-            rec.interpMode = "liveHB4x"
+            drive = 0.5
+            character = 0.5
+            saturation = 0.5
+            presence = 0.5
+            interpMode = "liveHB4x"
         }
         
-        return rec
+        return MojoRecommendation(
+            interpMode: interpMode,
+            drive: drive,
+            saturation: saturation,
+            character: character,
+            presence: presence,
+            mix: 1.0,
+            output: 0.0
+        )
     }
     
-    static func eqMatchBands(srcURL: URL, refURL: URL) -> MojoEQMatch? {
-        // Mock EQ match
+    // FIX: eqMatchBands should return SharedTypes MojoEQMatch and build bands accordingly
+    static func eqMatchBands(srcURL: URL, refURL: URL, bands: Int = 8) -> MojoEQMatch? {
+        // Mock EQ match with correct MojoEQBand structure from SharedTypes
         return MojoEQMatch(bands: [
-            MojoEQBand(freq: 100, gain: 2.0, q: 1.0),
-            MojoEQBand(freq: 500, gain: -1.5, q: 1.0),
-            MojoEQBand(freq: 2000, gain: 3.0, q: 1.0),
-            MojoEQBand(freq: 8000, gain: -2.0, q: 1.0)
+            MojoEQBand(lo: 50, hi: 200, gain_dB: 2.0),
+            MojoEQBand(lo: 200, hi: 800, gain_dB: -1.5),
+            MojoEQBand(lo: 800, hi: 3000, gain_dB: 3.0),
+            MojoEQBand(lo: 3000, hi: 15000, gain_dB: -2.0)
         ])
     }
-}
-
-struct MojoEQBand {
-    var freq: Float
-    var gain: Float
-    var q: Float
-}
-
-struct MojoEQMatch {
-    var bands: [MojoEQBand]
+    
+    // Helper for geometric mean calculation
+    static func geometricMean(_ a: [Float]) -> Float {
+        var sum: Float = 0
+        var count: Float = 0
+        for v in a where v > 0 {
+            sum += logf(v)
+            count += 1
+        }
+        return count > 0 ? expf(sum / count) : 0
+    }
 }
