@@ -59,6 +59,19 @@ jobs:
       # Clean derived data to remove stale file warnings
       - name: Clean derived data
         run: rm -rf app/build
+      
+      # Always regenerate Xcode project using XcodeGen
+      - name: Generate Xcode project (XcodeGen)
+        run: |
+          set -euo pipefail
+          brew install xcodegen || true
+          if [ -f app/project.yml ]; then
+            echo "Generating Xcode project from app/project.yml"
+            (cd app && xcodegen generate)
+            echo "XcodeGen project generation completed"
+          else
+            echo "⚠️ app/project.yml not found; skipping XcodeGen"
+          fi
 
       # Build App with xcodebuild; fallback to target when no schemes found
       - name: Build App (auto-recover project format)
@@ -219,6 +232,8 @@ jobs:
 
   plugin:
     runs-on: macos-14
+    needs: app
+    if: needs.app.result == 'success'
     steps:
       - uses: actions/checkout@v4
 
@@ -334,7 +349,7 @@ jobs:
           RES="failed_artifacts/app/app/build/App.xcresult"
           if [ -d "$RES" ]; then
             echo "----- xcresult error summaries -----"
-            xcrun xcresulttool get --path "$RES" --format json \
+            xcrun xcresulttool get --legacy --path "$RES" --format json \
               | jq -r '
                   # Try the canonical error summaries
                   (.issues.errorSummaries // []) as $errs
@@ -368,7 +383,7 @@ jobs:
                 ' || true
 
             echo "----- xcresult warnings (first 10) -----"
-            xcrun xcresulttool get --path "$RES" --format json \
+            xcrun xcresulttool get --legacy --path "$RES" --format json \
               | jq -r '
                   (.issues.warningSummaries // []) | .[0:10][]
                   | "- " + (

@@ -44,6 +44,7 @@ targets:
           - StealMojoSwift.swift
         excludes:
           - BritStripFaceplate.swift
+          - ProcessorParams.swift  # Legacy file replaced by SharedTypes.swift
       # Assets
       - path: Assets.xcassets
         type: folder
