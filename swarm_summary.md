@@ -6,7 +6,7 @@
 
 ## Hints
 - app log bytes: 67950
-- plugin log bytes: 5007
+- plugin log bytes: 2389
 
 
 changes_staged = YES; actions_ran = no
