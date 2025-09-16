@@ -1,6 +1,7 @@
 
 import SwiftUI
 import AVFoundation
+import SharedTypes // Explicitly import SharedTypes for ProcessorParams
 
 // macOS 11-safe prominent button style
 struct PMXProminent: ButtonStyle {
