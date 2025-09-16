@@ -1,6 +1,19 @@
 #pragma once
 
-#include <JuceHeader.h>
+// Include JUCE modules directly instead of using JuceHeader.h
+#include "../../JUCE/modules/juce_audio_basics/juce_audio_basics.h"
+#include "../../JUCE/modules/juce_audio_devices/juce_audio_devices.h"
+#include "../../JUCE/modules/juce_audio_formats/juce_audio_formats.h"
+#include "../../JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client.h"
+#include "../../JUCE/modules/juce_audio_processors/juce_audio_processors.h"
+#include "../../JUCE/modules/juce_audio_utils/juce_audio_utils.h"
+#include "../../JUCE/modules/juce_core/juce_core.h"
+#include "../../JUCE/modules/juce_data_structures/juce_data_structures.h"
+#include "../../JUCE/modules/juce_dsp/juce_dsp.h"
+#include "../../JUCE/modules/juce_events/juce_events.h"
+#include "../../JUCE/modules/juce_graphics/juce_graphics.h"
+#include "../../JUCE/modules/juce_gui_basics/juce_gui_basics.h"
+#include "../../JUCE/modules/juce_gui_extra/juce_gui_extra.h"
 
 // Forward declarations
 class Oversampler;
