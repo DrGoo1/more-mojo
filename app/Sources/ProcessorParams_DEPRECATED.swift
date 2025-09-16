@@ -1,3 +1,4 @@
+// DEPRECATED
 // ProcessorParams.swift
 // Redirect to SharedTypes for better organization
 

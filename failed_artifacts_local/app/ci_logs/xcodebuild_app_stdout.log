@@ -1,0 +1,14 @@
+SwiftCompile normal arm64 SharedTypes.swift
+    cd /Volumes/MP 1/MoreMojo/ChatGPT/app
+    export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name MoreMojoStudio -incremental -emit-dependencies -emit-module -emit-module-path /Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Debug/MoreMojoStudio.build/Objects-normal/arm64/SharedTypes~partial.swiftmodule -output-file-map /Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Debug/MoreMojoStudio.build/SharedTypes-OutputFileMap.json -parse-as-library -c /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/SharedTypes.swift -serialize-diagnostics -emit-object -o /Volumes/MP 1/MoreMojo/ChatGPT/app/build/Build/Intermediates.noindex/MoreMojoStudio.build/Debug/MoreMojoStudio.build/Objects-normal/arm64/SharedTypes.o
+SwiftCompile normal x86_64 Compiling\ AnalogInterpolator+Configure.swift,\ AnalogInterpolator.swift,\ AppState.swift,\ AudioEngine.swift,\ AudioProcessingView.swift,\ ContentView.swift,\ FaceplateOverlay.swift,\ ImportFixes.swift,\ Interpolators.swift,\ MojoMacro.swift,\ MojoMakerView.swift,\ MojoWheel.swift,\ MoreMojoAssets.swift,\ MoreMojoContainer.swift,\ MoreMojoSimpleView.swift,\ MoreMojoStudioApp.swift,\ PMXPalette.swift,\ PhotorealControls.swift,\ ProBritStripView.swift,\ ProcessorParams+Ext.swift,\ Recommendations.swift,\ RoundKnob.swift,\ SharedTypes.swift,\ StealMojoPanel_SwiftOnly.swift,\ StealMojoSwift.swift,\ SwiftMojoAnalyzer.swift,\ TopConsumerView.swift,\ UIMode.swift,\ WaveformSimple.swift
+
+While evaluating request TypeCheckSourceFileRequest(source_file "/Users/runner/work/more-mojo/more-mojo/app/Sources/StealMojoPanel_SwiftOnly.swift")
+While type-checking statement var params = ProcessorParams()
+cannot find type 'ProcessorParams' in scope
+
+SwiftCompile normal arm64 StealMojoPanel_SwiftOnly.swift
+/Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/StealMojoPanel_SwiftOnly.swift:102:27: error: cannot find type 'ProcessorParams' in scope
+                var params = ProcessorParams()
+                            ^~~~~~~~~~~~~~
