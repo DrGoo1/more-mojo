@@ -7,7 +7,7 @@ import struct ProcessorParams.MojoEQBand
 import struct ProcessorParams.MojoEQMatch
 import struct ProcessorParams.MojoRecommendation
 import struct ProcessorParams.ProcessorParams
-import enum ProcessorParams.InterpMode
+import enum InterpMode
 
 // MARK: - Swift-only audio analysis implementation
 
