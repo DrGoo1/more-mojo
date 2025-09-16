@@ -1,12 +1,13 @@
 # Swarm decisions
 - ProjectAgent: no
 - SchemeAgent: no
-- SwiftAgent: no
+- SwiftAgent: YES
 - CMakeAgent: no
 
 ## Hints
-- app log bytes: 67950
-- plugin log bytes: 5007
+- app log bytes: 4406
+- plugin log bytes: 0
 
+- Ran SwiftAgent
 
-changes_staged = YES; actions_ran = no
+changes_staged = no; actions_ran = YES

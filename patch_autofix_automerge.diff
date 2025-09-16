@@ -1,0 +1,55 @@
+*** a/.github/workflows/build_with_logs.yml
+--- b/.github/workflows/build_with_logs.yml
+@@
+   autofix:
+     if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
+     runs-on: macos-14
+     needs: [app, plugin]
++    permissions:
++      contents: write
++      pull-requests: write
+     steps:
+       - uses: actions/checkout@v4
+         with:
+-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
++          # Check out a branch (not a detached SHA) so CPR can open a PR
++          ref: ${{ github.head_ref || github.ref_name }}
+@@
+       - name: Create PR with fixes
+         if: steps.diff.outputs.changed == 'true'
+         id: create_pr
+         uses: peter-evans/create-pull-request@v6
+         with:
+           title: "Swarm Autofix: CI build cleanup"
+           body: |
+             Automated fixes after failed CI run.
+             See swarm summary in the build job.
+           branch: "swarm/autofix-${{ github.run_id }}"
+           labels: "autofix"
+           commit-message: "Swarm Autofix: CI build cleanup"
++          # When checked out on a commit instead of a branch, base is required.
++          base: ${{ github.event.pull_request.base.ref || github.ref_name }}
+ 
+-      - name: Log PR link
++      - name: Log PR link
+         if: steps.diff.outputs.changed == 'true'
+         run: |
+           echo "PR #:  ${{ steps.create_pr.outputs.pull-request-number }}"
+           echo "PR URL: ${{ steps.create_pr.outputs.pull-request-url }}"
++
++      # (Optional) Auto-approve if your protection rules require a review.
++      # Provide a PAT with write access as secrets.BOT_TOKEN or leave this step out.
++      - name: Approve PR (optional)
++        if: steps.diff.outputs.changed == 'true' && secrets.BOT_TOKEN
++        uses: peter-evans/approve-pull-request@v5
++        with:
++          token: ${{ secrets.BOT_TOKEN }}
++          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
++
++      # Enable GitHub auto-merge (squash) so it merges itself once checks are green
++      - name: Enable auto-merge
++        if: steps.diff.outputs.changed == 'true'
++        uses: peter-evans/enable-pull-request-automerge@v2
++        with:
++          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
++          merge-method: squash

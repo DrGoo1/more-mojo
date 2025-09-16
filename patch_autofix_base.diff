@@ -1,0 +1,30 @@
+*** a/.github/workflows/build_with_logs.yml
+--- b/.github/workflows/build_with_logs.yml
+@@
+   autofix:
+     if: ${{ always() && (needs.app.result == 'failure' || needs.plugin.result == 'failure') }}
+     runs-on: macos-14
+     needs: [app, plugin]
+     steps:
+-      - uses: actions/checkout@v4
+-        with:
+-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
++      - uses: actions/checkout@v4
++        with:
++          # Checkout the branch, not a detached SHA
++          ref: ${{ github.head_ref || github.ref_name }}
+@@
+       - name: Create PR with fixes
+         if: steps.diff.outputs.changed == 'true'
+         id: create_pr
+         uses: peter-evans/create-pull-request@v6
+         with:
+           title: "Swarm Autofix: CI build cleanup"
+           body: |
+             Automated fixes after failed CI run.
+             See swarm summary in the build job.
+           branch: "swarm/autofix-${{ github.run_id }}"
+           labels: "autofix"
+           commit-message: "Swarm Autofix: CI build cleanup"
++          # Explicit base is required when the checkout is on a detached HEAD
++          base: ${{ github.event.pull_request.base.ref || github.ref_name }}
