@@ -24,6 +24,7 @@ public struct ProcessorParams: Codable, Equatable {
     public var character: Float = 0.50
     public var saturation: Float = 0.45
     public var presence: Float = 0.50
+    public var warmth: Float = 0.60
     public var mix: Float = 1.00
     public var interpMode: InterpMode = .liveHB4x
     public var mode: Int = 1
