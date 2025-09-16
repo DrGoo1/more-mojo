@@ -1,7 +1,6 @@
 
 import SwiftUI
 import AVFoundation
-import SharedTypes // Explicitly import SharedTypes for ProcessorParams
 
 // macOS 11-safe prominent button style
 struct PMXProminent: ButtonStyle {
@@ -82,19 +81,20 @@ struct StealMojoPanel_SwiftOnly: View {
             .padding(16)
     }
 
-    private func chooseRef() {
+    func chooseRef() {
         let p = NSOpenPanel(); p.allowedContentTypes = [.audio]; p.allowsMultipleSelection = false
         if p.runModal() == .OK { refURL = p.url }
     }
-    private func chooseSrc() {
+    
+    func chooseSrc() {
         let p = NSOpenPanel(); p.allowedContentTypes = [.audio]; p.allowsMultipleSelection = false
         if p.runModal() == .OK { srcURL = p.url }
     }
 
-    private func analyze() {
+    func analyze() {
         guard let ref = refURL else { return }
         status = "Analyzing…"
-        DispatchQueue.global(qos: .userInitiated).async(execute: {
+        DispatchQueue.global(qos: .userInitiated).async {
             do {
                 // Swift-only HPSS separation + features
                 let (harm, _, sr) = try SwiftMojoAnalyzer.separateHPSS(url: ref)
@@ -122,7 +122,7 @@ struct StealMojoPanel_SwiftOnly: View {
             } catch {
                 DispatchQueue.main.async { self.status = "Analysis failed: \(error.localizedDescription)" }
             }
-        })
+        }
     }
 }
 
