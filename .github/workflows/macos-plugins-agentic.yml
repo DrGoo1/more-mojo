@@ -37,7 +37,7 @@ jobs:
           } | tee "$LOG_DIR/preflight.txt"
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app || xcodebuild -version
+        run: sudo xcode-select -s /Applications/Xcode_26.0.app || xcodebuild -version
 
       - name: Resolve SPM (if workspace present)
         if: ${{ env.WORKSPACE != '' }}
