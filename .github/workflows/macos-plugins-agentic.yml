@@ -1,0 +1,258 @@
+name: macOS + AU/VST3 Agentic CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    env:
+      # ---- customize these to your repo ----
+      WORKSPACE: App.xcworkspace        # or set to "" if you use an .xcodeproj only
+      SCHEME: App                       # macOS app / harness scheme, if you have one
+      CONFIG: Debug
+      # -------------------------------------
+      ARTIFACT_ROOT: failed_artifacts/macos
+      LOG_DIR: failed_artifacts/macos/ci_logs
+      BUILD_DIR: failed_artifacts/macos/build
+      XCRESULT_DIR: failed_artifacts/macos/build/App.xcresult
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight
+        shell: bash
+        run: |
+          mkdir -p "$LOG_DIR" "$BUILD_DIR"
+          {
+            echo "=== macOS preflight ==="
+            echo "workspace: ${WORKSPACE:-'(none)'}"
+            echo "scheme: $SCHEME"
+            echo "config: $CONFIG"
+          } | tee "$LOG_DIR/preflight.txt"
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app || xcodebuild -version
+
+      - name: Resolve SPM (if workspace present)
+        if: ${{ env.WORKSPACE != '' }}
+        run: xcodebuild -resolvePackageDependencies -workspace "$WORKSPACE" -scheme "$SCHEME"
+
+      - name: Build macOS app / harness (xcodebuild)
+        id: xcodebuild
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          if [[ -n "$WORKSPACE" ]]; then
+            xcodebuild \
+              -workspace "$WORKSPACE" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -destination 'platform=macOS' \
+              -derivedDataPath "$BUILD_DIR" \
+              -resultBundlePath "$XCRESULT_DIR" \
+              build | tee "$LOG_DIR/xcodebuild_stdout.log"
+          else
+            # fallback if you only have an .xcodeproj committed
+            PROJ=$(ls -1 *.xcodeproj | head -n1)
+            xcodebuild \
+              -project "$PROJ" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -destination 'platform=macOS' \
+              -derivedDataPath "$BUILD_DIR" \
+              -resultBundlePath "$XCRESULT_DIR" \
+              build | tee "$LOG_DIR/xcodebuild_stdout.log"
+          fi
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Install CMake (if missing)
+        shell: bash
+        run: |
+          command -v cmake >/dev/null || brew install cmake
+
+      - name: Configure VST3 via CMake (Xcode generator)
+        continue-on-error: true
+        run: |
+          cmake -B plugin_build -S . -GXcode -DCMAKE_BUILD_TYPE="$CONFIG" 2>&1 | tee "$LOG_DIR/cmake_configure.log"
+
+      - name: Build VST3 (CMake)
+        id: cmake_build
+        continue-on-error: true
+        run: |
+          cmake --build plugin_build --config "$CONFIG" 2>&1 | tee "$LOG_DIR/cmake_build.log"
+
+      - name: Collect plugin artifacts
+        shell: bash
+        run: |
+          mkdir -p "$ARTIFACT_ROOT/plugins"
+          # Common output locations (adjust if your CMake outputs elsewhere)
+          find plugin_build -name "*.vst3" -print -exec cp -R {} "$ARTIFACT_ROOT/plugins/" \; || true
+          find plugin_build -name "*.component" -print -exec cp -R {} "$ARTIFACT_ROOT/plugins/" \; || true
+          # Also check JUCE-style DerivedData product dirs
+          find "$BUILD_DIR" -name "*.vst3" -print -exec cp -R {} "$ARTIFACT_ROOT/plugins/" \; || true
+          find "$BUILD_DIR" -name "*.component" -print -exec cp -R {} "$ARTIFACT_ROOT/plugins/" \; || true
+
+      - name: Upload raw artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-plugin-build-artifacts
+          path: |
+            failed_artifacts/macos/
+            plugin_build/**/*
+            !plugin_build/**/.git/**
+
+  analyze:
+    runs-on: macos-14
+    needs: build
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-plugin-build-artifacts
+          path: artifacts
+
+      - name: Agentic analyzer
+        id: analyze
+        shell: bash
+        run: |
+          python3 - <<'PY'
+import json, os, re, subprocess, textwrap, glob
+
+ROOT = "artifacts"
+LOG_DIR = os.path.join(ROOT, "failed_artifacts/macos/ci_logs")
+XCRESULT = os.path.join(ROOT, "failed_artifacts/macos/build/App.xcresult")
+
+def read(p):
+    try:
+        with open(p, "r", errors="ignore") as f: return f.read()
+    except Exception:
+        return ""
+
+def run_json(cmd):
+    try:
+        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        return json.loads(out)
+    except Exception:
+        return {}
+
+def grep_errors(text, limit=20):
+    hits = []
+    for line in text.splitlines():
+        # Swift/ObjC/C++ compile & linker errors
+        if re.search(r":\d+:\d+:\s*(error|fatal error):", line): hits.append(line)
+        elif re.search(r"(error: linker command failed with exit code)|(Undefined symbols for architecture)|(ld: error:)", line): hits.append(line)
+        elif "error:" in line and any(x in line for x in [".swift", ".mm", ".m", ".cpp", ".cc", ".c"]): hits.append(line)
+        if len(hits) >= limit: break
+    return hits
+
+def xcresult_summary(path):
+    if not os.path.isdir(path): return {}
+    obj = run_json(["xcrun","xcresulttool","get","--path",path,"--format","json"])
+    issues = {"errorCount":0,"warningCount":0}
+    top = []
+    try:
+        acts = obj["actions"]["_values"]
+    except Exception:
+        return {"issues":issues,"topErrors":top}
+    for a in acts:
+        iss = a.get("actionResult",{}).get("issues",{})
+        errors = iss.get("errorSummaries",{}).get("_values",[])
+        warnings = iss.get("warningSummaries",{}).get("_values",[])
+        issues["errorCount"] += len(errors)
+        issues["warningCount"] += len(warnings)
+        for e in errors[:10]:
+            msg = e.get("message",{}).get("_value","")
+            loc = e.get("documentLocationInCreatingWorkspace",{}).get("url","")
+            top.append((msg,loc))
+    return {"issues":issues,"topErrors":top}
+
+parts = []
+
+# Preflight
+pf = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/preflight.txt"))
+if pf:
+    parts.append("**Preflight**\n\n```\n"+pf.strip()+"\n```")
+
+# xcodebuild log
+xb = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/xcodebuild_stdout.log"))
+if xb:
+    errs = grep_errors(xb, limit=15)
+    parts.append("**xcodebuild errors (top)**\n" + ("```\n" + "\n".join(errs) + "\n```" if errs else "_No standard compiler/linker error lines matched._"))
+
+# CMake logs
+cfg = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/cmake_configure.log"))
+bld = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/cmake_build.log"))
+if cfg:
+    c_errs = [l for l in cfg.splitlines() if "error" in l.lower() or "not found" in l.lower()][:15]
+    parts.append("**CMake configure (top issues)**\n" + ("```\n" + "\n".join(c_errs) + "\n```" if c_errs else "_No obvious configure errors._"))
+if bld:
+    b_errs = grep_errors(bld, limit=15)
+    if not b_errs:
+        # also scan for cmake build fails not caught by file:line pattern
+        b_errs = [l for l in bld.splitlines() if re.search(r"\b(error|FAILED|not found|undefined)\b", l, re.I)][:15]
+    parts.append("**CMake build (top issues)**\n" + ("```\n" + "\n".join(b_errs) + "\n```" if b_errs else "_No obvious build errors._"))
+
+# xcresult
+xc = xcresult_summary(XCRESULT)
+if xc:
+    parts.append(f"**.xcresult:** {xc['issues'].get('errorCount',0)} errors, {xc['issues'].get('warningCount',0)} warnings.")
+    if xc["topErrors"]:
+        parts.append("**Top .xcresult errors**")
+        for msg,loc in xc["topErrors"]:
+            line = f"- {msg}"
+            if loc: line += f"\n  - `{loc}`"
+            parts.append(line)
+
+# Artifact presence
+vst3 = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/plugins","*.vst3"))
+comp = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/plugins","*.component"))
+app  = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/build","**","*.app"), recursive=True)
+
+parts.append("**Artifacts found**")
+parts.append(f"- VST3: {len(vst3)} {'✅' if vst3 else '❌'}")
+for p in vst3[:6]: parts.append(f"  - `{os.path.relpath(p, ROOT)}`")
+parts.append(f"- AU .component: {len(comp)} {'✅' if comp else '❌'}")
+for p in comp[:6]: parts.append(f"  - `{os.path.relpath(p, ROOT)}`")
+parts.append(f"- macOS .app: {len(app)} {'✅' if app else '❌'}")
+
+md = "\n\n".join(parts).strip()
+os.makedirs("out", exist_ok=True)
+with open("out/summary.md","w") as f: f.write(md)
+print(md)
+PY
+
+      - name: Upload analyzer summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-agentic-summary
+          path: out/summary.md
+
+      - name: Post summary to job
+        if: always()
+        run: |
+          echo "### macOS Plugin Build Triage" >> $GITHUB_STEP_SUMMARY
+          cat out/summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('out/summary.md', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "## macOS Plugin Build Triage\n\n" + body
+            });
