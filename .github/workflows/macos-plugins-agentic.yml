@@ -5,6 +5,7 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ "**" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -120,115 +121,165 @@ jobs:
           name: macos-plugin-build-artifacts
           path: artifacts
 
-      - name: Agentic analyzer
-        id: analyze
-        shell: bash
+      - name: Extract xcresult info
+        id: xcresult_info
+        continue-on-error: true
         run: |
-          python3 - <<'PY'
-import json, os, re, subprocess, textwrap, glob
+          RESULT_DIR="artifacts/failed_artifacts/macos/build/App.xcresult"
+          if [ -d "$RESULT_DIR" ]; then
+            echo "Found xcresult directory"
+            # Try modern form, fall back to legacy
+            if xcrun xcresulttool get --path "$RESULT_DIR" --format json > xcresult_data.json 2>/dev/null; then
+              echo "Used modern xcresulttool"
+            elif xcrun xcresulttool get --legacy --path "$RESULT_DIR" --format json > xcresult_data.json 2>/dev/null; then
+              echo "Used legacy xcresulttool"
+            else
+              echo "xcresulttool could not process result bundle"
+              echo "{}" > xcresult_data.json
+            fi
+          else
+            echo "No xcresult directory found"
+            echo "{}" > xcresult_data.json
+          fi
 
-ROOT = "artifacts"
-LOG_DIR = os.path.join(ROOT, "failed_artifacts/macos/ci_logs")
-XCRESULT = os.path.join(ROOT, "failed_artifacts/macos/build/App.xcresult")
-
-def read(p):
-    try:
-        with open(p, "r", errors="ignore") as f: return f.read()
-    except Exception:
-        return ""
-
-def run_json(cmd):
-    try:
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        return json.loads(out)
-    except Exception:
-        return {}
-
-def grep_errors(text, limit=20):
-    hits = []
-    for line in text.splitlines():
-        # Swift/ObjC/C++ compile & linker errors
-        if re.search(r":\d+:\d+:\s*(error|fatal error):", line): hits.append(line)
-        elif re.search(r"(error: linker command failed with exit code)|(Undefined symbols for architecture)|(ld: error:)", line): hits.append(line)
-        elif "error:" in line and any(x in line for x in [".swift", ".mm", ".m", ".cpp", ".cc", ".c"]): hits.append(line)
-        if len(hits) >= limit: break
-    return hits
-
-def xcresult_summary(path):
-    if not os.path.isdir(path): return {}
-    obj = run_json(["xcrun","xcresulttool","get","--path",path,"--format","json"])
-    issues = {"errorCount":0,"warningCount":0}
-    top = []
-    try:
-        acts = obj["actions"]["_values"]
-    except Exception:
-        return {"issues":issues,"topErrors":top}
-    for a in acts:
-        iss = a.get("actionResult",{}).get("issues",{})
-        errors = iss.get("errorSummaries",{}).get("_values",[])
-        warnings = iss.get("warningSummaries",{}).get("_values",[])
-        issues["errorCount"] += len(errors)
-        issues["warningCount"] += len(warnings)
-        for e in errors[:10]:
-            msg = e.get("message",{}).get("_value","")
-            loc = e.get("documentLocationInCreatingWorkspace",{}).get("url","")
-            top.append((msg,loc))
-    return {"issues":issues,"topErrors":top}
-
-parts = []
-
-# Preflight
-pf = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/preflight.txt"))
-if pf:
-    parts.append("**Preflight**\n\n```\n"+pf.strip()+"\n```")
-
-# xcodebuild log
-xb = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/xcodebuild_stdout.log"))
-if xb:
-    errs = grep_errors(xb, limit=15)
-    parts.append("**xcodebuild errors (top)**\n" + ("```\n" + "\n".join(errs) + "\n```" if errs else "_No standard compiler/linker error lines matched._"))
-
-# CMake logs
-cfg = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/cmake_configure.log"))
-bld = read(os.path.join(ROOT,"failed_artifacts/macos/ci_logs/cmake_build.log"))
-if cfg:
-    c_errs = [l for l in cfg.splitlines() if "error" in l.lower() or "not found" in l.lower()][:15]
-    parts.append("**CMake configure (top issues)**\n" + ("```\n" + "\n".join(c_errs) + "\n```" if c_errs else "_No obvious configure errors._"))
-if bld:
-    b_errs = grep_errors(bld, limit=15)
-    if not b_errs:
-        # also scan for cmake build fails not caught by file:line pattern
-        b_errs = [l for l in bld.splitlines() if re.search(r"\b(error|FAILED|not found|undefined)\b", l, re.I)][:15]
-    parts.append("**CMake build (top issues)**\n" + ("```\n" + "\n".join(b_errs) + "\n```" if b_errs else "_No obvious build errors._"))
-
-# xcresult
-xc = xcresult_summary(XCRESULT)
-if xc:
-    parts.append(f"**.xcresult:** {xc['issues'].get('errorCount',0)} errors, {xc['issues'].get('warningCount',0)} warnings.")
-    if xc["topErrors"]:
-        parts.append("**Top .xcresult errors**")
-        for msg,loc in xc["topErrors"]:
-            line = f"- {msg}"
-            if loc: line += f"\n  - `{loc}`"
-            parts.append(line)
-
-# Artifact presence
-vst3 = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/plugins","*.vst3"))
-comp = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/plugins","*.component"))
-app  = glob.glob(os.path.join(ROOT,"failed_artifacts/macos/build","**","*.app"), recursive=True)
-
-parts.append("**Artifacts found**")
-parts.append(f"- VST3: {len(vst3)} {'✅' if vst3 else '❌'}")
-for p in vst3[:6]: parts.append(f"  - `{os.path.relpath(p, ROOT)}`")
-parts.append(f"- AU .component: {len(comp)} {'✅' if comp else '❌'}")
-for p in comp[:6]: parts.append(f"  - `{os.path.relpath(p, ROOT)}`")
-parts.append(f"- macOS .app: {len(app)} {'✅' if app else '❌'}")
-
-md = "\n\n".join(parts).strip()
-os.makedirs("out", exist_ok=True)
-with open("out/summary.md","w") as f: f.write(md)
-print(md)
-PY
+      - name: Generate analysis summary
+        id: analysis
+        run: |
+          cat > analyze.py << 'EOF'
+          import json, os, re, glob
+          
+          # Load xcresult data if available
+          try:
+              with open('xcresult_data.json', 'r') as f:
+                  xcresult_data = json.load(f)
+          except:
+              xcresult_data = {}
+              
+          # Setup paths
+          ROOT = "artifacts"
+          LOG_DIR = os.path.join(ROOT, "failed_artifacts/macos/ci_logs")
+          
+          def read_file(path):
+              try:
+                  with open(path, "r", errors="ignore") as f:
+                      return f.read()
+              except Exception:
+                  return ""
+          
+          def grep_errors(text, limit=20):
+              hits = []
+              for line in text.splitlines():
+                  # Swift/ObjC/C++ compile & linker errors
+                  if re.search(r":\d+:\d+:\s*(error|fatal error):", line):
+                      hits.append(line)
+                  elif re.search(r"(error: linker command failed with exit code)|(Undefined symbols for architecture)|(ld: error:)", line):
+                      hits.append(line)
+                  elif "error:" in line and any(x in line for x in [".swift", ".mm", ".m", ".cpp", ".cc", ".c"]):
+                      hits.append(line)
+                  if len(hits) >= limit:
+                      break
+              return hits
+          
+          def extract_xcresult_issues():
+              issues = {"errorCount": 0, "warningCount": 0}
+              top_errors = []
+              
+              try:
+                  # Extract actions which contain issue info
+                  actions = xcresult_data.get("actions", {}).get("_values", [])
+                  for action in actions:
+                      action_result = action.get("actionResult", {})
+                      action_issues = action_result.get("issues", {})
+                      
+                      # Get errors and warnings
+                      errors = action_issues.get("errorSummaries", {}).get("_values", [])
+                      warnings = action_issues.get("warningSummaries", {}).get("_values", [])
+                      
+                      issues["errorCount"] += len(errors)
+                      issues["warningCount"] += len(warnings)
+                      
+                      # Extract top error details
+                      for error in errors[:10]:
+                          msg = error.get("message", {}).get("_value", "")
+                          loc = error.get("documentLocationInCreatingWorkspace", {}).get("url", "")
+                          top_errors.append((msg, loc))
+              except Exception as e:
+                  print(f"Error extracting xcresult issues: {e}")
+                  
+              return {"issues": issues, "topErrors": top_errors}
+          
+          # Start building summary parts
+          parts = []
+          
+          # Preflight info
+          preflight = read_file(os.path.join(LOG_DIR, "preflight.txt"))
+          if preflight:
+              parts.append("**Preflight**\n\n```\n" + preflight.strip() + "\n```")
+          
+          # Xcodebuild log
+          xcodebuild_log = read_file(os.path.join(LOG_DIR, "xcodebuild_stdout.log"))
+          if xcodebuild_log:
+              errors = grep_errors(xcodebuild_log, limit=15)
+              parts.append("**xcodebuild errors (top)**\n" + 
+                          ("```\n" + "\n".join(errors) + "\n```" if errors else "_No standard compiler/linker error lines matched._"))
+          
+          # CMake logs
+          cmake_config_log = read_file(os.path.join(LOG_DIR, "cmake_configure.log"))
+          if cmake_config_log:
+              config_errors = [l for l in cmake_config_log.splitlines() if "error" in l.lower() or "not found" in l.lower()][:15]
+              parts.append("**CMake configure (top issues)**\n" + 
+                          ("```\n" + "\n".join(config_errors) + "\n```" if config_errors else "_No obvious configure errors._"))
+          
+          cmake_build_log = read_file(os.path.join(LOG_DIR, "cmake_build.log"))
+          if cmake_build_log:
+              build_errors = grep_errors(cmake_build_log, limit=15)
+              if not build_errors:
+                  # Also scan for cmake build fails not caught by file:line pattern
+                  build_errors = [l for l in cmake_build_log.splitlines() 
+                                 if re.search(r"\b(error|FAILED|not found|undefined)\b", l, re.I)][:15]
+              parts.append("**CMake build (top issues)**\n" + 
+                          ("```\n" + "\n".join(build_errors) + "\n```" if build_errors else "_No obvious build errors._"))
+          
+          # xcresult summary
+          xcresult_info = extract_xcresult_issues()
+          if xcresult_info:
+              parts.append(f"**.xcresult:** {xcresult_info['issues'].get('errorCount',0)} errors, {xcresult_info['issues'].get('warningCount',0)} warnings.")
+              if xcresult_info["topErrors"]:
+                  parts.append("**Top .xcresult errors**")
+                  for msg, loc in xcresult_info["topErrors"]:
+                      line = f"- {msg}"
+                      if loc:
+                          line += f"\n  - `{loc}`"
+                      parts.append(line)
+          
+          # Artifact presence
+          vst3_files = glob.glob(os.path.join(ROOT, "failed_artifacts/macos/plugins", "*.vst3"))
+          component_files = glob.glob(os.path.join(ROOT, "failed_artifacts/macos/plugins", "*.component"))
+          app_files = glob.glob(os.path.join(ROOT, "failed_artifacts/macos/build", "**", "*.app"), recursive=True)
+          
+          parts.append("**Artifacts found**")
+          parts.append(f"- VST3: {len(vst3_files)} {'✅' if vst3_files else '❌'}")
+          for path in vst3_files[:6]:
+              parts.append(f"  - `{os.path.relpath(path, ROOT)}`")
+              
+          parts.append(f"- AU .component: {len(component_files)} {'✅' if component_files else '❌'}")
+          for path in component_files[:6]:
+              parts.append(f"  - `{os.path.relpath(path, ROOT)}`")
+              
+          parts.append(f"- macOS .app: {len(app_files)} {'✅' if app_files else '❌'}")
+          for path in app_files[:6]:
+              parts.append(f"  - `{os.path.relpath(path, ROOT)}`")
+          
+          # Write summary
+          summary = "\n\n".join(parts).strip()
+          os.makedirs("out", exist_ok=True)
+          with open("out/summary.md", "w") as f:
+              f.write(summary)
+              
+          print(summary)
+          EOF
+          
+          python3 analyze.py
 
       - name: Upload analyzer summary
         if: always()
