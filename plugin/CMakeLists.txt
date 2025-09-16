@@ -26,7 +26,13 @@ juce_add_plugin(MoreMojoPlugin
     FORMATS AU VST3 Standalone
     PRODUCT_NAME "More Mojo by Umbo Gumbo"
     BUNDLE_ID "com.UmboGumbo.MoreMojoPlugin"
-    COPY_PLUGIN_AFTER_BUILD TRUE)
+    COPY_PLUGIN_AFTER_BUILD TRUE
+
+# Explicitly include source files to ensure createPluginFilter() is found
+target_sources(MoreMojoPlugin PRIVATE
+    Source/PluginProcessor.cpp
+    Source/PluginProcessor.h
+)
 
 # Add necessary modules for plugin
 target_compile_definitions(MoreMojoPlugin
@@ -40,6 +46,7 @@ target_link_libraries(MoreMojoPlugin
         juce::juce_audio_utils
         juce::juce_audio_devices
         juce::juce_dsp
+        juce::juce_audio_plugin_client
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
