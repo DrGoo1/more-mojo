@@ -12,8 +12,9 @@ jobs:
     runs-on: macos-14
     env:
       # ---- customize these to your repo ----
-      WORKSPACE: App.xcworkspace        # or set to "" if you use an .xcodeproj only
-      SCHEME: App                       # macOS app / harness scheme, if you have one
+      WORKSPACE: ""                      # empty since we use .xcodeproj directly
+      PROJECT: app/MoreMojoStudio.xcodeproj
+      SCHEME: MoreMojoStudio             # correct scheme name matching the project
       CONFIG: Debug
       # -------------------------------------
       ARTIFACT_ROOT: failed_artifacts/macos
@@ -58,10 +59,9 @@ jobs:
               -resultBundlePath "$XCRESULT_DIR" \
               build | tee "$LOG_DIR/xcodebuild_stdout.log"
           else
-            # fallback if you only have an .xcodeproj committed
-            PROJ=$(ls -1 *.xcodeproj | head -n1)
+            # Use the project specified in environment variables
             xcodebuild \
-              -project "$PROJ" \
+              -project "$PROJECT" \
               -scheme "$SCHEME" \
               -configuration "$CONFIG" \
               -destination 'platform=macOS' \
