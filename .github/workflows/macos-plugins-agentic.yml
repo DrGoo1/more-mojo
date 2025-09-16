@@ -46,12 +46,15 @@ jobs:
           if ! command -v xcodegen &> /dev/null; then
             brew install xcodegen
           fi
+          # Examine current directory structure
+          ls -la
+          cat project.yml
           # Backup original project file
           if [ -d "MoreMojoStudio.xcodeproj" ]; then
             mv MoreMojoStudio.xcodeproj MoreMojoStudio.xcodeproj.bak
           fi
           # Generate new project with current Xcode version
-          xcodegen generate --spec project.yml --project MoreMojoStudio
+          xcodegen generate
 
       - name: Resolve SPM (if workspace present)
         if: ${{ env.WORKSPACE != '' }}
