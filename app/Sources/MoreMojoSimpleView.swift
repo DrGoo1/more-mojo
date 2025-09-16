@@ -155,7 +155,19 @@ struct MoreMojoSimpleView: View {
         )
         .sheet(isPresented: $showStealMojo) {
             StealMojoPanel_SwiftOnly(onApply: { params in
-                engine.setParams(params)
+                // Convert ProcessorParams struct to dictionary for engine
+                let paramsDict: [String: Any] = [
+                    "drive": params.drive,
+                    "character": params.character,
+                    "saturation": params.saturation,
+                    "presence": params.presence,
+                    "warmth": params.warmth,
+                    "output": params.output,
+                    "mix": params.mix,
+                    "mode": params.mode,
+                    "interpMode": String(describing: params.interpMode)
+                ]
+                engine.setParams(paramsDict)
             })
         }
     }
