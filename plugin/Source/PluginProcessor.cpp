@@ -69,21 +69,24 @@ public:
         if (currentFactor == 4 && oversamplerX4 != nullptr)
         {
             auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
-            auto block = oversamplerX4->processSamplesDown(osBlock);
+            oversamplerX4->processSamplesDown(osBlock);
             
-            for (int ch = 0; ch < block.getNumChannels(); ++ch)
+            // Copy directly from input buffer back to output buffer since JUCE's processSamplesDown
+            // modifies the input block directly
+            for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
             {
-                buffer.copyFrom(ch, 0, block.getChannelPointer(ch), block.getNumSamples());
+                buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
             }
         }
         else if (currentFactor == 8 && oversamplerX8 != nullptr)
         {
             auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
-            auto block = oversamplerX8->processSamplesDown(osBlock);
+            oversamplerX8->processSamplesDown(osBlock);
             
-            for (int ch = 0; ch < block.getNumChannels(); ++ch)
+            // Copy directly from input buffer back to output buffer
+            for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
             {
-                buffer.copyFrom(ch, 0, block.getChannelPointer(ch), block.getNumSamples());
+                buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
             }
         }
     }
