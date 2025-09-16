@@ -25,4 +25,22 @@ juce_add_plugin(MoreMojoPlugin
     COMPANY_NAME "Umbo Gumbo"
     FORMATS AU VST3 Standalone
     PRODUCT_NAME "More Mojo by Umbo Gumbo"
+    BUNDLE_ID "com.UmboGumbo.MoreMojoPlugin"
     COPY_PLUGIN_AFTER_BUILD TRUE)
+
+# Add necessary modules for plugin
+target_compile_definitions(MoreMojoPlugin
+    PUBLIC
+    JUCE_WEB_BROWSER=0
+    JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=0)
+
+target_link_libraries(MoreMojoPlugin
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_devices
+        juce::juce_dsp
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags)
