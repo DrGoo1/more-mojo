@@ -2,17 +2,46 @@ import Foundation
 import Accelerate
 import AVFoundation
 
-// Import needed from ProcessorParams.swift
-import struct ProcessorParams.MojoEQBand
-import struct ProcessorParams.MojoEQMatch
-import struct ProcessorParams.MojoRecommendation
-import struct ProcessorParams.ProcessorParams
-import enum ProcessorParams.InterpMode
-
-// MARK: - Swift-only audio analysis implementation
+// MARK: - Swift-only HPSS (vDSP) + features + recommendation + EQ match
 
 /// Audio analyzer implementation in pure Swift
 enum SwiftMojoAnalyzer {
+    // Simple struct to hold mojoFingerprint data
+    struct MojoFingerprint {
+        struct Features {
+            var crest_dB: Float
+            var rms: Float
+            var band_low: Float
+            var band_mid: Float
+            var band_high: Float
+            var zcr_mean: Float
+            var centroid_mean: Float
+            var flat_mean: Float
+            var flux_mean: Float
+        }
+    }
+    
+    // Types used for EQ match
+    struct MojoEQBand {
+        var lo: Float
+        var hi: Float
+        var gain_dB: Float
+    }
+    
+    struct MojoEQMatch {
+        var bands: [MojoEQBand]
+    }
+    
+    // Type used for recommendations
+    struct MojoRecommendation {
+        var interpMode: String
+        var drive: Float
+        var saturation: Float
+        var character: Float
+        var presence: Float
+        var mix: Float
+        var output: Float
+    }
     
     // MARK: - Public API
     
