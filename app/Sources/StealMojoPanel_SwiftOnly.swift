@@ -19,7 +19,7 @@ struct StealMojoPanel_SwiftOnly: View {
     @State private var part: String = "bass"
     @State private var status: String = ""
     @State private var recommended: ProcessorParams? = nil
-    @State private var eqMatch: MojoEQMatch? = nil
+    @State private var eqMatch: SwiftMojoAnalyzer.MojoEQMatch? = nil
 
     var onApply: ((ProcessorParams)->Void)? = nil
 
@@ -101,19 +101,35 @@ struct StealMojoPanel_SwiftOnly: View {
                 let (harm, _, sr) = try SwiftMojoAnalyzer.separateHPSS(url: ref)
                 let feats = SwiftMojoAnalyzer.features(from: harm, sr: sr)
                 let rec = SwiftMojoAnalyzer.recommend(from: feats, part: part)
+                
+                // Create a ProcessorParams from the recommendation
                 var params = ProcessorParams()
+                
+                // Map the string interpolation mode to the enum
                 switch rec.interpMode.lowercased() {
-                case "hq","hq sinc8x","sinc8x": params.interpMode = .hqSinc8x
-                case "spline","transient spline 4x","spline4x": params.interpMode = .transientSpline4x
-                case "adaptive": params.interpMode = .adaptive
-                default: params.interpMode = .liveHB4x
+                case "hq", "hq sinc8x", "sinc8x": 
+                    params.interpMode = .hqSinc8x
+                case "spline", "transient spline 4x", "spline4x": 
+                    params.interpMode = .transientSpline4x
+                case "adaptive": 
+                    params.interpMode = .adaptive
+                default: 
+                    params.interpMode = .liveHB4x
                 }
-                params.drive = rec.drive; params.saturation = rec.saturation
-                params.character = rec.character; params.presence = rec.presence
-                params.mix = rec.mix; params.output = rec.output
+                
+                // Copy other values from recommendation
+                params.drive = rec.drive
+                params.saturation = rec.saturation
+                params.character = rec.character
+                params.presence = rec.presence
+                params.mix = rec.mix
+                params.output = rec.output
 
-                var eq: MojoEQMatch? = nil
-                if let src = self.srcURL { eq = SwiftMojoAnalyzer.eqMatchBands(srcURL: src, refURL: ref) }
+                // Optional EQ match
+                var eq: SwiftMojoAnalyzer.MojoEQMatch? = nil
+                if let src = self.srcURL { 
+                    eq = SwiftMojoAnalyzer.eqMatchBands(srcURL: src, refURL: ref) 
+                }
 
                 DispatchQueue.main.async {
                     self.recommended = params
@@ -121,7 +137,9 @@ struct StealMojoPanel_SwiftOnly: View {
                     self.status = "Analysis complete. Recommended Mojo ready."
                 }
             } catch {
-                DispatchQueue.main.async { self.status = "Analysis failed: \(error.localizedDescription)" }
+                DispatchQueue.main.async { 
+                    self.status = "Analysis failed: \(error.localizedDescription)" 
+                }
             }
         }
     }
