@@ -1,4 +1,3 @@
-
 import SwiftUI
 import AVFoundation
 
@@ -20,6 +19,7 @@ struct StealMojoPanel_SwiftOnly: View {
     @State private var part: String = "bass"
     @State private var status: String = ""
     @State private var recommended: ProcessorParams? = nil
+    @State private var eqMatch: MojoEQMatch? = nil
 
     var onApply: ((ProcessorParams)->Void)? = nil
 
@@ -79,6 +79,7 @@ struct StealMojoPanel_SwiftOnly: View {
                 .ifAvailableBackground()
             }
             .padding(16)
+        }
     }
 
     func chooseRef() {
