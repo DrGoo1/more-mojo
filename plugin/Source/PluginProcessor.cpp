@@ -66,28 +66,50 @@ public:
     
     void processSamplesDown(juce::AudioBuffer<float>& oversampledBuffer, juce::AudioBuffer<float>& buffer)
     {
-        if (currentFactor == 4 && oversamplerX4 != nullptr)
-        {
-            auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
-            oversamplerX4->processSamplesDown(osBlock);
+        // Safety checks to prevent null pointer issues
+        if (oversampledBuffer.getNumChannels() == 0 || buffer.getNumChannels() == 0)
+            return;
             
-            // Copy directly from input buffer back to output buffer since JUCE's processSamplesDown
-            // modifies the input block directly
-            for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
+        try {
+            if (currentFactor == 4 && oversamplerX4 != nullptr)
             {
-                buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
+                auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
+                
+                // Add null pointer check before processing
+                if (osBlock.getNumChannels() > 0 && osBlock.getNumSamples() > 0)
+                {
+                    oversamplerX4->processSamplesDown(osBlock);
+                    
+                    // Copy directly from input buffer back to output buffer since JUCE's processSamplesDown
+                    // modifies the input block directly
+                    for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
+                    {
+                        if (buffer.getNumSamples() <= oversampledBuffer.getNumSamples())
+                            buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
+                    }
+                }
+            }
+            else if (currentFactor == 8 && oversamplerX8 != nullptr)
+            {
+                auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
+                
+                // Add null pointer check before processing
+                if (osBlock.getNumChannels() > 0 && osBlock.getNumSamples() > 0)
+                {
+                    oversamplerX8->processSamplesDown(osBlock);
+                    
+                    // Copy directly from input buffer back to output buffer
+                    for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
+                    {
+                        if (buffer.getNumSamples() <= oversampledBuffer.getNumSamples())
+                            buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
+                    }
+                }
             }
         }
-        else if (currentFactor == 8 && oversamplerX8 != nullptr)
-        {
-            auto osBlock = juce::dsp::AudioBlock<float>(oversampledBuffer);
-            oversamplerX8->processSamplesDown(osBlock);
-            
-            // Copy directly from input buffer back to output buffer
-            for (int ch = 0; ch < buffer.getNumChannels() && ch < oversampledBuffer.getNumChannels(); ++ch)
-            {
-                buffer.copyFrom(ch, 0, oversampledBuffer.getReadPointer(ch), buffer.getNumSamples());
-            }
+        catch (std::exception& e) {
+            // Safely handle any other exceptions that might occur
+            // In a production environment, this could log the error
         }
     }
     
