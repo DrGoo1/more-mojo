@@ -1,13 +1,6 @@
 import Foundation
 import Accelerate
 import AVFoundation
-@_exported import struct ProcessorParams.ProcessorParams
-@_exported import struct ProcessorParams.MojoEQBand
-@_exported import struct ProcessorParams.MojoEQMatch
-@_exported import struct ProcessorParams.MojoRecommendation
-
-// Import SwiftMojoAnalyzer
-@_exported import enum SwiftMojoAnalyzer
 
 // MARK: - Swift-only HPSS (vDSP) + features + recommendation + EQ match
 
