@@ -1,0 +1,19 @@
+2025-09-16 11:53:55,220 - AgentHub - INFO - Running agents to fix issues...
+2025-09-16 11:53:55,221 - AgentHub - INFO - Running SwiftAgent...
+2025-09-16 11:53:55,221 - SwiftAgent - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/SharedTypes.swift
+2025-09-16 11:53:55,221 - SwiftAgent - INFO - Removing duplicate ProcessorParams.swift (now in SharedTypes.swift)
+2025-09-16 11:53:55,221 - SwiftAgent - INFO - Backed up to /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ProcessorParams_DEPRECATED.swift and removed original
+2025-09-16 11:53:55,222 - SwiftAgent - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ProcessorParams+Ext.swift
+2025-09-16 11:53:55,223 - AgentHub - INFO - SwiftAgent made changes
+2025-09-16 11:53:55,223 - AgentHub - INFO - Running AnalyzerAgent...
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/ProcessorParams_DEPRECATED.swift
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Updated analyzer references in ProcessorParams_DEPRECATED.swift
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/SwiftMojoAnalyzer.swift
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Updated analyzer references in SwiftMojoAnalyzer.swift
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/app/Sources/SharedTypes.swift
+2025-09-16 11:53:55,224 - AnalyzerAgent - INFO - Updated analyzer references in SharedTypes.swift
+2025-09-16 11:53:55,225 - AgentHub - INFO - AnalyzerAgent made changes
+2025-09-16 11:53:55,225 - AgentHub - INFO - Running BuildAgent...
+2025-09-16 11:53:55,225 - BuildAgent - INFO - BuildAgent doesn't modify files directly, use build_app() and build_plugin() methods
+2025-09-16 11:53:55,225 - AgentHub - INFO - BuildAgent did not make any changes
+2025-09-16 11:53:55,225 - AgentHub - INFO - $ git add -A
