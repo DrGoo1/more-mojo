@@ -1,6 +1,11 @@
 import Foundation
 import AVFoundation
 import Accelerate
+// Import types from ProcessorParams
+@_exported import struct ProcessorParams.ProcessorParams
+@_exported import struct ProcessorParams.MojoEQBand
+@_exported import struct ProcessorParams.MojoEQMatch
+@_exported import struct ProcessorParams.MojoRecommendation
 
 /// Mock implementation of the SwiftMojoAnalyzer for CI builds
 enum SwiftMojoAnalyzer {
