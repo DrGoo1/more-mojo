@@ -1,0 +1,94 @@
+name: MLAR Integration ChatOps
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  mlar-integration:
+    runs-on: macos-latest
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/mlar-integrate')
+    steps:
+      - name: Add reaction to comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: rocket
+
+      - name: Get PR branch
+        id: get_branch
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+            const pr = await github.rest.pulls.get({ owner, repo, pull_number: number });
+            return pr.data.head.ref;
+          result-encoding: string
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.get_branch.outputs.result }}
+          fetch-depth: 1
+
+      - name: Install dependencies
+        run: |
+          brew install cmake
+          # Clone JUCE if not present
+          if [ ! -d "JUCE" ]; then
+            git clone --depth 1 --branch 7.0.2 https://github.com/juce-framework/JUCE.git
+          fi
+
+      - name: Set up swarm integration
+        run: |
+          # Make sure the new MLAR agent script is executable
+          chmod +x scripts/swarm/mlar_agent.py
+          
+          # Backup original agent_hub.py if needed
+          if [ -f "scripts/swarm/agent_hub.py" ] && [ ! -f "scripts/swarm/agent_hub.py.bak" ]; then
+            cp scripts/swarm/agent_hub.py scripts/swarm/agent_hub.py.bak
+          fi
+          
+          # Replace with our MLAR-enabled version
+          cp scripts/swarm/agent_hub_with_mlar.py scripts/swarm/agent_hub.py
+          
+          # Create a trigger file to let the agent know MLAR is needed
+          echo "MLAR integration needed" > ci_logs/mlar_integration.log
+
+      - name: Run swarm integration
+        run: |
+          python scripts/swarm/agent_hub.py
+
+      - name: Commit changes if needed
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add -A
+            git commit -m "Integrate MLAR v3.1.1 via agentic swarm"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Add summary comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            ## MLAR Integration Report
+            
+            The agentic swarm has processed your MLAR integration request.
+            
+            <details>
+            <summary>Integration Summary</summary>
+            
+            ```
+            $(cat swarm_summary.md)
+            ```
+            
+            </details>
+            
+            You can trigger additional actions with these commands:
+            - `/mlar-test` - Run tests for the MLAR integration
+            - `/mlar-build` - Build the plugin with MLAR integration
