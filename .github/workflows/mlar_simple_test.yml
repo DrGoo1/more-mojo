@@ -1,0 +1,67 @@
+name: MLAR Simple Test
+
+on:
+  push:
+    branches:
+      - feature/mlar-v3.1.1-integration
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test-mlar-setup:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Create directory structure
+        run: |
+          mkdir -p shared/mlar/{dsp,metrics,ui/{views,components},Resources/icons}
+          mkdir -p ci_logs
+          echo "Testing MLAR integration" > ci_logs/mlar_integration.log
+
+      - name: Create simple MLAR test file
+        run: |
+          cat > shared/mlar/MLAR.h << 'EOL'
+          #pragma once
+          
+          namespace moremojo {
+          namespace mlar {
+          
+          // Simple test class for MLAR
+          class Processor {
+          public:
+              Processor() {}
+              ~Processor() {}
+          };
+          
+          }} // namespace moremojo::mlar
+          EOL
+          
+          echo "Created MLAR test header"
+          ls -la shared/mlar/
+
+      - name: Create CMakeLists.txt
+        run: |
+          cat > shared/mlar/CMakeLists.txt << 'EOL'
+          cmake_minimum_required(VERSION 3.15)
+          project(MLAR VERSION 3.1.1)
+          add_library(mlar INTERFACE)
+          target_include_directories(mlar INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+          EOL
+          
+          echo "Created CMakeLists.txt"
+          cat shared/mlar/CMakeLists.txt
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Add basic MLAR test files" || echo "No changes to commit"
+          git push || echo "Push failed"
