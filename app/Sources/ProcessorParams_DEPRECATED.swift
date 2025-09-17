@@ -1,12 +1,11 @@
-// DEPRECATED
-// ProcessorParams.swift
-// Defines core types for the app
-
 import Foundation
 
-public enum InterpMode: Int, Codable, CaseIterable, Identifiable {
+// Direct implementation of types (not importing from SharedTypes)
+public // DEPRECATED duplicate removed
+// enum InterpMode: Int, Codable, CaseIterable, Identifiable {
     case liveHB4x = 0, hqSinc8x, transientSpline4x, adaptive, aiAnalogHook
     public var id: Int { rawValue }
+
     public var displayName: String {
         switch self {
         case .liveHB4x: return "HB 4×"
@@ -31,9 +30,12 @@ public struct ProcessorParams: Codable, Equatable {
     public var mode: Int = 1
     
     public init() {}
+    
+    public var outputNormalized: Float { (output + 12) / 24 }
+    public var warmthNormalized: Float { warmth }
 }
 
-public struct MojoEQBand: Codable, Equatable {
+public struct MojoEQBand: Codable, Equatable { 
     public var lo: Float
     public var hi: Float
     public var gain_dB: Float
@@ -45,8 +47,8 @@ public struct MojoEQBand: Codable, Equatable {
     }
 }
 
-public struct SwiftMojoAnalyzer.MojoEQMatch: Codable, Equatable {
-    public var bands: [MojoEQBand]
+public struct MojoEQMatch: Codable, Equatable { 
+    public var bands: [MojoEQBand] 
     
     public init(bands: [MojoEQBand]) {
         self.bands = bands
