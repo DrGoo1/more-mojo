@@ -4,6 +4,11 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   mlar-integration:
     runs-on: macos-latest
@@ -41,6 +46,10 @@ jobs:
 
       - name: Set up swarm integration
         run: |
+          # Create required directories
+          mkdir -p ci_logs
+          mkdir -p shared/mlar/{dsp,metrics,ui/{views,components},Resources/icons}
+          
           # Make sure the new MLAR agent script is executable
           chmod +x scripts/swarm/mlar_agent.py
           
@@ -57,16 +66,31 @@ jobs:
 
       - name: Run swarm integration
         run: |
-          python scripts/swarm/agent_hub.py
+          # Add debug output
+          echo "Current directory structure:"
+          find . -type d -not -path "*/\.*" | sort
+          
+          # Run agent with verbose output
+          python -u scripts/swarm/agent_hub.py
+          
+          # Create empty swarm_summary.md if it doesn't exist
+          touch swarm_summary.md
+
+      - name: Show status
+        run: |
+          git status
+          ls -la shared/mlar/ || echo "MLAR directory not created"
 
       - name: Commit changes if needed
         run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
           if [[ -n $(git status --porcelain) ]]; then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
             git add -A
             git commit -m "Integrate MLAR v3.1.1 via agentic swarm"
             git push
+            echo "Changes committed and pushed"
           else
             echo "No changes to commit"
           fi
@@ -84,7 +108,7 @@ jobs:
             <summary>Integration Summary</summary>
             
             ```
-            $(cat swarm_summary.md)
+            $(cat swarm_summary.md || echo "No summary generated")
             ```
             
             </details>
