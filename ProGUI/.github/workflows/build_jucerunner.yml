@@ -1,0 +1,41 @@
+name: Build JuceRunner
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install CMake
+        uses: lukka/get-cmake@v3.29.2
+
+      - name: Configure JUCE_DIR
+        run: |
+          echo "JUCE_DIR=$GITHUB_WORKSPACE/ProGUI/JUCE" >> $GITHUB_ENV
+
+      - name: Configure JuceRunner
+        working-directory: ProGUI/Tools/JuceRunner
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G "Unix Makefiles" ..
+
+      - name: Build JuceRunner
+        working-directory: ProGUI/Tools/JuceRunner/build
+        run: |
+          cmake --build . --config Release --parallel 3
+
+      - name: Archive JuceRunner app
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProGUIJuceRunner-macOS
+          path: ProGUI/Tools/JuceRunner/build/ProGUIJuceRunner.app

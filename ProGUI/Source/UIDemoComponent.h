@@ -1,12 +1,13 @@
 #pragma once
+#include <JuceHeader.h>
+// Optional skin manager (stub) for loading assets
+#include "../shared/ui_core/SkinManager.h"
 #include "../../JUCE/modules/juce_core/juce_core.h"
 #include "../../JUCE/modules/juce_events/juce_events.h"
 #include "../../JUCE/modules/juce_graphics/juce_graphics.h"
 #include "../../JUCE/modules/juce_gui_basics/juce_gui_basics.h"
 #include "../../JUCE/modules/juce_gui_extra/juce_gui_extra.h"
 #include "../shared/ui_core/Theme.h"
-#include "../shared/ui_core/Knob.h"
-#include "../shared/ui_core/Slider.h"
 #include "../shared/ui_core/Primitives.h"
 #include "../shared/ui_core/PillToggle.h"
 
@@ -33,6 +34,26 @@ public:
         demoSwitch.setButtonText("Switch");
         demoSwitch.setClickingTogglesState(true);
         addAndMakeVisible(demoSwitch);
+
+        addAndMakeVisible(btnAction);
+        btnAction.setButtonText("Action");
+        btnAction.onClick = [this]{ log("[UI] Action clicked"); };
+
+        addAndMakeVisible(btnLoadSkin);
+        btnLoadSkin.setButtonText("Load Skin…");
+        btnLoadSkin.onClick = [this]
+        {
+            juce::FileChooser chooser ("Select a skin folder",
+                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                       "*");
+            if (chooser.browseForDirectory())
+            {
+                auto dir = chooser.getResult();
+                SkinManager::instance().loadSkin(dir);
+                log("[UI] Loaded skin folder: " + dir.getFullPathName());
+                repaint();
+            }
+        };
 
         // Load Skin button
         loadSkinButton.setButtonText("Load Skin…");
@@ -196,6 +217,8 @@ public:
         demoButton.setBounds(32, 280, 120, 28);
         demoSwitch.setBounds(168, 280, 120, 28);
         loadSkinButton.setBounds(304, 280, 140, 28);
+        btnAction.setBounds(32, 320, 120, 28);
+        btnLoadSkin.setBounds(168, 320, 120, 28);
         // meters painted on right side in paint()
 
         // skin preview area next to meters (paint)
@@ -207,6 +230,8 @@ private:
     juce::TextButton demoButton;
     ui::PillToggle demoSwitch;
     juce::TextButton loadSkinButton;
+    juce::TextButton btnAction;
+    juce::TextButton btnLoadSkin;
     juce::Image skinImage;
 
     float level {0.25f};
