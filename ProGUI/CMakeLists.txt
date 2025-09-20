@@ -141,11 +141,19 @@ target_link_libraries(MoreMojoProGUI PRIVATE
 #         "-Wl,-exported_symbols_list,${EXPORTED_SYMBOLS_LIST}")
 # endif()
 
-target_link_libraries(MoreMojoProGUI PRIVATE
-    juce::juce_dsp
-    juce::juce_audio_basics
-    juce::juce_audio_devices
-    juce::juce_audio_formats
-    juce::juce_audio_processors
-    juce::juce_audio_utils
+target_link_libraries(MoreMojoProGUI
+    PRIVATE
+        juce::juce_dsp
+        juce::juce_audio_basics
+        juce::juce_audio_devices
+        juce::juce_audio_formats
+        juce::juce_audio_processors
+        juce::juce_audio_utils
 )
+
+# Optionally include the pure-JUCE runner if its CMake project exists.
+# This allows building the Runner from the root CMake as a convenience.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Tools/JuceRunner/CMakeLists.txt")
+  message(STATUS "Including Tools/JuceRunner from root CMake")
+  add_subdirectory(Tools/JuceRunner)
+endif()

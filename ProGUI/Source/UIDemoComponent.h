@@ -101,7 +101,14 @@ public:
 
     void paint(juce::Graphics& g) override
     {
-        g.fillAll(ui::theme().bg);
+        // Use skin/theme colours if available
+        auto& skin = SkinManager::instance().skin();
+        auto BG   = skin.panel.isTransparent() ? ui::theme().bg : skin.panel;
+        auto TXT  = skin.text.isTransparent()  ? ui::theme().text : skin.text;
+        auto ACC  = skin.accent.isTransparent()? ui::theme().accent : skin.accent;
+        auto ACC2 = skin.accent2.isTransparent()? ui::theme().accent2 : skin.accent2;
+
+        g.fillAll(BG);
         // Bold diagnostic stripe background so painting is undeniable
         {
             auto b = getLocalBounds().toFloat();
@@ -144,7 +151,7 @@ public:
             auto rf = knobR.toFloat();
             auto c = rf.getCentre();
             float rad = juce::jmin(rf.getWidth(), rf.getHeight()) * 0.5f;
-            g.setColour(ui::theme().panel);
+            g.setColour(skin.panel);
             g.fillEllipse(rf);
             g.setColour(juce::Colours::black.withAlpha(0.5f));
             g.drawEllipse(rf, 1.5f);
@@ -152,7 +159,7 @@ public:
             float end   = juce::MathConstants<float>::pi * (1.2f + 1.2f);
             float ang   = start + (end - start) * juce::jlimit(0.0f, 1.0f, level);
             juce::Path arc; arc.addCentredArc(c.x, c.y, rad-12.f, rad-12.f, 0, start, ang, true);
-            g.setColour(ui::theme().accent);
+            g.setColour(ACC);
             g.strokePath(arc, juce::PathStrokeType(3.0f));
         }
 
@@ -160,14 +167,14 @@ public:
         {
             auto rs = sldR.toFloat();
             auto track = juce::Rectangle<float>(rs.getX(), rs.getCentreY() - 4.f, rs.getWidth(), 8.f);
-            g.setColour(ui::theme().panel.darker(0.15f)); g.fillRoundedRectangle(track, 4.f);
+            g.setColour(skin.panel.darker(0.15f)); g.fillRoundedRectangle(track, 4.f);
             auto fill = track.withWidth(track.getWidth() * juce::jlimit(0.f, 1.f, level2));
-            g.setColour(ui::theme().accent); g.fillRoundedRectangle(fill, 4.f);
+            g.setColour(ACC); g.fillRoundedRectangle(fill, 4.f);
         }
 
         // Button
         {
-            auto bf = btnR.toFloat(); g.setColour(ui::theme().card);
+            auto bf = btnR.toFloat(); g.setColour(skin.card);
             g.fillRoundedRectangle(bf, 6.f);
             g.setColour(juce::Colours::white.withAlpha(0.85f));
             g.drawFittedText("Button", btnR, juce::Justification::centred, 1);
@@ -176,8 +183,8 @@ public:
         // Toggle (pill)
         {
             auto tf = togR.toFloat();
-            g.setColour(ui::theme().card); g.fillRoundedRectangle(tf, tf.getHeight()/2.f);
-            bool on = level2 > 0.5f; g.setColour(on ? ui::theme().accent : ui::theme().panel);
+            g.setColour(skin.card); g.fillRoundedRectangle(tf, tf.getHeight()/2.f);
+            bool on = level2 > 0.5f; g.setColour(on ? ACC : skin.panel);
             auto knob = juce::Rectangle<float>(tf.getX()+ (on ? tf.getWidth()-tf.getHeight() : 0.f), tf.getY(), tf.getHeight(), tf.getHeight());
             g.fillEllipse(knob);
             g.setColour(juce::Colours::white.withAlpha(0.85f));
@@ -188,14 +195,15 @@ public:
 
         // Meter frame
         auto meterArea = getLocalBounds().reduced(16).removeFromRight(140);
-        drawMeter(g, meterArea, level, ui::theme().accent);
+        drawMeter(g, meterArea, level, ACC);
         auto meterArea2 = meterArea.withTrimmedTop( meterArea.getHeight()/2 + 8 );
-        drawMeter(g, meterArea2, level2, ui::theme().accent2);
+        drawMeter(g, meterArea2, level2, ACC2);
 
         // Header
-        g.setColour(ui::theme().text);
-        g.setFont(ui::theme().title);
-        g.drawFittedText("UI Demo — Knob, Slider, Button, Switch, Meter", getLocalBounds().reduced(16).removeFromTop(24), juce::Justification::left, 1);
+        g.setColour(TXT);
+        g.setFont(18.0f);
+        g.drawFittedText("[Demo] MoreMojo Pro GUI — UIDemoComponent", getLocalBounds().removeFromTop(28),
+                         juce::Justification::centredLeft, 1);
 
         // Diagnostics banner to verify rendering
         auto diag = getLocalBounds().reduced(12).removeFromBottom(36);
