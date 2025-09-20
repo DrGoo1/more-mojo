@@ -1,13 +1,17 @@
-# Swarm decisions
+# Swarm Agent Hub Summary
+## Agent Decisions
 - ProjectAgent: no
 - SchemeAgent: no
 - SwiftAgent: YES
 - CMakeAgent: no
+- WarmthAgent: no
+- ImportAgent: no
+- AnalyzerAgent: YES
+- StructAgent: no
+- BuildAgent: YES
 
-## Hints
-- app log bytes: 4406
-- plugin log bytes: 0
+## Log Information
+- App log size: 4406 bytes
+- Plugin log size: 0 bytes
 
-- Ran SwiftAgent
-
-changes_staged = no; actions_ran = YES
+Changes made: YES

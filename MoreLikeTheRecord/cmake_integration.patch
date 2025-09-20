@@ -1,0 +1,92 @@
+// ========================= CMAKE INTEGRATION PATCH =========================
+// This file contains the CMake changes needed to integrate MLAR into the MoreMojo project
+// Add this to your root CMakeLists.txt or to a new CMakeLists.txt in the shared/mlar directory
+
+// ===== shared/mlar/CMakeLists.txt =====
+
+cmake_minimum_required(VERSION 3.15)
+project(MoreLikeTheRecord VERSION 3.0.0)
+
+# Define MLAR library target
+add_library(mlar STATIC)
+
+# Define source files
+target_sources(mlar
+    PRIVATE
+        # DSP Sources
+        dsp/TimingSafeResampler.cpp
+        dsp/TransientDetect.cpp
+        dsp/FractionalDelayAlign.cpp
+        dsp/AnalogContinuity.cpp
+        dsp/LimiterLevelMatch.cpp
+        
+        # Metrics Sources
+        metrics/GDSComputer.cpp
+        metrics/IACCComputer.cpp
+        metrics/TEIAnalyzer.cpp
+        
+        # UI Sources
+        ui/LookAndFeel_Mojo.cpp
+        ui/views/ConsumerView.cpp
+        ui/views/ProOverviewView.cpp
+        ui/views/DetailWindows.cpp
+        ui/components/MojoMeters.cpp
+)
+
+# Set include directories
+target_include_directories(mlar
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+# Add SVG resources (if not already handled in parent CMakeLists.txt)
+file(GLOB_RECURSE MLAR_SVG_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icons/*.svg")
+
+# Create binary resources if not already done at parent level
+if(NOT TARGET MojoBinaryData)
+    juce_add_binary_data(MojoBinaryData SOURCES ${MLAR_SVG_RESOURCES})
+else()
+    # Add MLAR SVGs to existing binary data target
+    target_sources(MojoBinaryData PRIVATE ${MLAR_SVG_RESOURCES})
+endif()
+
+# Link with JUCE modules
+target_link_libraries(mlar
+    PRIVATE
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_opengl
+        MojoBinaryData
+)
+
+# Set C++17 standard
+target_compile_features(mlar PRIVATE cxx_std_17)
+
+# ===== Root CMakeLists.txt changes =====
+# Add this to your root CMakeLists.txt to include the MLAR module
+
+# Add MLAR module
+add_subdirectory(shared/mlar)
+
+# Add MLAR include directory to MoreMojoPlugin and MoreMojoApp targets
+target_include_directories(MoreMojoPlugin
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared
+)
+
+target_include_directories(MoreMojoApp
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared
+)
+
+# Link MLAR with your plugin and app targets
+target_link_libraries(MoreMojoPlugin
+    PRIVATE
+        mlar
+)
+
+target_link_libraries(MoreMojoApp
+    PRIVATE
+        mlar
+)

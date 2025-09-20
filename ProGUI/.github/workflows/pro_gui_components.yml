@@ -1,0 +1,118 @@
+name: Pro GUI Components CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ProGUI/**'
+      - '.github/workflows/pro_gui_components.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ProGUI/**'
+      - '.github/workflows/pro_gui_components.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: Install JUCE
+        run: |
+          git clone https://github.com/juce-framework/JUCE.git
+          cd JUCE
+          git checkout develop
+      
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+          cmake-version: '3.24.x'
+      
+      - name: Configure CMake
+        working-directory: ${{ github.workspace }}/ProGUI
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DJUCE_DIR="${{ github.workspace }}/JUCE"
+      
+      - name: Build
+        working-directory: ${{ github.workspace }}/ProGUI
+        run: |
+          cmake --build build --config Release
+      
+      - name: Create Framework
+        working-directory: ${{ github.workspace }}/ProGUI
+        run: |
+          mkdir -p build/MoreMojoProGUI.framework/Versions/A/Headers
+          mkdir -p build/MoreMojoProGUI.framework/Versions/A/Resources
+          
+          cp build/libMoreMojoProGUI.dylib build/MoreMojoProGUI.framework/Versions/A/MoreMojoProGUI
+          cp SwiftBridge/ProGUIBridgeC.h build/MoreMojoProGUI.framework/Versions/A/Headers/
+          
+          ln -sf A build/MoreMojoProGUI.framework/Versions/Current
+          ln -sf Versions/Current/Headers build/MoreMojoProGUI.framework/Headers
+          ln -sf Versions/Current/Resources build/MoreMojoProGUI.framework/Resources
+          ln -sf Versions/Current/MoreMojoProGUI build/MoreMojoProGUI.framework/MoreMojoProGUI
+          
+          cat > build/MoreMojoProGUI.framework/Versions/A/Resources/Info.plist << 'EOL'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundleExecutable</key>
+    <string>MoreMojoProGUI</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.moremojo.progui</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>MoreMojoProGUI</string>
+    <key>CFBundlePackageType</key>
+    <string>FMWK</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2025 MoreMojo. All rights reserved.</string>
+</dict>
+</plist>
+EOL
+
+      - name: Archive Framework
+        working-directory: ${{ github.workspace }}/ProGUI/build
+        run: zip -r MoreMojoProGUI.framework.zip MoreMojoProGUI.framework
+      
+      - name: Archive Swift Bridge Files
+        working-directory: ${{ github.workspace }}/ProGUI/SwiftBridge
+        run: zip -r SwiftBridge.zip Swift
+      
+      - name: Upload Framework Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MoreMojoProGUI.framework
+          path: ${{ github.workspace }}/ProGUI/build/MoreMojoProGUI.framework.zip
+      
+      - name: Upload Swift Bridge Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SwiftBridge
+          path: ${{ github.workspace }}/ProGUI/SwiftBridge/SwiftBridge.zip
+      
+      - name: Send Slack notification
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: '#build-notifications'
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/moremojo.png?size=48
+          SLACK_TITLE: 'Pro GUI Components Build'
+          SLACK_MESSAGE: 'Build status: ${{ job.status }}'
+          SLACK_FOOTER: 'MoreMojo Pro GUI Components'

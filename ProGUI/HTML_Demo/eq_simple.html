@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional EQ Visualization Demo</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .eq-container {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .eq-display {
+            width: 100%;
+            height: 300px;
+            background-color: #111;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #frequency-response {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bands-container {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .eq-band {
+            flex: 1;
+            min-width: 120px;
+            background-color: #333;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .band-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+        
+        .knob-container {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 15px;
+        }
+        
+        .knob {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #aaa, #666 60%, #333);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 3px rgba(255, 255, 255, 0.4);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .knob::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 35%;
+            background-color: #fff;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            border-radius: 2px;
+        }
+        
+        .knob-label {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #aaa;
+        }
+        
+        .knob-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4285f4;
+            margin-top: 3px;
+        }
+        
+        .frequency-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #999;
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .db-labels {
+            position: absolute;
+            left: 5px;
+            top: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .horizontal-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(100, 100, 100, 0.2);
+        }
+        
+        .vertical-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background-color: rgba(100, 100, 100, 0.2);
+        }
+        
+        .analyzer-switch {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        .switch-button {
+            background-color: #333;
+            border: none;
+            color: #ccc;
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .switch-button.active {
+            background-color: #4285f4;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Audio Processor Pro - EQ Visualization</h1>
+        
+        <div class="eq-container">
+            <div class="eq-display">
+                <canvas id="frequency-response"></canvas>
+                
+                <!-- Grid Lines -->
+                <div class="grid" id="grid-container">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Frequency Labels -->
+                <div class="frequency-labels">
+                    <span>20Hz</span>
+                    <span>50Hz</span>
+                    <span>100Hz</span>
+                    <span>200Hz</span>
+                    <span>500Hz</span>
+                    <span>1kHz</span>
+                    <span>2kHz</span>
+                    <span>5kHz</span>
+                    <span>10kHz</span>
+                    <span>20kHz</span>
+                </div>
+                
+                <!-- dB Labels -->
+                <div class="db-labels">
+                    <span>+12dB</span>
+                    <span>0dB</span>
+                    <span>-12dB</span>
+                    <span>-24dB</span>
+                </div>
+            </div>
+            
+            <div class="analyzer-switch">
+                <button class="switch-button active" id="eq-curve-btn">EQ Curve</button>
+                <button class="switch-button" id="spectrum-btn">Spectrum</button>
+                <button class="switch-button" id="both-btn">Both</button>
+            </div>
+            
+            <div class="bands-container">
+                <!-- Band 1: Low Shelf -->
+                <div class="eq-band" style="border-top: 3px solid #4285f4;">
+                    <div class="band-title">Low Shelf</div>
+                    <div class="knob-container">
+                        <div class="knob" id="band1-gain" data-value="0" data-min="-12" data-max="12" style="border: 2px solid #4285f4;"></div>
+                        <div class="knob-label">Gain</div>
+                        <div class="knob-value">0.0 dB</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band1-freq" data-value="100" data-min="30" data-max="300" style="border: 2px solid #4285f4;"></div>
+                        <div class="knob-label">Frequency</div>
+                        <div class="knob-value">100 Hz</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band1-q" data-value="0.7" data-min="0.1" data-max="2" style="border: 2px solid #4285f4;"></div>
+                        <div class="knob-label">Q</div>
+                        <div class="knob-value">0.7</div>
+                    </div>
+                </div>
+                
+                <!-- Band 2: Low-Mid Bell -->
+                <div class="eq-band" style="border-top: 3px solid #ea4335;">
+                    <div class="band-title">Low-Mid</div>
+                    <div class="knob-container">
+                        <div class="knob" id="band2-gain" data-value="0" data-min="-12" data-max="12" style="border: 2px solid #ea4335;"></div>
+                        <div class="knob-label">Gain</div>
+                        <div class="knob-value">0.0 dB</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band2-freq" data-value="300" data-min="100" data-max="1000" style="border: 2px solid #ea4335;"></div>
+                        <div class="knob-label">Frequency</div>
+                        <div class="knob-value">300 Hz</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band2-q" data-value="1.0" data-min="0.1" data-max="5" style="border: 2px solid #ea4335;"></div>
+                        <div class="knob-label">Q</div>
+                        <div class="knob-value">1.0</div>
+                    </div>
+                </div>
+                
+                <!-- Band 3: Mid Bell -->
+                <div class="eq-band" style="border-top: 3px solid #fbbc05;">
+                    <div class="band-title">Mid</div>
+                    <div class="knob-container">
+                        <div class="knob" id="band3-gain" data-value="0" data-min="-12" data-max="12" style="border: 2px solid #fbbc05;"></div>
+                        <div class="knob-label">Gain</div>
+                        <div class="knob-value">0.0 dB</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band3-freq" data-value="1000" data-min="300" data-max="3000" style="border: 2px solid #fbbc05;"></div>
+                        <div class="knob-label">Frequency</div>
+                        <div class="knob-value">1000 Hz</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band3-q" data-value="1.0" data-min="0.1" data-max="5" style="border: 2px solid #fbbc05;"></div>
+                        <div class="knob-label">Q</div>
+                        <div class="knob-value">1.0</div>
+                    </div>
+                </div>
+                
+                <!-- Band 4: High-Mid Bell -->
+                <div class="eq-band" style="border-top: 3px solid #34a853;">
+                    <div class="band-title">High-Mid</div>
+                    <div class="knob-container">
+                        <div class="knob" id="band4-gain" data-value="0" data-min="-12" data-max="12" style="border: 2px solid #34a853;"></div>
+                        <div class="knob-label">Gain</div>
+                        <div class="knob-value">0.0 dB</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band4-freq" data-value="3000" data-min="1000" data-max="8000" style="border: 2px solid #34a853;"></div>
+                        <div class="knob-label">Frequency</div>
+                        <div class="knob-value">3000 Hz</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band4-q" data-value="1.0" data-min="0.1" data-max="5" style="border: 2px solid #34a853;"></div>
+                        <div class="knob-label">Q</div>
+                        <div class="knob-value">1.0</div>
+                    </div>
+                </div>
+                
+                <!-- Band 5: High Shelf -->
+                <div class="eq-band" style="border-top: 3px solid #bb86fc;">
+                    <div class="band-title">High Shelf</div>
+                    <div class="knob-container">
+                        <div class="knob" id="band5-gain" data-value="0" data-min="-12" data-max="12" style="border: 2px solid #bb86fc;"></div>
+                        <div class="knob-label">Gain</div>
+                        <div class="knob-value">0.0 dB</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band5-freq" data-value="8000" data-min="3000" data-max="20000" style="border: 2px solid #bb86fc;"></div>
+                        <div class="knob-label">Frequency</div>
+                        <div class="knob-value">8000 Hz</div>
+                    </div>
+                    <div class="knob-container">
+                        <div class="knob" id="band5-q" data-value="0.7" data-min="0.1" data-max="2" style="border: 2px solid #bb86fc;"></div>
+                        <div class="knob-label">Q</div>
+                        <div class="knob-value">0.7</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Canvas setup
+            const canvas = document.getElementById('frequency-response');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match display size
+            function resizeCanvas() {
+                const parent = canvas.parentElement;
+                canvas.width = parent.clientWidth;
+                canvas.height = parent.clientHeight;
+                drawEQCurve();
+            }
+            
+            // Create grid lines
+            function createGridLines() {
+                const gridContainer = document.getElementById('grid-container');
+                
+                // Clear existing grid
+                gridContainer.innerHTML = '';
+                
+                // Create horizontal lines (dB markers)
+                const dbValues = [12, 0, -12, -24];
+                dbValues.forEach(db => {
+                    const yPos = dbToY(db);
+                    const line = document.createElement('div');
+                    line.className = 'horizontal-line';
+                    line.style.top = `${yPos}px`;
+                    gridContainer.appendChild(line);
+                });
+                
+                // Create vertical lines (frequency markers)
+                const freqValues = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+                freqValues.forEach(freq => {
+                    const xPos = freqToX(freq);
+                    const line = document.createElement('div');
+                    line.className = 'vertical-line';
+                    line.style.left = `${xPos}px`;
+                    gridContainer.appendChild(line);
+                });
+            }
+            
+            // Convert frequency to x position
+            function freqToX(freq) {
+                const logFreq = Math.log10(freq / 20) / Math.log10(20000 / 20);
+                return logFreq * canvas.width;
+            }
+            
+            // Convert dB to y position
+            function dbToY(db) {
+                const normalizedDB = (db - 12) / (-24 - 12);  // Map from 12dB to -24dB
+                return normalizedDB * canvas.height;
+            }
+            
+            // Calculate EQ response at a given frequency
+            function calculateEQResponse(frequency) {
+                let totalGain = 0;
+                
+                // Band 1: Low Shelf
+                const band1Freq = parseFloat(document.getElementById('band1-freq').getAttribute('data-value'));
+                const band1Gain = parseFloat(document.getElementById('band1-gain').getAttribute('data-value'));
+                const band1Q = parseFloat(document.getElementById('band1-q').getAttribute('data-value'));
+                
+                // Low Shelf calculation (simplified)
+                if (frequency < band1Freq) {
+                    totalGain += band1Gain;
+                } else {
+                    const octaveDistance = Math.log2(frequency / band1Freq);
+                    totalGain += band1Gain / (1 + Math.pow(octaveDistance * band1Q * 2, 2));
+                }
+                
+                // Band 2: Low-Mid Bell
+                const band2Freq = parseFloat(document.getElementById('band2-freq').getAttribute('data-value'));
+                const band2Gain = parseFloat(document.getElementById('band2-gain').getAttribute('data-value'));
+                const band2Q = parseFloat(document.getElementById('band2-q').getAttribute('data-value'));
+                
+                // Bell calculation
+                const octaveDistance2 = Math.log2(frequency / band2Freq);
+                totalGain += band2Gain / (1 + Math.pow(octaveDistance2 * band2Q, 2));
+                
+                // Band 3: Mid Bell
+                const band3Freq = parseFloat(document.getElementById('band3-freq').getAttribute('data-value'));
+                const band3Gain = parseFloat(document.getElementById('band3-gain').getAttribute('data-value'));
+                const band3Q = parseFloat(document.getElementById('band3-q').getAttribute('data-value'));
+                
+                const octaveDistance3 = Math.log2(frequency / band3Freq);
+                totalGain += band3Gain / (1 + Math.pow(octaveDistance3 * band3Q, 2));
+                
+                // Band 4: High-Mid Bell
+                const band4Freq = parseFloat(document.getElementById('band4-freq').getAttribute('data-value'));
+                const band4Gain = parseFloat(document.getElementById('band4-gain').getAttribute('data-value'));
+                const band4Q = parseFloat(document.getElementById('band4-q').getAttribute('data-value'));
+                
+                const octaveDistance4 = Math.log2(frequency / band4Freq);
+                totalGain += band4Gain / (1 + Math.pow(octaveDistance4 * band4Q, 2));
+                
+                // Band 5: High Shelf
+                const band5Freq = parseFloat(document.getElementById('band5-freq').getAttribute('data-value'));
+                const band5Gain = parseFloat(document.getElementById('band5-gain').getAttribute('data-value'));
+                const band5Q = parseFloat(document.getElementById('band5-q').getAttribute('data-value'));
+                
+                // High Shelf calculation (simplified)
+                if (frequency > band5Freq) {
+                    totalGain += band5Gain;
+                } else {
+                    const octaveDistance5 = Math.log2(frequency / band5Freq);
+                    totalGain += band5Gain / (1 + Math.pow(-octaveDistance5 * band5Q * 2, 2));
+                }
+                
+                return totalGain;
+            }
+            
+            // Draw EQ curve
+            function drawEQCurve() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw bands individual responses with semi-transparency
+                drawBandResponses();
+                
+                // Draw main EQ curve
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ffffff';
+                
+                // Start from left edge
+                let startFreq = 20;
+                let startGain = calculateEQResponse(startFreq);
+                ctx.moveTo(freqToX(startFreq), dbToY(startGain));
+                
+                // Draw the curve with logarithmic frequency spacing
+                for (let i = 1; i <= 200; i++) {
+                    const logFactor = i / 200;
+                    const freq = 20 * Math.pow(1000, logFactor);
+                    const gain = calculateEQResponse(freq);
+                    
+                    ctx.lineTo(freqToX(freq), dbToY(gain));
+                }
+                
+                ctx.stroke();
+                
+                // Draw band handle points
+                drawBandHandles();
+            }
+            
+            // Draw individual band responses
+            function drawBandResponses() {
+                const bands = [
+                    { color: '#4285f4', id: 'band1' },
+                    { color: '#ea4335', id: 'band2' },
+                    { color: '#fbbc05', id: 'band3' },
+                    { color: '#34a853', id: 'band4' },
+                    { color: '#bb86fc', id: 'band5' }
+                ];
+                
+                bands.forEach(band => {
+                    const freq = parseFloat(document.getElementById(`${band.id}-freq`).getAttribute('data-value'));
+                    const gain = parseFloat(document.getElementById(`${band.id}-gain`).getAttribute('data-value'));
+                    
+                    // Only draw if there's some gain
+                    if (Math.abs(gain) > 0.1) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = band.color + '80';  // 50% opacity
+                        ctx.lineWidth = 2;
+                        
+                        // Calculate individual band response
+                        for (let i = 0; i <= 200; i++) {
+                            const logFactor = i / 200;
+                            const f = 20 * Math.pow(1000, logFactor);
+                            
+                            let bandGain = 0;
+                            // Simulate just this band's response
+                            if (band.id === 'band1' || band.id === 'band5') {
+                                // Shelf band
+                                const isLowShelf = band.id === 'band1';
+                                const bandQ = parseFloat(document.getElementById(`${band.id}-q`).getAttribute('data-value'));
+                                
+                                if ((isLowShelf && f < freq) || (!isLowShelf && f > freq)) {
+                                    bandGain = gain;
+                                } else {
+                                    const octaveDistance = Math.log2(f / freq);
+                                    const direction = isLowShelf ? 1 : -1;
+                                    bandGain = gain / (1 + Math.pow(direction * octaveDistance * bandQ * 2, 2));
+                                }
+                            } else {
+                                // Bell band
+                                const bandQ = parseFloat(document.getElementById(`${band.id}-q`).getAttribute('data-value'));
+                                const octaveDistance = Math.log2(f / freq);
+                                bandGain = gain / (1 + Math.pow(octaveDistance * bandQ, 2));
+                            }
+                            
+                            if (i === 0) {
+                                ctx.moveTo(freqToX(f), dbToY(bandGain));
+                            } else {
+                                ctx.lineTo(freqToX(f), dbToY(bandGain));
+                            }
+                        }
+                        
+                        ctx.stroke();
+                    }
+                });
+            }
+            
+            // Draw band handle points
+            function drawBandHandles() {
+                const bands = [
+                    { color: '#4285f4', id: 'band1' },
+                    { color: '#ea4335', id: 'band2' },
+                    { color: '#fbbc05', id: 'band3' },
+                    { color: '#34a853', id: 'band4' },
+                    { color: '#bb86fc', id: 'band5' }
+                ];
+                
+                bands.forEach(band => {
+                    const freq = parseFloat(document.getElementById(`${band.id}-freq`).getAttribute('data-value'));
+                    const gain = parseFloat(document.getElementById(`${band.id}-gain`).getAttribute('data-value'));
+                    
+                    const x = freqToX(freq);
+                    const y = dbToY(gain);
+                    
+                    // Draw handle
+                    ctx.beginPath();
+                    ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = band.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+            
+            // Knob interaction
+            function setupKnobs() {
+                const knobs = document.querySelectorAll('.knob');
+                
+                knobs.forEach(knob => {
+                    let isDragging = false;
+                    let startY = 0;
+                    let startValue = 0;
+                    
+                    knob.addEventListener('mousedown', function(e) {
+                        isDragging = true;
+                        startY = e.clientY;
+                        startValue = parseFloat(knob.getAttribute('data-value'));
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                        e.preventDefault();
+                    });
+                    
+                    function handleMouseMove(e) {
+                        if (!isDragging) return;
+                        
+                        const minVal = parseFloat(knob.getAttribute('data-min'));
+                        const maxVal = parseFloat(knob.getAttribute('data-max'));
+                        const range = maxVal - minVal;
+                        
+                        // Calculate value change based on vertical mouse movement
+                        const deltaY = startY - e.clientY;
+                        const sensitivity = 100;  // pixels per full range
+                        const valueChange = (deltaY / sensitivity) * range;
+                        
+                        // Calculate new value and clamp
+                        let newValue = Math.min(Math.max(startValue + valueChange, minVal), maxVal);
+                        
+                        // Round to 1 decimal place for most values
+                        newValue = Math.round(newValue * 10) / 10;
+                        
+                        // Update knob value
+                        knob.setAttribute('data-value', newValue);
+                        
+                        // Update rotation and display value
+                        updateKnobRotation(knob, newValue, minVal, maxVal);
+                        updateDisplayValue(knob);
+                        
+                        // Redraw EQ curve
+                        drawEQCurve();
+                    }
+                    
+                    function handleMouseUp() {
+                        isDragging = false;
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                    }
+                });
+            }
+            
+            // Update knob rotation based on value
+            function updateKnobRotation(knob, value, min, max) {
+                const knobIndicator = knob.querySelector('::after') || knob;
+                const range = max - min;
+                const percentage = (value - min) / range;
+                const degrees = 45 + (270 * percentage);
+                
+                // Apply rotation to indicator line
+                knob.style.setProperty('--rotation', `${degrees}deg`);
+                knob.style.transform = `rotate(${degrees}deg)`;
+            }
+            
+            // Update display value below knob
+            function updateDisplayValue(knob) {
+                const value = parseFloat(knob.getAttribute('data-value'));
+                const id = knob.id;
+                
+                // Find the corresponding value display
+                const knobContainer = knob.closest('.knob-container');
+                const valueDisplay = knobContainer.querySelector('.knob-value');
+                
+                // Format value based on knob type
+                if (id.includes('-gain')) {
+                    valueDisplay.textContent = value.toFixed(1) + ' dB';
+                } else if (id.includes('-freq')) {
+                    if (value >= 1000) {
+                        valueDisplay.textContent = (value / 1000).toFixed(1) + ' kHz';
+                    } else {
+                        valueDisplay.textContent = value + ' Hz';
+                    }
+                } else {  // q value
+                    valueDisplay.textContent = value.toFixed(1);
+                }
+            }
+            
+            // Initialize all knobs
+            function initializeKnobs() {
+                const knobs = document.querySelectorAll('.knob');
+                
+                knobs.forEach(knob => {
+                    const value = parseFloat(knob.getAttribute('data-value'));
+                    const min = parseFloat(knob.getAttribute('data-min'));
+                    const max = parseFloat(knob.getAttribute('data-max'));
+                    
+                    // Set initial rotation
+                    updateKnobRotation(knob, value, min, max);
+                    
+                    // Set initial display value
+                    updateDisplayValue(knob);
+                });
+            }
+            
+            // Handle display mode buttons
+            function setupDisplayModeButtons() {
+                const eqCurveBtn = document.getElementById('eq-curve-btn');
+                const spectrumBtn = document.getElementById('spectrum-btn');
+                const bothBtn = document.getElementById('both-btn');
+                
+                eqCurveBtn.addEventListener('click', function() {
+                    setActiveButton(eqCurveBtn);
+                    // Set display mode to EQ curve only
+                });
+                
+                spectrumBtn.addEventListener('click', function() {
+                    setActiveButton(spectrumBtn);
+                    // Set display mode to spectrum analyzer only
+                });
+                
+                bothBtn.addEventListener('click', function() {
+                    setActiveButton(bothBtn);
+                    // Set display mode to both
+                });
+                
+                function setActiveButton(activeBtn) {
+                    [eqCurveBtn, spectrumBtn, bothBtn].forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    activeBtn.classList.add('active');
+                }
+            }
+            
+            // Initialize
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            createGridLines();
+            setupKnobs();
+            initializeKnobs();
+            setupDisplayModeButtons();
+            drawEQCurve();
+        });
+    </script>
+</body>
+</html>

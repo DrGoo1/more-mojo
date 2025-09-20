@@ -17,3 +17,33 @@
 2025-09-16 11:53:55,225 - BuildAgent - INFO - BuildAgent doesn't modify files directly, use build_app() and build_plugin() methods
 2025-09-16 11:53:55,225 - AgentHub - INFO - BuildAgent did not make any changes
 2025-09-16 11:53:55,225 - AgentHub - INFO - $ git add -A
+2025-09-16 11:53:55,272 - AgentHub - INFO - Wrote /Volumes/MP 1/MoreMojo/ChatGPT/swarm_summary.md
+2025-09-16 11:53:55,272 - AgentHub - INFO - # Swarm Agent Hub Summary
+## Agent Decisions
+- ProjectAgent: no
+- SchemeAgent: no
+- SwiftAgent: YES
+- CMakeAgent: no
+- WarmthAgent: no
+- ImportAgent: no
+- AnalyzerAgent: YES
+- StructAgent: no
+- BuildAgent: YES
+
+## Log Information
+- App log size: 4406 bytes
+- Plugin log size: 0 bytes
+
+Changes made: YES
+2025-09-16 11:56:28,385 - AgentHub - INFO - Building all components...
+2025-09-16 11:56:28,385 - BuildAgent - INFO - Building app and plugins...
+2025-09-16 11:56:28,385 - BuildAgent - INFO - Building macOS app...
+2025-09-16 11:56:28,386 - BuildAgent - INFO - Running: xcodebuild -project /Volumes/MP 1/MoreMojo/ChatGPT/app/MoreMojoStudio.xcodeproj -scheme MoreMojoStudio -configuration Debug -destination platform=macOS -derivedDataPath /Volumes/MP 1/MoreMojo/ChatGPT/build/app build
+2025-09-16 11:56:30,789 - BuildAgent - INFO - Build completed in 2.40 seconds
+2025-09-16 11:56:30,789 - BuildAgent - ERROR - App build failed with return code 65
+2025-09-16 11:56:30,789 - BuildAgent - INFO - Building AU and VST3 plugins...
+2025-09-16 11:56:30,790 - BuildAgent - INFO - Running CMake configure: cmake -B /Volumes/MP 1/MoreMojo/ChatGPT/build/plugin -S /Volumes/MP 1/MoreMojo/ChatGPT/plugin -DMOJO_FORMATS=AU;VST3;Standalone
+2025-09-16 11:56:33,574 - BuildAgent - ERROR - Plugin CMake configure failed with return code 1
+2025-09-16 11:56:33,575 - BuildAgent - ERROR - App build failed
+2025-09-16 11:56:33,575 - BuildAgent - ERROR - Plugin build failed
+2025-09-16 11:56:33,575 - AgentHub - ERROR - Build failed

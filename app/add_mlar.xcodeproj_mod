@@ -1,0 +1,36 @@
+diff --git a/project.pbxproj b/project.pbxproj
+index 123456..789012 100644
+--- a/project.pbxproj
++++ b/project.pbxproj
+@@ -34,6 +34,7 @@
+ 		F4DC2A02D0B808BE087DFCBD /* StealMojoSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FAAEF726A76CBC5CCA73225 /* StealMojoSwift.swift */; };
+ 		F7C0FE60A9339E9BC5A25AF7 /* WaveformSimple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061CDD65829E07D931471058 /* WaveformSimple.swift */; };
+ 		F8CE57765950843BEE376F62 /* MoreMojoSimpleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFF0E183160FD498A775736 /* MoreMojoSimpleView.swift */; };
++		F9CE57765950843BEE376F63 /* MLARIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFF0E183160FD498A775737 /* MLARIntegration.swift */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXFileReference section */
+@@ -64,6 +65,7 @@
+ 		C7DDF71B6DF52C4CF945F7B9 /* MoreMojoStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoreMojoStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		EAD17F3D5EA0D7E7F8C3EC95 /* UIMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIMode.swift; sourceTree = "<group>"; };
+ 		ECDE7E1A022B0B79489D4954 /* MoreMojoContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMojoContainer.swift; sourceTree = "<group>"; };
++		1CFF0E183160FD498A775737 /* MLARIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLARIntegration.swift; sourceTree = "<group>"; };
+ 		FC1DDB4BF32E4F512E56DB65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+ /* End PBXFileReference section */
+ 
+@@ -104,6 +106,7 @@
+ 				6FAAEF726A76CBC5CCA73225 /* StealMojoSwift.swift */,
+ 				112D95E8E65D1138D94D3BA3 /* TopConsumerView.swift */,
+ 				EAD17F3D5EA0D7E7F8C3EC95 /* UIMode.swift */,
++				1CFF0E183160FD498A775737 /* MLARIntegration.swift */,
+ 				061CDD65829E07D931471058 /* WaveformSimple.swift */,
+ 			);
+ 			path = Sources;
+@@ -214,6 +217,7 @@
+ 				7E117788E090283E0D9C1617 /* TopConsumerView.swift in Sources */,
+ 				10438709035031895C58236E /* UIMode.swift in Sources */,
+ 				F7C0FE60A9339E9BC5A25AF7 /* WaveformSimple.swift in Sources */,
++				F9CE57765950843BEE376F63 /* MLARIntegration.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};

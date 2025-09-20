@@ -1,0 +1,202 @@
+// ========================= UI INTEGRATION PATCH =========================
+// This file contains the changes needed to integrate MLAR UI into the MoreMojo plugin editor
+// Apply these changes to your existing plugin/Source/PluginEditor.h and .cpp files
+
+// ===== In PluginEditor.h =====
+// 1. Add MLAR UI includes
+#include "shared/mlar/ui/views/ConsumerView.h"
+#include "shared/mlar/ui/views/ProOverviewView.h"
+#include "shared/mlar/ui/views/DetailWindows.h"
+
+// 2. Add MLAR UI member variables to the MoreMojoAudioProcessorEditor class
+// Add tab selection for MLAR Consumer UI
+juce::ToggleButton mlarTab { "More Like The Record" };
+
+// Add MLAR Consumer and Pro views
+moremojo::mlar::ConsumerView mlarConsumer;
+moremojo::mlar::ProOverviewView mlarPro;
+
+// Add container for detail windows
+std::unique_ptr<juce::CallOutBox> mlarDetailHost;
+
+// Add parameter attachments for MLAR
+std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>> mlarSliderAttachments;
+std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>> mlarButtonAttachments;
+
+// Add method to open MLAR detail windows
+void openMlarDetail(int index);
+
+// ===== In PluginEditor.cpp =====
+// 1. In constructor, initialize MLAR UI components
+// After your existing UI initialization, add:
+
+// Setup MLAR tab
+addAndMakeVisible(mlarTab);
+mlarTab.setClickingTogglesState(true);
+mlarTab.setToggleState(false, juce::dontSendNotification);
+
+// Initialize MLAR Consumer view
+addAndMakeVisible(mlarConsumer);
+mlarConsumer.setVisible(false); // Hide initially
+
+// Initialize MLAR Pro view
+addAndMakeVisible(mlarPro);
+mlarPro.setVisible(false); // Hide initially
+
+// Setup tab click handler
+mlarTab.onClick = [this]() {
+    bool showMlar = mlarTab.getToggleState();
+    
+    // Hide existing tabs/views when MLAR is active
+    for (auto* existingTab : mainTabs)
+        existingTab->setVisible(!showMlar);
+    
+    // Show appropriate MLAR view based on pro mode state
+    bool proMode = proModeButton.getToggleState();
+    mlarConsumer.setVisible(showMlar && !proMode);
+    mlarPro.setVisible(showMlar && proMode);
+};
+
+// Setup Pro mode toggle to affect MLAR views too
+proModeButton.onClick = [this]() {
+    bool proMode = proModeButton.getToggleState();
+    
+    // Update existing UI (keep your existing code)
+    
+    // Update MLAR views if tab is active
+    if (mlarTab.getToggleState()) {
+        mlarConsumer.setVisible(!proMode);
+        mlarPro.setVisible(proMode);
+    }
+};
+
+// Connect MLAR Pro view to detail windows
+mlarPro.onOpenDetail = [this](int index) {
+    openMlarDetail(index);
+};
+
+// Create parameter attachments for MLAR controls
+createMlarAttachments();
+
+// Setup metrics update timer (if not already created)
+startTimerHz(15);
+
+// 2. Add method to create MLAR parameter attachments
+void MoreMojoAudioProcessorEditor::createMlarAttachments() {
+    // Clear any existing attachments
+    mlarSliderAttachments.clear();
+    mlarButtonAttachments.clear();
+    
+    // Create slider attachments
+    auto createSliderAttachment = [this](const juce::String& paramID, juce::Slider& slider) {
+        mlarSliderAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            audioProcessor.getAPVTS(), paramID, slider));
+    };
+    
+    // Create button attachments
+    auto createButtonAttachment = [this](const juce::String& paramID, juce::Button& button) {
+        mlarButtonAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+            audioProcessor.getAPVTS(), paramID, button));
+    };
+    
+    // Attach Consumer view controls
+    createSliderAttachment("mlar_macro", mlarConsumer.getMacroSlider());
+    
+    // Attach Pro view controls (add for each control as needed)
+    // Example:
+    // createSliderAttachment("mlar_transient_sense", mlarPro.getTransientStrip().getSenseSlider());
+    // createButtonAttachment("mlar_transient_on", mlarPro.getTransientStrip().getEnableButton());
+}
+
+// 3. Add method to open MLAR detail windows
+void MoreMojoAudioProcessorEditor::openMlarDetail(int index) {
+    // Close any existing detail window
+    if (mlarDetailHost) {
+        mlarDetailHost.reset();
+    }
+    
+    // Create the appropriate detail window based on index
+    std::unique_ptr<juce::Component> detail;
+    
+    switch (index) {
+        case 0: // Resampler detail
+            detail = std::make_unique<moremojo::mlar::ResamplerDetail>(audioProcessor);
+            break;
+            
+        case 1: // Transient detail
+            detail = std::make_unique<moremojo::mlar::TransientDetail>(audioProcessor);
+            break;
+            
+        case 2: // Align detail
+            detail = std::make_unique<moremojo::mlar::AlignDetail>(audioProcessor);
+            break;
+            
+        case 3: // Analog detail
+            detail = std::make_unique<moremojo::mlar::AnalogDetail>(audioProcessor);
+            break;
+            
+        case 4: // Limiter detail
+            detail = std::make_unique<moremojo::mlar::LimiterDetail>(audioProcessor);
+            break;
+            
+        case 5: // Consumer Macro detail
+            detail = std::make_unique<moremojo::mlar::ConsumerMacroDetail>(audioProcessor);
+            break;
+            
+        case 6: // Metrics Hub detail
+            detail = std::make_unique<moremojo::mlar::MetricsHubDetail>(audioProcessor);
+            break;
+            
+        default:
+            return;
+    }
+    
+    // Create a call-out box with the detail window
+    auto bounds = mlarPro.getBounds();
+    auto position = bounds.getCentre();
+    
+    mlarDetailHost = juce::CallOutBox::launchAsynchronously(
+        std::move(detail),
+        juce::Rectangle<int>(position.x - 25, position.y - 25, 50, 50),
+        this);
+}
+
+// 4. Update resized() to position MLAR UI components
+void MoreMojoAudioProcessorEditor::resized() {
+    // Keep your existing layout code for main components
+    
+    // Position MLAR tab button
+    int tabWidth = 150;
+    int tabHeight = 24;
+    int tabX = getWidth() - tabWidth - 20;
+    int tabY = 20;
+    mlarTab.setBounds(tabX, tabY, tabWidth, tabHeight);
+    
+    // Position MLAR Consumer and Pro views
+    juce::Rectangle<int> contentArea(20, 60, getWidth() - 40, getHeight() - 80);
+    mlarConsumer.setBounds(contentArea);
+    mlarPro.setBounds(contentArea);
+}
+
+// 5. Update timerCallback() to update MLAR metrics
+void MoreMojoAudioProcessorEditor::timerCallback() {
+    // Keep your existing timer code
+    
+    // Update MLAR metrics if visible
+    if (mlarTab.getToggleState()) {
+        moremojo::mlar::MetricsFrame frame;
+        
+        // Try to get the latest metrics
+        if (audioProcessor.mlarMetrics.pop(frame)) {
+            // Update Consumer view meters
+            if (mlarConsumer.isVisible()) {
+                mlarConsumer.updateMeters(frame);
+            }
+            
+            // Update Pro view meters
+            if (mlarPro.isVisible()) {
+                mlarPro.updateMeters(frame);
+            }
+        }
+    }
+}

@@ -1,0 +1,4 @@
+==> Preflight fixups (optional - keep if you already have this)
+==> Generate Xcode project (XcodeGen if used)
+==> Building app with MLAR integration
+Compiling with MLAR integration...

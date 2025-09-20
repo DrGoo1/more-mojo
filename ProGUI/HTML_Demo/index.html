@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoreMojo Pro GUI Components</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+            background: linear-gradient(90deg, #4285f4, #ea4335, #fbbc05, #34a853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: 10px;
+        }
+        
+        h2 {
+            color: #4285f4;
+            margin-top: 40px;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .component-card {
+            background-color: #222;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+        }
+        
+        .card-preview {
+            height: 200px;
+            background-color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .card-preview img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .card-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .card-link {
+            display: inline-block;
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .card-link:hover {
+            background-color: #2a75f3;
+        }
+        
+        .intro {
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #ccc;
+            font-size: 16px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* EQ card specific styles */
+        .eq-preview {
+            background: linear-gradient(to bottom, #19213a, #0c1021);
+        }
+        
+        .eq-preview::before {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 70%;
+            border-radius: 3px;
+            background: linear-gradient(to right, #4285f4, #ea4335);
+            opacity: 0.2;
+        }
+        
+        /* Compressor card specific styles */
+        .comp-preview {
+            background: linear-gradient(to bottom, #2d1e3a, #1a1122);
+        }
+        
+        .comp-preview::before {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 40%;
+            top: 30%;
+            border-radius: 3px;
+            background: linear-gradient(to right, #ea4335, #4285f4);
+            opacity: 0.2;
+        }
+
+        .comp-preview::after {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 40%;
+            top: 30%;
+            border-radius: 3px;
+            background: linear-gradient(to right, transparent 0%, transparent 60%, #4285f4 100%);
+            clip-path: polygon(0% 50%, 100% 10%, 100% 90%);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MoreMojo Pro GUI Components</h1>
+        
+        <div class="intro">
+            <p>This collection showcases professional audio processing GUI components designed for the MoreMojo Pro interface. These components demonstrate high-resolution, interactive visualizations for audio processing tasks.</p>
+            <p>The demos are built with HTML, CSS, and JavaScript to provide interactive prototypes of the components that will be implemented in JUCE for the final application.</p>
+        </div>
+        
+        <div class="component-grid">
+            <!-- EQ Component -->
+            <div class="component-card">
+                <div class="card-preview eq-preview">
+                    <svg width="80%" height="60%" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                        <!-- EQ Curve -->
+                        <path d="M0,30 C10,40 20,15 30,25 C40,35 50,20 60,10 C70,5 80,25 90,20 C95,18 100,30 100,30" 
+                              stroke="#4285f4" stroke-width="2" fill="none" />
+                        
+                        <!-- Grid Lines -->
+                        <line x1="0" y1="15" x2="100" y2="15" stroke="#333" stroke-width="0.5" />
+                        <line x1="0" y1="30" x2="100" y2="30" stroke="#333" stroke-width="0.5" />
+                        <line x1="0" y1="45" x2="100" y2="45" stroke="#333" stroke-width="0.5" />
+                        
+                        <!-- Band Points -->
+                        <circle cx="30" cy="25" r="3" fill="#4285f4" />
+                        <circle cx="60" cy="10" r="3" fill="#ea4335" />
+                        <circle cx="90" cy="20" r="3" fill="#fbbc05" />
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">EQ Visualization</h3>
+                    <p class="card-description">Professional EQ component with interactive frequency response curve, parametric controls, and spectrum analyzer visualization.</p>
+                    <a href="eq_simple.html" class="card-link">View Demo</a>
+                </div>
+            </div>
+            
+            <!-- Compressor Component -->
+            <div class="component-card">
+                <div class="card-preview comp-preview">
+                    <svg width="80%" height="60%" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Input Waveform -->
+                        <path d="M0,30 C5,30 10,10 15,10 C20,10 25,30 30,30 C35,30 40,50 45,50 C50,50 55,30 60,30 C65,30 70,10 75,10 C80,10 85,30 90,30 C95,30 100,30 100,30" 
+                              stroke="#ea4335" stroke-width="1.5" fill="none" stroke-opacity="0.7" />
+                        
+                        <!-- Output Waveform -->
+                        <path d="M0,30 C5,30 10,15 15,15 C20,15 25,30 30,30 C35,30 40,45 45,45 C50,45 55,30 60,30 C65,30 70,15 75,15 C80,15 85,30 90,30 C95,30 100,30 100,30" 
+                              stroke="#4285f4" stroke-width="2" fill="none" />
+                        
+                        <!-- Threshold Line -->
+                        <line x1="0" y1="20" x2="100" y2="20" stroke="#4285f4" stroke-width="0.5" stroke-dasharray="2,2" />
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Compressor Visualization</h3>
+                    <p class="card-description">Dynamic compressor component with waveform visualization, compression curve, and gain reduction meter.</p>
+                    <a href="compressor_simple.html" class="card-link">View Demo</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>MoreMojo Pro GUI Components © 2025</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Compressor Visualization Demo</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .comp-container {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .display-area {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .waveform-display {
+            flex: 1;
+            height: 300px;
+            background-color: #111;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .compression-curve {
+            width: 300px;
+            height: 300px;
+            background-color: #111;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gain-reduction-meter {
+            width: 40px;
+            height: 300px;
+            background-color: #111;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .knobs-container {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .knob-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .knob-title {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        
+        .knob-container {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        
+        .knob {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #aaa, #666 60%, #333);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 3px rgba(255, 255, 255, 0.4);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .knob::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 35%;
+            background-color: #fff;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            border-radius: 2px;
+        }
+        
+        .knob-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .knob-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4285f4;
+            margin-top: 3px;
+            text-align: center;
+        }
+        
+        .grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .horizontal-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(100, 100, 100, 0.2);
+        }
+        
+        .vertical-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background-color: rgba(100, 100, 100, 0.2);
+        }
+        
+        .labels {
+            position: absolute;
+            font-size: 11px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Audio Processor Pro - Compressor Visualization</h1>
+        
+        <div class="comp-container">
+            <div class="display-area">
+                <!-- Waveform Visualization -->
+                <div class="waveform-display">
+                    <canvas id="waveform-canvas"></canvas>
+                    
+                    <div class="labels" style="left: 10px; top: 10px;">Waveform</div>
+                    <div class="labels" style="bottom: 10px; left: 10px; display: flex; gap: 10px;">
+                        <span style="color: #ea4335; display: flex; align-items: center;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #ea4335; margin-right: 5px;"></span>Input
+                        </span>
+                        <span style="color: #4285f4; display: flex; align-items: center;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #4285f4; margin-right: 5px;"></span>Output
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Compression Curve -->
+                <div class="compression-curve">
+                    <canvas id="curve-canvas"></canvas>
+                    <div class="grid" id="curve-grid"></div>
+                    
+                    <div class="labels" style="left: 10px; top: 10px;">Compression Curve</div>
+                    <div class="labels" style="bottom: 10px; left: 10px;">Input Level (dB)</div>
+                    <div class="labels" style="top: 50%; left: 5px; transform: rotate(-90deg) translateY(-50%); transform-origin: left center;">Output Level (dB)</div>
+                </div>
+                
+                <!-- Gain Reduction Meter -->
+                <div class="gain-reduction-meter">
+                    <canvas id="meter-canvas"></canvas>
+                    <div class="grid" id="meter-grid"></div>
+                    
+                    <div class="labels" style="top: 10px; left: 50%; transform: translateX(-50%);">GR</div>
+                    <div class="labels" style="bottom: 10px; right: 5px;">0</div>
+                    <div class="labels" style="top: 50%; right: 5px;">-10</div>
+                    <div class="labels" style="top: 10px; right: 5px;">-20</div>
+                </div>
+            </div>
+            
+            <div class="knobs-container">
+                <!-- Threshold Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Threshold</div>
+                    <div class="knob-container">
+                        <div class="knob" id="threshold-knob" data-value="-20" data-min="-60" data-max="0"></div>
+                    </div>
+                    <div class="knob-value" id="threshold-value">-20 dB</div>
+                </div>
+                
+                <!-- Ratio Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Ratio</div>
+                    <div class="knob-container">
+                        <div class="knob" id="ratio-knob" data-value="4" data-min="1" data-max="20"></div>
+                    </div>
+                    <div class="knob-value" id="ratio-value">4:1</div>
+                </div>
+                
+                <!-- Attack Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Attack</div>
+                    <div class="knob-container">
+                        <div class="knob" id="attack-knob" data-value="20" data-min="0.1" data-max="100"></div>
+                    </div>
+                    <div class="knob-value" id="attack-value">20 ms</div>
+                </div>
+                
+                <!-- Release Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Release</div>
+                    <div class="knob-container">
+                        <div class="knob" id="release-knob" data-value="200" data-min="10" data-max="1000"></div>
+                    </div>
+                    <div class="knob-value" id="release-value">200 ms</div>
+                </div>
+                
+                <!-- Knee Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Knee</div>
+                    <div class="knob-container">
+                        <div class="knob" id="knee-knob" data-value="6" data-min="0" data-max="24"></div>
+                    </div>
+                    <div class="knob-value" id="knee-value">6 dB</div>
+                </div>
+                
+                <!-- Makeup Gain Knob -->
+                <div class="knob-group">
+                    <div class="knob-title">Makeup</div>
+                    <div class="knob-container">
+                        <div class="knob" id="makeup-knob" data-value="0" data-min="0" data-max="24"></div>
+                    </div>
+                    <div class="knob-value" id="makeup-value">0 dB</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get canvases
+            const waveformCanvas = document.getElementById('waveform-canvas');
+            const waveformCtx = waveformCanvas.getContext('2d');
+            
+            const curveCanvas = document.getElementById('curve-canvas');
+            const curveCtx = curveCanvas.getContext('2d');
+            
+            const meterCanvas = document.getElementById('meter-canvas');
+            const meterCtx = meterCanvas.getContext('2d');
+            
+            // Set canvas dimensions
+            function resizeCanvases() {
+                waveformCanvas.width = waveformCanvas.parentElement.clientWidth;
+                waveformCanvas.height = waveformCanvas.parentElement.clientHeight;
+                
+                curveCanvas.width = curveCanvas.parentElement.clientWidth;
+                curveCanvas.height = curveCanvas.parentElement.clientHeight;
+                
+                meterCanvas.width = meterCanvas.parentElement.clientWidth;
+                meterCanvas.height = meterCanvas.parentElement.clientHeight;
+            }
+            
+            // Create grid lines for compression curve
+            function createCurveGrid() {
+                const gridContainer = document.getElementById('curve-grid');
+                gridContainer.innerHTML = '';
+                
+                // Horizontal lines (every 10dB)
+                for (let db = -60; db <= 0; db += 10) {
+                    const yPos = dbToY(db, 0, -60, curveCanvas.height);
+                    const line = document.createElement('div');
+                    line.className = 'horizontal-line';
+                    line.style.top = `${yPos}px`;
+                    gridContainer.appendChild(line);
+                }
+                
+                // Vertical lines (every 10dB)
+                for (let db = -60; db <= 0; db += 10) {
+                    const xPos = dbToX(db, -60, 0, curveCanvas.width);
+                    const line = document.createElement('div');
+                    line.className = 'vertical-line';
+                    line.style.left = `${xPos}px`;
+                    gridContainer.appendChild(line);
+                }
+            }
+            
+            // Create grid lines for meter
+            function createMeterGrid() {
+                const gridContainer = document.getElementById('meter-grid');
+                gridContainer.innerHTML = '';
+                
+                // Horizontal lines
+                for (let db = 0; db >= -20; db -= 5) {
+                    const yPos = (Math.abs(db) / 20) * meterCanvas.height;
+                    const line = document.createElement('div');
+                    line.className = 'horizontal-line';
+                    line.style.top = `${yPos}px`;
+                    gridContainer.appendChild(line);
+                }
+            }
+            
+            // Convert dB to Y coordinate
+            function dbToY(db, maxDb, minDb, height) {
+                return height - ((db - minDb) / (maxDb - minDb)) * height;
+            }
+            
+            // Convert dB to X coordinate
+            function dbToX(db, minDb, maxDb, width) {
+                return ((db - minDb) / (maxDb - minDb)) * width;
+            }
+            
+            // Calculate gain reduction based on compressor settings
+            function calculateGainReduction(inputLevel) {
+                const threshold = parseFloat(document.getElementById('threshold-knob').getAttribute('data-value'));
+                const ratio = parseFloat(document.getElementById('ratio-knob').getAttribute('data-value'));
+                const knee = parseFloat(document.getElementById('knee-knob').getAttribute('data-value'));
+                
+                if (knee <= 0) {
+                    // Hard knee
+                    if (inputLevel < threshold) {
+                        return 0;
+                    } else {
+                        return (threshold - inputLevel) * (1 - 1/ratio);
+                    }
+                } else {
+                    // Soft knee
+                    if (inputLevel < (threshold - knee/2)) {
+                        return 0;
+                    } else if (inputLevel > (threshold + knee/2)) {
+                        return (threshold - inputLevel) * (1 - 1/ratio);
+                    } else {
+                        // In knee region - simplified calculation
+                        const kneeInput = inputLevel - (threshold - knee/2);
+                        const kneeComp = kneeInput * kneeInput / (2 * knee);
+                        return kneeComp * (1 - 1/ratio);
+                    }
+                }
+            }
+            
+            // Draw compression curve
+            function drawCompressionCurve() {
+                const width = curveCanvas.width;
+                const height = curveCanvas.height;
+                
+                // Clear canvas
+                curveCtx.clearRect(0, 0, width, height);
+                
+                // Draw 1:1 line (no compression)
+                curveCtx.beginPath();
+                curveCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                curveCtx.lineWidth = 1;
+                curveCtx.moveTo(0, height);
+                curveCtx.lineTo(width, 0);
+                curveCtx.stroke();
+                
+                // Draw threshold line
+                const threshold = parseFloat(document.getElementById('threshold-knob').getAttribute('data-value'));
+                const thresholdX = dbToX(threshold, -60, 0, width);
+                
+                curveCtx.beginPath();
+                curveCtx.strokeStyle = '#4285f4';
+                curveCtx.lineWidth = 1;
+                curveCtx.setLineDash([5, 3]);
+                curveCtx.moveTo(thresholdX, 0);
+                curveCtx.lineTo(thresholdX, height);
+                curveCtx.stroke();
+                curveCtx.setLineDash([]);
+                
+                // Draw compression curve
+                curveCtx.beginPath();
+                curveCtx.strokeStyle = '#ffffff';
+                curveCtx.lineWidth = 3;
+                
+                // Start from bottom left (-60dB)
+                curveCtx.moveTo(0, height);
+                
+                for (let x = 0; x <= width; x++) {
+                    const inputDb = -60 + (x / width) * 60;
+                    const gainReduction = calculateGainReduction(inputDb);
+                    const outputDb = inputDb + gainReduction;
+                    const y = dbToY(outputDb, 0, -60, height);
+                    curveCtx.lineTo(x, y);
+                }
+                
+                curveCtx.stroke();
+            }
+            
+            // Generate waveform data
+            function generateWaveform(numSamples = 1000) {
+                const samples = [];
+                
+                // Generate a complex waveform (mix of sine waves)
+                for (let i = 0; i < numSamples; i++) {
+                    const t = i / numSamples;
+                    // Basic sine wave with overtones
+                    let sample = Math.sin(2 * Math.PI * t * 1.0) * 0.8;
+                    sample += Math.sin(2 * Math.PI * t * 2.0) * 0.3;
+                    sample += Math.sin(2 * Math.PI * t * 4.0) * 0.1;
+                    
+                    // Add some peaks
+                    if (i % 100 < 10) {
+                        sample *= 1.4; 
+                    }
+                    
+                    samples.push(sample);
+                }
+                
+                return samples;
+            }
+            
+            // Apply compression to waveform
+            function applyCompression(samples) {
+                const threshold = parseFloat(document.getElementById('threshold-knob').getAttribute('data-value'));
+                const ratio = parseFloat(document.getElementById('ratio-knob').getAttribute('data-value'));
+                const attack = parseFloat(document.getElementById('attack-knob').getAttribute('data-value'));
+                const release = parseFloat(document.getElementById('release-knob').getAttribute('data-value'));
+                const knee = parseFloat(document.getElementById('knee-knob').getAttribute('data-value'));
+                const makeup = parseFloat(document.getElementById('makeup-knob').getAttribute('data-value'));
+                
+                // Convert to dB scale
+                const threshold_linear = Math.pow(10, threshold / 20);
+                
+                // Simple compression (ignoring attack and release)
+                const outputSamples = [];
+                let currentGainReduction = 0;
+                const attackCoeff = Math.exp(-1 / (attack * 0.001 * 100));
+                const releaseCoeff = Math.exp(-1 / (release * 0.001 * 100));
+                
+                for (let i = 0; i < samples.length; i++) {
+                    const inputSample = samples[i];
+                    const inputLevel = Math.abs(inputSample);
+                    
+                    // Convert to dB for gain calculation
+                    const inputDb = 20 * Math.log10(inputLevel + 0.0000001);
+                    
+                    // Calculate target gain reduction
+                    const targetGainReduction = calculateGainReduction(inputDb);
+                    
+                    // Apply attack and release times
+                    if (Math.abs(targetGainReduction) > Math.abs(currentGainReduction)) {
+                        // Attack phase - gain reduction is increasing
+                        currentGainReduction = attackCoeff * currentGainReduction + (1 - attackCoeff) * targetGainReduction;
+                    } else {
+                        // Release phase - gain reduction is decreasing
+                        currentGainReduction = releaseCoeff * currentGainReduction + (1 - releaseCoeff) * targetGainReduction;
+                    }
+                    
+                    // Convert gain reduction from dB to linear gain
+                    const gainFactor = Math.pow(10, currentGainReduction / 20);
+                    
+                    // Apply gain reduction and makeup gain
+                    const outputSample = inputSample * gainFactor * Math.pow(10, makeup / 20);
+                    
+                    outputSamples.push({
+                        input: inputSample,
+                        output: outputSample,
+                        gainReduction: currentGainReduction
+                    });
+                }
+                
+                return outputSamples;
+            }
+            
+            // Draw waveform
+            function drawWaveform() {
+                const width = waveformCanvas.width;
+                const height = waveformCanvas.height;
+                const centerY = height / 2;
+                
+                // Clear canvas
+                waveformCtx.clearRect(0, 0, width, height);
+                
+                // Generate input waveform
+                const inputSamples = generateWaveform();
+                
+                // Apply compression
+                const processedSamples = applyCompression(inputSamples);
+                
+                // Find the peak gain reduction for meter
+                let peakGainReduction = 0;
+                processedSamples.forEach(sample => {
+                    if (sample.gainReduction < peakGainReduction) {
+                        peakGainReduction = sample.gainReduction;
+                    }
+                });
+                
+                // Draw center line
+                waveformCtx.beginPath();
+                waveformCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                waveformCtx.lineWidth = 1;
+                waveformCtx.moveTo(0, centerY);
+                waveformCtx.lineTo(width, centerY);
+                waveformCtx.stroke();
+                
+                // Draw input waveform
+                waveformCtx.beginPath();
+                waveformCtx.strokeStyle = 'rgba(234, 67, 53, 0.7)'; // Red
+                waveformCtx.lineWidth = 2;
+                
+                for (let i = 0; i < processedSamples.length; i++) {
+                    const x = (i / processedSamples.length) * width;
+                    const y = centerY - processedSamples[i].input * (height / 2) * 0.9;
+                    
+                    if (i === 0) {
+                        waveformCtx.moveTo(x, y);
+                    } else {
+                        waveformCtx.lineTo(x, y);
+                    }
+                }
+                
+                waveformCtx.stroke();
+                
+                // Draw output waveform
+                waveformCtx.beginPath();
+                waveformCtx.strokeStyle = '#4285f4'; // Blue
+                waveformCtx.lineWidth = 2;
+                
+                for (let i = 0; i < processedSamples.length; i++) {
+                    const x = (i / processedSamples.length) * width;
+                    const y = centerY - processedSamples[i].output * (height / 2) * 0.9;
+                    
+                    if (i === 0) {
+                        waveformCtx.moveTo(x, y);
+                    } else {
+                        waveformCtx.lineTo(x, y);
+                    }
+                }
+                
+                waveformCtx.stroke();
+                
+                // Update gain reduction meter
+                drawGainReductionMeter(peakGainReduction);
+            }
+            
+            // Draw gain reduction meter
+            function drawGainReductionMeter(gainReduction) {
+                const width = meterCanvas.width;
+                const height = meterCanvas.height;
+                
+                // Clear canvas
+                meterCtx.clearRect(0, 0, width, height);
+                
+                // Limit gain reduction to -20dB for display
+                const normalizedGainReduction = Math.max(gainReduction, -20);
+                const meterHeight = (Math.abs(normalizedGainReduction) / 20) * height;
+                
+                // Draw meter bar with gradient
+                const gradient = meterCtx.createLinearGradient(0, 0, 0, height);
+                gradient.addColorStop(0, '#f44336'); // Red at top (-20dB)
+                gradient.addColorStop(0.5, '#ffeb3b'); // Yellow at middle (-10dB)
+                gradient.addColorStop(1, '#4caf50'); // Green at bottom (0dB)
+                
+                meterCtx.fillStyle = gradient;
+                meterCtx.fillRect(width * 0.25, 0, width * 0.5, meterHeight);
+                
+                // Draw meter value
+                meterCtx.fillStyle = '#ffffff';
+                meterCtx.font = '10px Arial';
+                meterCtx.textAlign = 'center';
+                meterCtx.fillText(Math.round(gainReduction) + 'dB', width / 2, meterHeight - 5);
+            }
+            
+            // Setup knob interaction
+            function setupKnobs() {
+                const knobs = document.querySelectorAll('.knob');
+                
+                knobs.forEach(knob => {
+                    let isDragging = false;
+                    let startY = 0;
+                    let startValue = 0;
+                    
+                    knob.addEventListener('mousedown', function(e) {
+                        isDragging = true;
+                        startY = e.clientY;
+                        startValue = parseFloat(knob.getAttribute('data-value'));
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                        e.preventDefault();
+                    });
+                    
+                    function handleMouseMove(e) {
+                        if (!isDragging) return;
+                        
+                        const minVal = parseFloat(knob.getAttribute('data-min'));
+                        const maxVal = parseFloat(knob.getAttribute('data-max'));
+                        const range = maxVal - minVal;
+                        
+                        // Calculate value change based on vertical mouse movement
+                        const deltaY = startY - e.clientY;
+                        const sensitivity = 100; // pixels per full range
+                        const valueChange = (deltaY / sensitivity) * range;
+                        
+                        // Calculate new value and clamp
+                        let newValue = Math.min(Math.max(startValue + valueChange, minVal), maxVal);
+                        
+                        // Round to 1 decimal place
+                        newValue = Math.round(newValue * 10) / 10;
+                        
+                        // Update knob value
+                        knob.setAttribute('data-value', newValue);
+                        
+                        // Update rotation
+                        updateKnobRotation(knob, newValue, minVal, maxVal);
+                        
+                        // Update display value
+                        updateKnobDisplay(knob.id, newValue);
+                        
+                        // Update visualizations
+                        drawCompressionCurve();
+                        drawWaveform();
+                    }
+                    
+                    function handleMouseUp() {
+                        isDragging = false;
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                    }
+                });
+            }
+            
+            // Update knob rotation based on value
+            function updateKnobRotation(knob, value, min, max) {
+                const range = max - min;
+                const percentage = (value - min) / range;
+                const degrees = 45 + (270 * percentage);
+                
+                // Apply rotation to knob indicator
+                knob.style.setProperty('--rotation', `${degrees}deg`);
+                knob.style.transform = `rotate(${degrees}deg)`;
+            }
+            
+            // Update knob display value
+            function updateKnobDisplay(knobId, value) {
+                let displayValue = '';
+                let valueElement = null;
+                
+                switch (knobId) {
+                    case 'threshold-knob':
+                        displayValue = value.toFixed(1) + ' dB';
+                        valueElement = document.getElementById('threshold-value');
+                        break;
+                    case 'ratio-knob':
+                        displayValue = value.toFixed(1) + ':1';
+                        valueElement = document.getElementById('ratio-value');
+                        break;
+                    case 'attack-knob':
+                        displayValue = value.toFixed(1) + ' ms';
+                        valueElement = document.getElementById('attack-value');
+                        break;
+                    case 'release-knob':
+                        displayValue = value.toFixed(0) + ' ms';
+                        valueElement = document.getElementById('release-value');
+                        break;
+                    case 'knee-knob':
+                        displayValue = value.toFixed(1) + ' dB';
+                        valueElement = document.getElementById('knee-value');
+                        break;
+                    case 'makeup-knob':
+                        displayValue = value.toFixed(1) + ' dB';
+                        valueElement = document.getElementById('makeup-value');
+                        break;
+                }
+                
+                if (valueElement) {
+                    valueElement.textContent = displayValue;
+                }
+            }
+            
+            // Initialize all knobs
+            function initializeKnobs() {
+                const knobs = document.querySelectorAll('.knob');
+                
+                knobs.forEach(knob => {
+                    const value = parseFloat(knob.getAttribute('data-value'));
+                    const min = parseFloat(knob.getAttribute('data-min'));
+                    const max = parseFloat(knob.getAttribute('data-max'));
+                    
+                    // Set initial rotation
+                    updateKnobRotation(knob, value, min, max);
+                    
+                    // Set initial display value
+                    updateKnobDisplay(knob.id, value);
+                });
+            }
+            
+            // Animation loop
+            function animate() {
+                // Regenerate and redraw the waveform to simulate audio processing
+                drawWaveform();
+                requestAnimationFrame(animate);
+            }
+            
+            // Initialize
+            window.addEventListener('resize', function() {
+                resizeCanvases();
+                createCurveGrid();
+                createMeterGrid();
+                drawCompressionCurve();
+            });
+            
+            resizeCanvases();
+            createCurveGrid();
+            createMeterGrid();
+            setupKnobs();
+            initializeKnobs();
+            drawCompressionCurve();
+            
+            // Start animation
+            animate();
+        });
+    </script>
+</body>
+</html>

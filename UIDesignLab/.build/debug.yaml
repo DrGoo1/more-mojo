@@ -1,0 +1,81 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "UIDesignLab-arm64-apple-macosx15.0-debug.exe": ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe>"]
+  "UIDesignLab-arm64-apple-macosx15.0-debug.module": ["<UIDesignLab-arm64-apple-macosx15.0-debug.module>"]
+  "main": ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe>","<UIDesignLab-arm64-apple-macosx15.0-debug.module>"]
+  "test": ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe>","<UIDesignLab-arm64-apple-macosx15.0-debug.module>"]
+default: "main"
+nodes:
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab":
+    is-mutated: true
+commands:
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist":
+    tool: write-auxiliary-file
+    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist"]
+    description: "Write auxiliary file /Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist"
+
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources"]
+    description: "Write auxiliary file /Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources"
+
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList"
+
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+
+  "<UIDesignLab-arm64-apple-macosx15.0-debug.exe>":
+    tool: phony
+    inputs: ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    outputs: ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe>"]
+
+  "<UIDesignLab-arm64-apple-macosx15.0-debug.module>":
+    tool: phony
+    inputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule"]
+    outputs: ["<UIDesignLab-arm64-apple-macosx15.0-debug.module>"]
+
+  "C.UIDesignLab-arm64-apple-macosx15.0-debug.exe":
+    tool: shell
+    inputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/UIDesignLab"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug","-o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab","-module-name","UIDesignLab","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_UIDesignLab_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList","-target","arm64-apple-macosx13.0","-Xlinker","-add_ast_path","-Xlinker","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
+
+  "C.UIDesignLab-arm64-apple-macosx15.0-debug.exe-entitlements":
+    tool: shell
+    inputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist"]
+    outputs: ["<UIDesignLab-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/UIDesignLab"
+    args: ["codesign","--force","--sign","-","--entitlements","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab"]
+
+  "C.UIDesignLab-arm64-apple-macosx15.0-debug.module":
+    tool: shell
+    inputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources"]
+    outputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule"]
+    description: "Compiling Swift Module 'UIDesignLab' (8 sources)"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","UIDesignLab","-emit-dependencies","-emit-module","-emit-module-path","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule","-output-file-map","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/output-file-map.json","-incremental","-c","@/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources","-I","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx13.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","UIDesignLab_main","-color-diagnostics","-swift-version","5","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","uidesignlab"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Package.swift","/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

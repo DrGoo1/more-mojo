@@ -1,0 +1,61 @@
+{
+  "": {
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/master.swiftdeps"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.dia"
+  },
+  "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift": {
+    "dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.d",
+    "object": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o",
+    "swiftmodule": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp~partial.swiftmodule",
+    "swift-dependencies": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swiftdeps",
+    "diagnostics": "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.dia"
+  }
+}

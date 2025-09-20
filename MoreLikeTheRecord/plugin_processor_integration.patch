@@ -1,0 +1,110 @@
+// ========================= PLUGIN PROCESSOR INTEGRATION PATCH =========================
+// This file contains the changes needed to integrate MLAR into the MoreMojo processor
+// Apply these changes to your existing plugin/Source/PluginProcessor.h and .cpp files
+
+// ===== In PluginProcessor.h =====
+// 1. Add MLAR include
+#include "shared/mlar/MLAR.h"
+
+// 2. Add MLAR member variables to the MoreMojoAudioProcessor class
+// After your existing member variables, add:
+moremojo::mlar::Processor mlar;
+juce::AudioBuffer<float> mlarPre;
+juce::AudioBuffer<float> mlarPost;
+
+// 3. Add metrics ring buffer
+template<typename T, size_t N> 
+class MetricsRing {
+public: 
+    bool push(const T& v) { 
+        size_t n = (w + 1) % N; 
+        if (n == r) return false; 
+        data[w] = v; 
+        w = n; 
+        return true; 
+    }
+    
+    bool pop(T& out) { 
+        if (r == w) return false; 
+        out = data[r]; 
+        r = (r + 1) % N; 
+        return true;
+    }
+    
+private: 
+    T data[N]; 
+    size_t r{0}, w{0}; 
+};
+
+MetricsRing<moremojo::mlar::MetricsFrame, 64> mlarMetrics;
+
+// ===== In PluginProcessor.cpp =====
+// 1. In createParameterLayout(), append MLAR parameters
+// Find where you create your parameter layout and add:
+
+auto mlarParams = moremojo::mlar::Processor::createParameterLayout();
+params.insert(params.end(), 
+             std::make_move_iterator(mlarParams.getParameters().begin()), 
+             std::make_move_iterator(mlarParams.getParameters().end()));
+
+// 2. In prepareToPlay(), initialize MLAR
+// In your existing prepareToPlay method, add:
+mlar.prepare(sampleRate, maximumExpectedSamplesPerBlock);
+mlarPre.setSize(getTotalNumInputChannels(), maximumExpectedSamplesPerBlock);
+mlarPost.setSize(getTotalNumInputChannels(), maximumExpectedSamplesPerBlock);
+
+// 3. In processBlock(), add MLAR processing
+// In your existing processBlock method, add:
+// Store pre-processing buffer
+mlarPre.makeCopyOf(buffer);
+
+// Process MLAR if enabled
+if (apvts.getRawParameterValue("mlar_macro")->load() > 0.1f) {
+    mlar.process(buffer, apvts);
+}
+
+// Store post-processing buffer
+mlarPost.makeCopyOf(buffer);
+
+// Update latency if needed
+setLatencySamples(mlar.latencySamples());
+
+// Update metrics (every 8 blocks to avoid CPU overhead)
+static int blockCounter = 0;
+if (++blockCounter >= 8) {
+    blockCounter = 0;
+    moremojo::mlar::MetricsFrame frame;
+    mlar.snapshotMetrics(frame);
+    mlarMetrics.push(frame);
+}
+
+// 4. In resetState() or releaseResources(), add MLAR reset
+mlar.reset();
+
+// 5. Add macro parameter mapping (optional)
+// This can be in processBlock or in a separate parameter listener:
+void updateMacroMapping() {
+    float macro = apvts.getRawParameterValue("mlar_macro")->load() * 0.01f; // Convert to 0-1
+    
+    auto mapWithSoftKnee = [](float value, float start, float end) {
+        float normalized = juce::jlimit(0.0f, 1.0f, (value - start) / (end - start));
+        // Soft knee curve (smoothstep)
+        return normalized * normalized * (3.0f - 2.0f * normalized);
+    };
+    
+    // Map macro to individual parameters
+    if (auto* param = apvts.getParameter("mlar_transient_sense")) {
+        float mapped = mapWithSoftKnee(macro, 0.1f, 0.7f);
+        param->setValueNotifyingHost(mapped);
+    }
+    
+    if (auto* param = apvts.getParameter("mlar_align_amount")) {
+        float mapped = mapWithSoftKnee(macro, 0.3f, 0.9f);
+        param->setValueNotifyingHost(mapped);
+    }
+    
+    if (auto* param = apvts.getParameter("mlar_analog_mix")) {
+        float mapped = 0.3f * mapWithSoftKnee(macro, 0.6f, 1.0f); // Cap at 30%
+        param->setValueNotifyingHost(mapped);
+    }
+}

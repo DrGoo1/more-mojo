@@ -1,0 +1,398 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.UIDesignLab-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources",
+      "importPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "UIDesignLab",
+      "moduleOutputPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule",
+      "objects" : [
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "UIDesignLab_main",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "uidesignlab"
+      ],
+      "outputFileMapPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules/UIDesignLab.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift",
+        "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift"
+      ],
+      "tempsPath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "UIDesignLab" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "UIDesignLab",
+      "-package-name",
+      "uidesignlab",
+      "-c",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift",
+      "-I",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "UIDesignLab_main",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "uidesignlab",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "UIDesignLab" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<entitlement-plist>"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<com.apple.security.get-task-allow>"
+        }
+      ],
+      "outputFilePath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab-entitlement.plist"
+    },
+    "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/CompareKnobsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/EnhancedKnobs.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/HybridMojoKnob.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/MetalKnobDesigner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/PRRoundKnob.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Professional3DControls.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/Project.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/Sources/UIDesignLabApp.swift"
+        }
+      ],
+      "outputFilePath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/sources"
+    },
+    "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/CompareKnobsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/EnhancedKnobs.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/HybridMojoKnob.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/MetalKnobDesigner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/PRRoundKnob.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Professional3DControls.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/Project.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.build/UIDesignLabApp.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/UIDesignLab.product/Objects.LinkFileList"
+    },
+    "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Volumes/MP 1/MoreMojo/ChatGPT/UIDesignLab/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

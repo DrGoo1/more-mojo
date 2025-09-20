@@ -1,0 +1,41 @@
+Sources/ProcessorParams_DEPRECATED.swift:48:32: error: expected '{' in struct
+46 | }
+47 | 
+48 | public struct SwiftMojoAnalyzer.MojoEQMatch: Codable, Equatable {
+   |                                `- error: expected '{' in struct
+49 |     public var bands: [MojoEQBand]
+50 |     
+
+Sources/ProcessorParams_old.swift:48:32: error: expected '{' in struct
+46 | }
+47 | 
+48 | public struct SwiftMojoAnalyzer.MojoEQMatch: Codable, Equatable {
+   |                                `- error: expected '{' in struct
+49 |     public var bands: [MojoEQBand]
+50 |     
+
+Sources/SharedTypes.swift:43:32: error: expected '{' in struct
+41 | }
+42 | 
+43 | public struct SwiftMojoAnalyzer.MojoEQMatch: Codable, Equatable { 
+   |                                `- error: expected '{' in struct
+44 |     public var bands: [MojoEQBand] 
+45 |     
+
+Sources/SwiftMojoAnalyzer.swift:8:2: error: duplicate attribute
+  5 | @_exported import struct ProcessorParams.ProcessorParams
+  6 | @_exported import struct ProcessorParams.MojoEQBand
+  7 | @_exported // Using SwiftMojoAnalyzer.MojoEQMatch
+    | `- note: attribute already specified here
+  8 | @_exported // Using SwiftMojoAnalyzer.MojoRecommendation
+    |  `- error: duplicate attribute
+  9 | 
+ 10 | /// Mock implementation of the SwiftMojoAnalyzer for CI builds
+
+Sources/SwiftMojoAnalyzer.swift:5:26: error: no such module 'ProcessorParams'
+  3 | import Accelerate
+  4 | // Import types from ProcessorParams
+  5 | @_exported import struct ProcessorParams.ProcessorParams
+    |                          `- error: no such module 'ProcessorParams'
+  6 | @_exported import struct ProcessorParams.MojoEQBand
+  7 | @_exported // Using SwiftMojoAnalyzer.MojoEQMatch
