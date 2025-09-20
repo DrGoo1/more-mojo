@@ -1,0 +1,6 @@
+[submodule "ProGUI/JUCE"]
+	path = ProGUI/JUCE
+	url = https://github.com/juce-framework/JUCE.git
+[submodule "ProGUI/PluginGuiMagic"]
+	path = ProGUI/PluginGuiMagic
+	url = https://github.com/ffAudio/PluginGuiMagic.git

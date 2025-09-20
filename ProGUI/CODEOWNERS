@@ -1,0 +1,14 @@
+# Code owners for agentic swarm collaboration
+# Format: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner (falls back when no path match)
+* @DrGoo1
+
+# Areas
+/ProGUI/Tests/TestApp/              @swift-host
+/ProGUI/SwiftBridge/                @swift-bridge
+/ProGUI/Source/                     @juce-ui
+/ProGUI/shared/ui_core/             @ui-core
+/ProGUI/Tools/JuceRunner/           @juce-runner
+/ProGUI/.github/workflows/          @ci
+/ProGUI/scripts/                    @tooling
