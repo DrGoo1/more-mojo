@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+866c0cb673ec25e12d1176fcaefd1bf3 NeptuneMeterTest_artefacts/JuceLibraryCode/NeptuneMeterTest/PkgInfo

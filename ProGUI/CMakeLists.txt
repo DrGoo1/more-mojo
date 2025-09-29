@@ -94,6 +94,40 @@ target_link_libraries(MoreMojoProGUIApp
 # Create directory for assets
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Assets")
 
+# Build a reusable UI static library for UIDemoComponent to avoid ODR across targets
+add_library(progui_ui STATIC
+    Source/UIDemoComponent.cpp
+    Source/UIDemoComponent.h
+    Source/NeptuneTestWindow.h
+    Source/Neptune/NeptuneKnobDemo.cpp
+    Source/Neptune/NeptuneKnobDemo.h
+    Source/Components/NeptuneVUMeter.cpp
+    Source/Components/NeptuneVUMeter.h
+    Source/Components/NeptuneKnob.cpp
+    Source/Components/NeptuneMixKnob.cpp
+    Source/Components/NeptuneKnob.h
+    Source/Components/ProcessControl.cpp
+    Source/Components/ProcessControl.h
+    Source/Components/NeptuneISPSubwindow.cpp
+    Source/Components/NeptuneISPSubwindow.h
+    Source/Components/HorizontalBarMeter.cpp
+)
+target_include_directories(progui_ui
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/ui_core
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_link_libraries(progui_ui
+    PUBLIC
+        juce::juce_gui_extra
+        juce::juce_gui_basics
+        juce::juce_graphics
+        juce::juce_events
+        juce::juce_core
+        ui_core
+)
+
 # Shared library to package into a Framework for the Swift TestApp
 add_library(MoreMojoProGUI SHARED
     Source/ProGUIWrapper.cpp
@@ -132,6 +166,7 @@ target_link_libraries(MoreMojoProGUI PRIVATE
     juce::juce_core
     juce::juce_events
     ui_core
+    progui_ui
 )
 
 # Temporarily export all symbols (disable exported_symbols_list filtering)

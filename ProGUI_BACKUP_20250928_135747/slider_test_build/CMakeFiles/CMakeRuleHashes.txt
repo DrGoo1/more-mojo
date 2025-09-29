@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+57294ead863c907e1286d76efc53fb92 NeptuneSliderTest_artefacts/JuceLibraryCode/NeptuneSliderTest/PkgInfo

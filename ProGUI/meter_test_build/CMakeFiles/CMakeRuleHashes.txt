@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+07794cd37ee3ac6a271af1abb36cc040 LedBarMeterTest_artefacts/JuceLibraryCode/LedBarMeterTest/PkgInfo

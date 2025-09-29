@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+8a84953b358a2dc31241125cb289ed58 AudioGraphicsTest_artefacts/JuceLibraryCode/AudioGraphicsTest/PkgInfo

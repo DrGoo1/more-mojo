@@ -1,0 +1,4 @@
+[SkinManager] Loaded skin from folder: /Volumes/MP 1/MoreMojo/Knobs/App Knobs folder/kit-07, knobImage=270x270, meterVUFrame=0x0, meterLEDStrip=0x0, filesFound=396, knobFrames=396, vuFrames=0, buttonFrames=2, switchFrames=2
+[SkinManager] Loaded skin from folder: /Volumes/MP 1/MoreMojo/Knobs/VU-Meter-04, knobImage=270x270, meterVUFrame=500x500, meterLEDStrip=0x0, filesFound=137, knobFrames=396, vuFrames=137, buttonFrames=2, switchFrames=2
+[resized] ledMeter1=0 0 0 0 ledMeter2=0 0 0 0 waveform=16 16 0 0 transport=28 16 0 0
+[resized] ledMeter1=24 24 0 0 ledMeter2=24 24 0 0 waveform=148 16 604 528 transport=160 544 580 40

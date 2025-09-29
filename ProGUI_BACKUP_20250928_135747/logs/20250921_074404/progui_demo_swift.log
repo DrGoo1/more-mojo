@@ -1,0 +1,10 @@
+[Swift] 2025-09-20 18:54:54 +0000 [ContentView] onAppear -> opening standalone demo window
+[Swift] 2025-09-20 18:54:54 +0000 [Standalone] Opened ProGUI Standalone Demo window
+[Swift] 2025-09-20 19:22:09 +0000 [ContentView] onAppear -> opening standalone demo window
+[Swift] 2025-09-20 19:22:09 +0000 [Standalone] Creating window and container
+[Swift] 2025-09-20 19:22:09 +0000 [Standalone] Added visible header/border/big-label
+[Swift] 2025-09-20 19:22:09 +0000 [Standalone] Opened ProGUI Standalone Demo window; container subviews=4
+[Swift] 2025-09-20 20:06:21 +0000 [ContentView] onAppear -> opening standalone demo window
+[Swift] 2025-09-20 20:06:21 +0000 [Standalone] Creating window and container
+[Swift] 2025-09-20 20:06:21 +0000 [Standalone] Added visible header/border/big-label
+[Swift] 2025-09-20 20:06:21 +0000 [Standalone] Opened ProGUI Standalone Demo window; container subviews=4

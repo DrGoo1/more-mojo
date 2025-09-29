@@ -1,0 +1,10 @@
+_ProGUI_CreateComponent
+_ProGUI_DestroyComponent
+_ProGUI_ResizeComponent
+_ProGUI_SetParameterValue
+_ProGUI_GetParameterValue
+_ProGUI_ProcessAudio
+_ProGUI_GetNativeView
+_ProGUI_SetOverlayVisible
+_ProGUI_SetTestSignalEnabled
+_ProGUI_AttachToParent

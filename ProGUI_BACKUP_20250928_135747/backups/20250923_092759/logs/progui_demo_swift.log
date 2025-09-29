@@ -1,0 +1,4 @@
+[Swift] 2025-09-23 13:27:46 +0000 [ContentView] onAppear -> opening standalone demo window
+[Swift] 2025-09-23 13:27:46 +0000 [Standalone] Creating window and container
+[Swift] 2025-09-23 13:27:46 +0000 [Standalone] Added visible header/border/big-label
+[Swift] 2025-09-23 13:27:46 +0000 [Standalone] Opened ProGUI Standalone Demo window; container subviews=3; retained bridge

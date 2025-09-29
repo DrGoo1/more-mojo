@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+23a694bca607d721aaa995188d6471b9 SimpleNeptuneTest_artefacts/JuceLibraryCode/SimpleNeptuneTest/PkgInfo
