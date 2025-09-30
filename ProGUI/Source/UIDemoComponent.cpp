@@ -1814,6 +1814,98 @@ void UIDemoComponent::openProcessSubwindow(int processIndex)
         float lookaheadMeter = 0.0f;
     };
     
+    // SRC Control Window - Sample Rate Conversion
+    class SRCControlWindow : public juce::Component
+    {
+    public:
+        SRCControlWindow(const juce::String& name, const juce::String& desc) : processName(name)
+        {
+            setSize(800, 600);
+            
+            try {
+                // Create preset dropdown
+                presetCombo = std::make_unique<juce::ComboBox>();
+                if (presetCombo) {
+                    presetCombo->addItem("CD Mastering (44.1k)", 1);
+                    presetCombo->addItem("Broadcast (48k)", 2);
+                    presetCombo->addItem("Hi-Res Audio (96k)", 3);
+                    presetCombo->setSelectedId(1);
+                    presetCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
+                    presetCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF87ceeb));
+                    addAndMakeVisible(*presetCombo);
+                }
+                
+                // Create knobs
+                qualityKnob = std::make_unique<CleanKnob>();
+                if (qualityKnob) addAndMakeVisible(*qualityKnob);
+                
+                rippleKnob = std::make_unique<CleanKnob>();
+                if (rippleKnob) addAndMakeVisible(*rippleKnob);
+                
+                stopbandKnob = std::make_unique<CleanKnob>();
+                if (stopbandKnob) addAndMakeVisible(*stopbandKnob);
+                
+                // Create INFO button
+                infoButton = std::make_unique<juce::TextButton>("INFO");
+                if (infoButton) {
+                    infoButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xFF4a4a6a));
+                    infoButton->onClick = [this]() { 
+                        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
+                            "SRC Information", "Sample Rate Conversion with advanced filtering", "OK");
+                    };
+                    addAndMakeVisible(*infoButton);
+                }
+            } catch (const std::exception& e) {
+                proguiLog("[ERROR] Exception in SRCControlWindow constructor: " + juce::String(e.what()));
+            }
+        }
+        
+        void paint(juce::Graphics& g) override
+        {
+            g.fillAll(juce::Colour(0xFF1a1a2e));
+            g.setColour(juce::Colours::white);
+            g.setFont(18.0f);
+            g.drawText(processName, 20, 20, getWidth() - 40, 30, juce::Justification::centred);
+            
+            // Preset area
+            g.setColour(juce::Colour(0xFF1a2a3a));
+            g.fillRoundedRectangle(getWidth()/2 - 90, 95, 180, 60, 8.0f);
+            g.setColour(juce::Colour(0xFF87ceeb));
+            g.setFont(13.0f);
+            g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
+            
+            // Labels
+            g.setColour(juce::Colours::white);
+            g.setFont(11.0f);
+            g.drawText("Quality", 70, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Ripple", 190, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Stopband", 310, 240, 80, 40, juce::Justification::centred);
+        }
+        
+        void resized() override
+        {
+            if (presetCombo) presetCombo->setBounds(getWidth()/2 - 75, 120, 150, 25);
+            if (qualityKnob) qualityKnob->setBounds(80, 280, 60, 60);
+            if (rippleKnob) rippleKnob->setBounds(200, 280, 60, 60);
+            if (stopbandKnob) stopbandKnob->setBounds(320, 280, 60, 60);
+            if (infoButton) infoButton->setBounds(getWidth() - 80, 20, 60, 30);
+        }
+        
+    private:
+        juce::String processName;
+        std::unique_ptr<juce::ComboBox> presetCombo;
+        std::unique_ptr<CleanKnob> qualityKnob, rippleKnob, stopbandKnob;
+        std::unique_ptr<juce::TextButton> infoButton;
+    };
+    
+    // Placeholder classes for other processes (will implement fully later)
+    using JitterControlWindow = SRCControlWindow;
+    using AlignControlWindow = SRCControlWindow;
+    using TransientControlWindow = SRCControlWindow;
+    using DeesserControlWindow = SRCControlWindow;
+    using MLARControlWindow = SRCControlWindow;
+    using TransformerControlWindow = SRCControlWindow;
+    
     switch (processIndex)
     {
         case 0: // ISP
@@ -1831,16 +1923,115 @@ void UIDemoComponent::openProcessSubwindow(int processIndex)
             opts.launchAsync();
             break;
         }
-        default:
-            juce::String message = "Testing the 3-layer system:\n\n";
-            message += "1. Main UI -> OPEN CONTROLS button (working)\n";
-            message += "2. Control Window -> Knobs + INFO button (ISP available)\n";
-            message += "3. Info Window -> Detailed explanations (working)\n\n";
-            message += "Try the ISP process to see the full 3-layer system!";
+        case 1: // SRC
+        {
+            auto* controlWindow = new SRCControlWindow("SRC - SAMPLE RATE CONVERSION", 
+                "High-quality sample rate conversion with advanced filtering");
             
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 2: // JITTER
+        {
+            auto* controlWindow = new JitterControlWindow("JITTER - JITTER & ACCUMULATION", 
+                "Advanced jitter analysis and bit-depth management");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 3: // ALIGN
+        {
+            auto* controlWindow = new AlignControlWindow("ALIGN - PHASE/TIME ALIGNMENT", 
+                "Precision phase and time alignment for stereo imaging");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 4: // TRANSIENT
+        {
+            auto* controlWindow = new TransientControlWindow("TRANSIENT - TRANSIENT PROCESSING", 
+                "Advanced transient detection and enhancement");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 5: // DEESSER
+        {
+            auto* controlWindow = new DeesserControlWindow("DEESSER - DE-ESSING", 
+                "Intelligent sibilance detection and reduction");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 6: // MLAR
+        {
+            auto* controlWindow = new MLARControlWindow("MLAR - MID-LATERAL RECONSTRUCTION", 
+                "Advanced stereo field processing and imaging");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        case 7: // TRANSFORMER
+        {
+            auto* controlWindow = new TransformerControlWindow("TRANSFORMER - TRANSFORMER MODELING", 
+                "Vintage transformer saturation and harmonic enhancement");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        default:
             juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
-                processName + " - Coming Soon", 
-                message, 
+                "Unknown Process", 
+                "Process index out of range.", 
                 "OK");
             return;
     }
