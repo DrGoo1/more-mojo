@@ -111,6 +111,28 @@ add_library(progui_ui STATIC
     Source/Components/NeptuneISPSubwindow.cpp
     Source/Components/NeptuneISPSubwindow.h
     Source/Components/HorizontalBarMeter.cpp
+    # Control info window with graphics
+    Source/ControlInfoWindow.cpp
+    Source/ControlInfoWindow.h
+    # Professional subwindow files
+    Source/ProcessSubwindow.cpp
+    Source/ProcessSubwindow.h
+    Source/ISPSubwindow.cpp
+    Source/ISPSubwindow.h
+    Source/SRCSubwindow.cpp
+    Source/SRCSubwindow.h
+    Source/JitterSubwindow.cpp
+    Source/JitterSubwindow.h
+    Source/AlignSubwindow.cpp
+    Source/AlignSubwindow.h
+    Source/TransientSubwindow.cpp
+    Source/TransientSubwindow.h
+    Source/DeEsserSubwindow.cpp
+    Source/DeEsserSubwindow.h
+    Source/MLARSubwindow.cpp
+    Source/MLARSubwindow.h
+    Source/TransformerSubwindow.cpp
+    Source/TransformerSubwindow.h
 )
 target_include_directories(progui_ui
     PUBLIC

@@ -18,6 +18,17 @@
 #include "../shared/ui_core/SkinnedKnob.h"
 #include "../shared/ui_core/SkinnedSlider.h"
 
+// Forward declarations for subwindow classes
+class ProcessSubwindow;
+class ISPSubwindow;
+class SRCSubwindow;
+class JitterSubwindow;
+class AlignSubwindow;
+class TransientSubwindow;
+class DeEsserSubwindow;
+class MLARSubwindow;
+class TransformerSubwindow;
+
 // Fallback: draw vector controls directly in paint() for guaranteed visibility
 #ifndef PROGUI_VECTOR_FALLBACK
 #define PROGUI_VECTOR_FALLBACK 0
@@ -168,6 +179,17 @@ private:
             g.setColour(juce::Colours::white);
             g.setFont(8.0f); // Larger button font
             g.drawText("OPEN CONTROLS", buttonArea, juce::Justification::centred);
+        }
+        
+        void mouseDown(const juce::MouseEvent& event) override
+        {
+            // Forward mouse events to parent UIDemoComponent
+            if (auto* parent = getParentComponent())
+            {
+                // Convert local coordinates to parent coordinates
+                auto parentEvent = event.getEventRelativeTo(parent);
+                parent->mouseDown(parentEvent);
+            }
         }
         
     private:

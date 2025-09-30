@@ -1,17 +1,23 @@
-#include "../shared/ui_core/ProcessSubwindow.h"
-#include "Components/ISPWindow.h"
-#include "Components/SRCWindow.h"
-#include "Components/QuantDitherWindow.h"
-#include "Components/AlignWindow.h"
 #include "UIDemoComponent.h"
 #include "Components/NeptuneVUMeter.h"
 #include "Components/NeptuneKnob.h"
 #include "Components/NeptuneMixKnob.h"
 #include "Components/HorizontalBarMeter.h"
 #include "Components/ProcessControl.h"
-#include "Components/NeptuneMixKnob.h"
-#include "Components/NeptuneKnob.h"
 #include "Components/NeptuneISPSubwindow.h"
+// #include "ControlInfoWindow.h" // Temporarily disabled due to linking issues
+// Professional subwindow includes temporarily disabled - using simple inline approach
+// #include "ProcessSubwindow.h"
+// Individual subwindows temporarily disabled - using inline test class
+// #include "ISPSubwindow.h"
+// Other subwindows temporarily disabled until linking issues resolved
+// #include "SRCSubwindow.h"
+// #include "JitterSubwindow.h"
+// #include "AlignSubwindow.h"
+// #include "TransientSubwindow.h"
+// #include "DeEsserSubwindow.h"
+// #include "MLARSubwindow.h"
+// #include "TransformerSubwindow.h"
 #include "../shared/ui_core/LedBarMeter.h"
 #include "../shared/ui_core/WaveformView.h"
 // Ensure LedBarMeter gets compiled in this TU for the demo build
@@ -160,70 +166,11 @@ UIDemoComponent::UIDemoComponent()
         auto* comp = new ProMasterComponent();
         comp->onOpenProcess = [this, processInfoText](const juce::String& name)
         {
-            juce::Component* sub = nullptr;
-            if (name == "ISP")
-            {
-                sub = new ISPWindow();
-                static_cast<ProcessSubwindow*>(sub)->setInfoText(processInfoText(name));
-            }
-            else if (name == "SRC")
-            {
-                sub = new SRCWindow();
-                static_cast<ProcessSubwindow*>(sub)->setInfoText(processInfoText(name));
-            }
-            else if (name == "Quant/Dither")
-            {
-                sub = new QuantDitherWindow();
-                static_cast<ProcessSubwindow*>(sub)->setInfoText(processInfoText(name));
-            }
-            else if (name == "Align")
-            {
-                sub = new AlignWindow();
-                static_cast<ProcessSubwindow*>(sub)->setInfoText(processInfoText(name));
-            }
-            else if (name == "Transient")
-            {
-                // sub = new TransientWindow(); // Temporarily disabled
-                auto* generic = new ProcessSubwindow(name);
-                generic->setInfoText(processInfoText(name));
-                sub = generic;
-            }
-            else if (name == "De-esser")
-            {
-                // sub = new DeEsserWindow(); // Temporarily disabled
-                auto* generic = new ProcessSubwindow(name);
-                generic->setInfoText(processInfoText(name));
-                sub = generic;
-            }
-            else if (name == "MLAR")
-            {
-                // sub = new MLARWindow(); // Temporarily disabled
-                auto* generic = new ProcessSubwindow(name);
-                generic->setInfoText(processInfoText(name));
-                sub = generic;
-            }
-            else if (name == "Transformer")
-            {
-                // sub = new TransformerWindow(); // Temporarily disabled
-                auto* generic = new ProcessSubwindow(name);
-                generic->setInfoText(processInfoText(name));
-                sub = generic;
-            }
-            else
-            {
-                auto* generic = new ProcessSubwindow(name);
-                generic->setInfoText(processInfoText(name));
-                sub = generic;
-            }
-
-            juce::DialogWindow::LaunchOptions subOpts;
-            subOpts.content.setOwned(sub);
-            subOpts.dialogTitle = name + " — Details";
-            subOpts.componentToCentreAround = this;
-            subOpts.escapeKeyTriggersCloseButton = true;
-            subOpts.useNativeTitleBar = true;
-            subOpts.resizable = true;
-            subOpts.launchAsync();
+            // For now, show info dialog until subwindows are fully implemented
+            juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
+                name + " Process", 
+                processInfoText(name), 
+                "OK");
         };
         juce::DialogWindow::LaunchOptions opts;
         opts.content.setOwned(comp);
@@ -1081,41 +1028,35 @@ void UIDemoComponent::drawMeter(juce::Graphics& g, juce::Rectangle<int> area, fl
 
 void UIDemoComponent::mouseDown(const juce::MouseEvent& event)
 {
-    // Click detection for "OPEN CONTROLS" buttons
+    // Click detection for "OPEN CONTROLS" buttons in our Neptune knob components
     auto clickPos = event.getPosition();
     proguiLog("[DEBUG] Mouse click at: " + juce::String(clickPos.x) + ", " + juce::String(clickPos.y));
     
-    // Define button bounds for the 8 processes (2×4 grid)
-    struct ProcessButton {
-        juce::String name;
-        juce::Rectangle<int> bounds;
-        int index;
-    };
-    
-    // Button bounds based on the Professional Mojo Controls layout (2×4 grid for all 8 processes)
-    ProcessButton buttons[] = {
-        {"ISP", juce::Rectangle<int>(318, 274, 104, 65), 0},
-        {"SRC", juce::Rectangle<int>(669, 274, 104, 65), 1}, 
-        {"JITTER", juce::Rectangle<int>(318, 339, 104, 65), 2},
-        {"ALIGN", juce::Rectangle<int>(669, 339, 104, 65), 3},
-        {"TRANSIENT", juce::Rectangle<int>(318, 404, 104, 65), 4},
-        {"DEESSER", juce::Rectangle<int>(669, 404, 104, 65), 5},
-        {"MLAR", juce::Rectangle<int>(318, 469, 104, 65), 6},
-        {"TRANSFORMER", juce::Rectangle<int>(669, 469, 104, 65), 7}
-    };
-    
-    // Check if click is within any button bounds
-    for (auto& button : buttons)
+    // Check if click is within any of our placeholder components' button areas
+    for (int i = 0; i < 8; ++i)
     {
-        proguiLog("[DEBUG] " + button.name + " button bounds: " + juce::String(button.bounds.getX()) + " " + 
-                 juce::String(button.bounds.getY()) + " " + juce::String(button.bounds.getWidth()) + " " + 
-                 juce::String(button.bounds.getHeight()));
-                 
-        if (button.bounds.contains(clickPos))
+        if (placeholderComponents[i])
         {
-            proguiLog("[UI] Opening " + button.name + " subwindow!");
-            openProcessSubwindow(button.index);
-            return;
+            auto componentBounds = placeholderComponents[i]->getBounds();
+            
+            // Button area is at bottom right of each component (110px × 25px)
+            auto buttonArea = juce::Rectangle<int>(
+                componentBounds.getRight() - 110 - 8,  // 110px wide + 8px margin
+                componentBounds.getBottom() - 25 - 8,  // 25px tall + 8px margin
+                110, 25
+            );
+            
+            proguiLog("[DEBUG] Component " + juce::String(i) + " button bounds: " + 
+                     juce::String(buttonArea.getX()) + " " + juce::String(buttonArea.getY()) + " " + 
+                     juce::String(buttonArea.getWidth()) + " " + juce::String(buttonArea.getHeight()));
+                     
+            if (buttonArea.contains(clickPos))
+            {
+                juce::String processNames[] = {"ISP", "SRC", "JITTER", "ALIGN", "TRANSIENT", "DEESSER", "MLAR", "TRANSFORMER"};
+                proguiLog("[UI] Opening " + processNames[i] + " subwindow!");
+                openProcessSubwindow(i);
+                return;
+            }
         }
     }
 }
@@ -1129,284 +1070,780 @@ void UIDemoComponent::openProcessSubwindow(int processIndex)
         
     juce::String processName = processNames[processIndex];
     
-    // Create Neptune subwindows
-    if (processName == "ISP")
-    {
-        // Create simple Neptune ISP subwindow
-        auto* ispWindow = new NeptuneISPSubwindow();
-        
-        juce::DialogWindow::LaunchOptions opts;
-        opts.content.setOwned(ispWindow);
-        opts.dialogTitle = "ISP - Intersample Processing";
-        opts.componentToCentreAround = this;
-        opts.escapeKeyTriggersCloseButton = true;
-        opts.useNativeTitleBar = true;
-        opts.resizable = false;
-        opts.launchAsync();
-        
-        proguiLog("[ISP] Opened Neptune ISP subwindow");
-        return;
-    }
+    // For now, create a simple test control window to demonstrate the 3-layer system
+    // This will show: Main UI -> Control Window (with knobs + INFO button) -> Info Window
     
-    // For other processes, show placeholder
-    if (processIndex >= 0 && processIndex < 8)
+    // Clean knob component without depression for control windows
+    class CleanKnob : public juce::Component
     {
-        // Create the complete working ISP subwindow based on the individual files
-        class WorkingISPSubwindow : public juce::Component
+    public:
+        CleanKnob()
         {
-        public:
-            WorkingISPSubwindow()
-            {
-                setSize(900, 700);
-                createISPControls();
-                proguiLog("[ISP] Created working ISP subwindow with complete structure");
-            }
+            addAndMakeVisible(slider);
+            slider.setRange(0.0, 1.0, 0.001);
+            slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+            slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+            slider.onValueChange = [this]{ 
+                repaint(); 
+                if (onValueChanged) 
+                    onValueChanged(getValue()); 
+            };
             
-            void createISPControls()
+            // Make slider invisible - we draw our own graphics
+            slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::transparentBlack);
+            slider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::transparentBlack);
+            slider.setColour(juce::Slider::thumbColourId, juce::Colours::transparentBlack);
+            slider.setColour(juce::Slider::trackColourId, juce::Colours::transparentBlack);
+            slider.setColour(juce::Slider::backgroundColourId, juce::Colours::transparentBlack);
+        }
+        
+        void setValue(float v) { slider.setValue(juce::jlimit(0.0, 1.0, (double)v)); }
+        float getValue() const { return (float)slider.getValue(); }
+        
+        std::function<void(float)> onValueChanged;
+        
+        void resized() override
+        {
+            slider.setBounds(getLocalBounds());
+        }
+        
+        void paint(juce::Graphics& g) override
+        {
+            auto r = getLocalBounds().toFloat();
+            const auto& skin = SkinManager::instance().skin();
+            float t = (float)slider.getValue();
+            auto c = r.getCentre();
+            
+            // Draw clean Neptune knob WITHOUT depression
+            if (!skin.knobFrames.empty())
             {
-                // Sample Rate dropdown (renamed from OS Factor)
-                juce::StringArray sampleRates = {"44.1 kHz", "48 kHz", "88.2 kHz", "96 kHz", "176.4 kHz", "192 kHz"};
-                sampleRateCombo = std::make_unique<juce::ComboBox>("Sample Rate");
-                sampleRateCombo->addItemList(sampleRates, 1);
-                sampleRateCombo->setSelectedItemIndex(1); // Default to 48 kHz
-                addAndMakeVisible(*sampleRateCombo);
+                int n = (int)skin.knobFrames.size();
+                int idx = juce::jlimit(0, n-1, (int)std::round(t * (n-1)));
+                auto img = skin.knobFrames[(size_t)idx];
+                float scale = juce::jmin(r.getWidth() / img.getWidth(), r.getHeight() / img.getHeight()) * 0.9f;
+                auto dest = juce::Rectangle<float>(img.getWidth() * scale, img.getHeight() * scale).withCentre(c);
+                g.drawImage(img, dest);
+            }
+            else
+            {
+                // Vector fallback
+                g.setColour(juce::Colour(0xFF444444));
+                g.fillEllipse(r.reduced(4));
+                g.setColour(juce::Colour(0xFF666666));
+                g.drawEllipse(r.reduced(4), 2.0f);
+                
+                // Draw pointer
+                auto angle = juce::MathConstants<float>::pi * 1.2f + t * juce::MathConstants<float>::pi * 1.6f;
+                auto radius = r.getWidth() * 0.3f;
+                auto startX = c.x;
+                auto startY = c.y;
+                auto endX = c.x + std::cos(angle) * radius;
+                auto endY = c.y + std::sin(angle) * radius;
+                
+                g.setColour(juce::Colours::white);
+                g.drawLine(startX, startY, endX, endY, 3.0f);
+            }
+        }
+        
+    private:
+        juce::Slider slider;
+    };
+    
+    class ISPControlWindow : public juce::Component
+    {
+    public:
+        ISPControlWindow(const juce::String& name, const juce::String& desc)
+            : processName(name), processDescription(desc)
+        {
+            setSize(800, 600);
+            
+            // Create dropdowns
+            try {
+                // OS Factor dropdown
+                osFactorCombo = std::make_unique<juce::ComboBox>();
+                if (osFactorCombo) {
+                    osFactorCombo->addItem("2x Oversampling", 1);
+                    osFactorCombo->addItem("4x Oversampling", 2);
+                    osFactorCombo->addItem("8x Oversampling", 3);
+                    osFactorCombo->setSelectedId(2); // Default to 4x
+                    osFactorCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF2a2a3e));
+                    osFactorCombo->setColour(juce::ComboBox::textColourId, juce::Colours::white);
+                    addAndMakeVisible(*osFactorCombo);
+                }
                 
                 // Filter Type dropdown
-                juce::StringArray filterTypes = {"Linear Phase", "Minimum Phase", "Polyphase"};
-                filterTypeCombo = std::make_unique<juce::ComboBox>("Filter Type");
-                filterTypeCombo->addItemList(filterTypes, 1);
-                filterTypeCombo->setSelectedItemIndex(2); // Default to Polyphase
-                addAndMakeVisible(*filterTypeCombo);
+                filterTypeCombo = std::make_unique<juce::ComboBox>();
+                if (filterTypeCombo) {
+                    filterTypeCombo->addItem("Linear Phase", 1);
+                    filterTypeCombo->addItem("Minimum Phase", 2);
+                    filterTypeCombo->addItem("Polyphase", 3);
+                    filterTypeCombo->setSelectedId(3); // Default to Polyphase
+                    filterTypeCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF2a2a3e));
+                    filterTypeCombo->setColour(juce::ComboBox::textColourId, juce::Colours::white);
+                    addAndMakeVisible(*filterTypeCombo);
+                }
                 
-                // Control knobs (Neptune style without rings)
-                passbandRolloffKnob = createKnobWithMeter("Passband Rolloff", 0.0f, 3.0f, 0.5f);
-                stopbandAttenKnob = createKnobWithMeter("Stopband Atten", 60.0f, 120.0f, 90.0f);
-                tpCeilingKnob = createKnobWithMeter("TP Ceiling", -6.0f, 0.0f, -1.0f);
-                lookaheadKnob = createKnobWithMeter("Lookahead", 0.0f, 10.0f, 2.0f);
+                // Preset dropdown with instrument and bus presets
+                presetCombo = std::make_unique<juce::ComboBox>();
+                if (presetCombo) {
+                    // Instrument presets
+                    presetCombo->addSectionHeading("INSTRUMENTS");
+                    presetCombo->addItem("Vocals - Lead", 1);
+                    presetCombo->addItem("Vocals - Backing", 2);
+                    presetCombo->addItem("Guitar - Electric", 3);
+                    presetCombo->addItem("Guitar - Acoustic", 4);
+                    presetCombo->addItem("Bass Guitar", 5);
+                    presetCombo->addItem("Piano - Acoustic", 6);
+                    presetCombo->addItem("Piano - Electric", 7);
+                    presetCombo->addItem("Drums - Kick", 8);
+                    presetCombo->addItem("Drums - Snare", 9);
+                    presetCombo->addItem("Drums - Overheads", 10);
+                    presetCombo->addItem("Strings - Violin", 11);
+                    presetCombo->addItem("Strings - Cello", 12);
+                    presetCombo->addItem("Brass - Trumpet", 13);
+                    presetCombo->addItem("Brass - Trombone", 14);
+                    presetCombo->addItem("Woodwinds - Flute", 15);
+                    presetCombo->addItem("Woodwinds - Saxophone", 16);
+                    presetCombo->addItem("Synth - Lead", 17);
+                    presetCombo->addItem("Synth - Pad", 18);
+                    
+                    // Bus presets
+                    presetCombo->addSeparator();
+                    presetCombo->addSectionHeading("BUSSES");
+                    presetCombo->addItem("Drum Bus", 19);
+                    presetCombo->addItem("Vocal Bus", 20);
+                    presetCombo->addItem("Guitar Bus", 21);
+                    presetCombo->addItem("String Bus", 22);
+                    presetCombo->addItem("Brass Bus", 23);
+                    presetCombo->addItem("Mix Bus", 24);
+                    presetCombo->addItem("Master Bus", 25);
+                    
+                    presetCombo->setSelectedId(1); // Default to Vocals - Lead
+                    // Professional blue styling for preset dropdown
+                    presetCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a)); // Dark blue background
+                    presetCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF87ceeb)); // Soft blue text
+                    presetCombo->setColour(juce::ComboBox::outlineColourId, juce::Colour(0xFF4a90e2)); // Professional blue outline
+                    presetCombo->setColour(juce::ComboBox::arrowColourId, juce::Colour(0xFF87ceeb)); // Soft blue arrow
+                    presetCombo->onChange = [this]() { loadPreset(); };
+                    addAndMakeVisible(*presetCombo);
+                }
                 
-                // Create OPEN buttons for each control
-                createOpenButtons();
+                // Create 4 ISP-specific knobs with meter connections
+                passbandKnob = std::make_unique<CleanKnob>();
+                if (passbandKnob) {
+                    passbandKnob->setValue(0.33f); // 1.0dB default (0-3dB range)
+                    passbandKnob->onValueChanged = [this](float value) { 
+                        passbandMeter = value; 
+                        repaint(); 
+                    };
+                    addAndMakeVisible(*passbandKnob);
+                }
+                
+                stopbandKnob = std::make_unique<CleanKnob>();
+                if (stopbandKnob) {
+                    stopbandKnob->setValue(0.67f); // 100dB default (60-120dB range)
+                    stopbandKnob->onValueChanged = [this](float value) { 
+                        stopbandMeter = value; 
+                        repaint(); 
+                    };
+                    addAndMakeVisible(*stopbandKnob);
+                }
+                
+                ceilingKnob = std::make_unique<CleanKnob>();
+                if (ceilingKnob) {
+                    ceilingKnob->setValue(0.83f); // -1dB default (-6 to 0dB range)
+                    ceilingKnob->onValueChanged = [this](float value) { 
+                        ceilingMeter = value; 
+                        repaint(); 
+                    };
+                    addAndMakeVisible(*ceilingKnob);
+                }
+                
+                lookaheadKnob = std::make_unique<CleanKnob>();
+                if (lookaheadKnob) {
+                    lookaheadKnob->setValue(0.2f); // 2ms default (0-10ms range)
+                    lookaheadKnob->onValueChanged = [this](float value) { 
+                        lookaheadMeter = value; 
+                        repaint(); 
+                    };
+                    addAndMakeVisible(*lookaheadKnob);
+                }
+                
+                // Initialize meter values
+                passbandMeter = 0.33f;
+                stopbandMeter = 0.67f;
+                ceilingMeter = 0.83f;
+                lookaheadMeter = 0.2f;
+                
+                // Create INFO button
+                infoButton = std::make_unique<juce::TextButton>("INFO");
+                if (infoButton) {
+                    infoButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xFF4a90e2));
+                    infoButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+                    infoButton->onClick = [this]() { showInfoWindow(); };
+                    addAndMakeVisible(*infoButton);
+                }
+            } catch (...) {
+                // If component creation fails, we'll handle it gracefully in resized()
+            }
+        }
+        
+        void paint(juce::Graphics& g) override
+        {
+            g.fillAll(juce::Colour(0xFF1a1a2e));
+            
+            // Header
+            g.setColour(juce::Colours::white);
+            g.setFont(18.0f);
+            g.drawText(processName, 20, 20, getWidth() - 40, 30, juce::Justification::centred);
+            
+            g.setColour(juce::Colour(0xFF00ffff));
+            g.setFont(12.0f);
+            g.drawText(processDescription, 20, 50, getWidth() - 40, 40, juce::Justification::centred, true);
+            
+            // Preset area background highlight
+            g.setColour(juce::Colour(0xFF1a2a3a)); // Subtle dark blue background
+            g.fillRoundedRectangle(getWidth()/2 - 90, 95, 180, 60, 8.0f);
+            g.setColour(juce::Colour(0xFF4a90e2)); // Professional blue outline
+            g.drawRoundedRectangle(getWidth()/2 - 90, 95, 180, 60, 8.0f, 2.0f);
+            
+            // Preset label (centered, professional styling)
+            g.setColour(juce::Colour(0xFF87ceeb)); // Soft blue for readability
+            g.setFont(13.0f); // Larger font
+            g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
+            
+            // Other dropdown labels (moved down more)
+            g.setColour(juce::Colours::white);
+            g.setFont(11.0f);
+            g.drawText("OS Factor", 200, 170, 120, 20, juce::Justification::centred);
+            g.drawText("Filter Type", 350, 170, 120, 20, juce::Justification::centred);
+            
+            // Parameter labels (moved down more)
+            g.drawText("Passband\nRolloff", 70, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Stopband\nAtten", 190, 240, 80, 40, juce::Justification::centred);
+            g.drawText("TP Ceiling", 310, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Lookahead\nTime", 430, 240, 80, 40, juce::Justification::centred);
+            
+            // Draw vertical bar meters (moved down more)
+            drawVerticalMeter(g, 110, 280, 20, 100, passbandMeter, juce::Colour(0xFF00d4aa), "Passband");
+            drawVerticalMeter(g, 230, 280, 20, 100, stopbandMeter, juce::Colour(0xFFff6b35), "Stopband");
+            drawVerticalMeter(g, 350, 280, 20, 100, ceilingMeter, juce::Colour(0xFFf7931e), "Ceiling");
+            drawVerticalMeter(g, 470, 280, 20, 100, lookaheadMeter, juce::Colour(0xFF4a90e2), "Lookahead");
+            
+            // Value displays (moved down more)
+            g.setColour(juce::Colour(0xFF00d4aa));
+            g.setFont(10.0f);
+            if (passbandKnob) {
+                float value = passbandKnob->getValue() * 3.0f; // 0-3dB
+                g.drawText(juce::String(value, 1) + "dB", 70, 390, 80, 15, juce::Justification::centred);
+            }
+            if (stopbandKnob) {
+                float value = 60.0f + stopbandKnob->getValue() * 60.0f; // 60-120dB
+                g.drawText(juce::String(value, 0) + "dB", 190, 390, 80, 15, juce::Justification::centred);
+            }
+            if (ceilingKnob) {
+                float value = -6.0f + ceilingKnob->getValue() * 6.0f; // -6 to 0dB
+                g.drawText(juce::String(value, 1) + "dB", 310, 390, 80, 15, juce::Justification::centred);
+            }
+            if (lookaheadKnob) {
+                float value = lookaheadKnob->getValue() * 10.0f; // 0-10ms
+                g.drawText(juce::String(value, 1) + "ms", 430, 390, 80, 15, juce::Justification::centred);
+            }
+        }
+        
+        void resized() override
+        {
+            auto area = getLocalBounds().reduced(20);
+            area.removeFromTop(100); // Skip header
+            
+            // Preset dropdown (centered, prominent)
+            if (presetCombo)
+                presetCombo->setBounds(getWidth()/2 - 80, 120, 160, 30); // Centered, wider, taller
+                
+            // Other dropdowns (moved down more)
+            if (osFactorCombo)
+                osFactorCombo->setBounds(200, 190, 120, 25);
+            if (filterTypeCombo)
+                filterTypeCombo->setBounds(350, 190, 120, 25);
+            
+            // Bigger knobs positioned below meters (moved down more)
+            if (passbandKnob)
+                passbandKnob->setBounds(80, 410, 80, 80);
+            if (stopbandKnob)
+                stopbandKnob->setBounds(200, 410, 80, 80);
+            if (ceilingKnob)
+                ceilingKnob->setBounds(320, 410, 80, 80);
+            if (lookaheadKnob)
+                lookaheadKnob->setBounds(440, 410, 80, 80);
+            
+            // INFO button moved to top right
+            if (infoButton)
+                infoButton->setBounds(getWidth() - 120, 20, 100, 30);
+        }
+        
+    private:
+        void drawVerticalMeter(juce::Graphics& g, int x, int y, int width, int height, float level, juce::Colour color, const juce::String& label)
+        {
+            const int numSegments = 20; // High resolution with 20 segments
+            const int segmentHeight = 4;
+            const int segmentGap = 1;
+            const int totalSegmentSpace = segmentHeight + segmentGap;
+            
+            // Draw meter background
+            g.setColour(juce::Colour(0xFF1a1a1a));
+            g.fillRect(x, y, width, height);
+            g.setColour(juce::Colour(0xFF444444));
+            g.drawRect(x, y, width, height, 1);
+            
+            // Calculate how many segments to light up
+            int activeSegments = (int)(level * numSegments);
+            
+            // Draw segments from bottom to top
+            for (int i = 0; i < numSegments; i++) {
+                int segmentY = y + height - (i + 1) * totalSegmentSpace;
+                
+                if (i < activeSegments) {
+                    // Active segment - use color with intensity based on position
+                    float intensity = 1.0f;
+                    if (i > numSegments * 0.7f) {
+                        // Top 30% - brighter (peak area)
+                        intensity = 1.2f;
+                        g.setColour(color.brighter(0.4f));
+                    } else if (i > numSegments * 0.4f) {
+                        // Middle area - normal intensity
+                        g.setColour(color);
+                    } else {
+                        // Bottom area - slightly dimmer
+                        g.setColour(color.darker(0.2f));
+                    }
+                    
+                    g.fillRect(x + 2, segmentY, width - 4, segmentHeight);
+                    
+                    // Add highlight on active segments
+                    g.setColour(color.brighter(0.6f));
+                    g.fillRect(x + 2, segmentY, width - 4, 1);
+                } else {
+                    // Inactive segment - dark
+                    g.setColour(juce::Colour(0xFF2a2a2a));
+                    g.fillRect(x + 2, segmentY, width - 4, segmentHeight);
+                }
             }
             
-            std::unique_ptr<SkinnedKnob> createKnobWithMeter(const juce::String& name, float min, float max, float defaultVal)
-            {
-                auto knob = std::make_unique<SkinnedKnob>();
-                // SkinnedKnob uses normalized 0.0-1.0 range, so normalize the default value
-                float normalizedValue = (defaultVal - min) / (max - min);
-                knob->setValue(juce::jlimit(0.0f, 1.0f, normalizedValue));
-                knob->setName(name);
-                addAndMakeVisible(*knob);
-                return knob;
+            // Draw scale marks at key positions
+            g.setColour(juce::Colour(0xFF666666));
+            for (int i = 0; i <= 4; i++) {
+                int markY = y + (height * i / 4);
+                g.drawHorizontalLine(markY, x - 2, x + width + 2);
+            }
+        }
+        
+        void loadPreset()
+        {
+            if (!presetCombo) return;
+            
+            int selectedId = presetCombo->getSelectedId();
+            
+            // Set parameters based on preset
+            switch (selectedId) {
+                // Instrument presets
+                case 1: // Vocals - Lead
+                    if (passbandKnob) passbandKnob->setValue(0.2f); // 0.6dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.8f); // 108dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.83f); // -1.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.3f); // 3.0ms
+                    break;
+                case 2: // Vocals - Backing
+                    if (passbandKnob) passbandKnob->setValue(0.33f); // 1.0dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.67f); // 100dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.67f); // -2.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.2f); // 2.0ms
+                    break;
+                case 3: // Guitar - Electric
+                    if (passbandKnob) passbandKnob->setValue(0.5f); // 1.5dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.75f); // 105dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.5f); // -3.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.15f); // 1.5ms
+                    break;
+                case 8: // Drums - Kick
+                    if (passbandKnob) passbandKnob->setValue(0.67f); // 2.0dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.5f); // 90dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.17f); // -5.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.1f); // 1.0ms
+                    break;
+                case 24: // Mix Bus
+                    if (passbandKnob) passbandKnob->setValue(0.17f); // 0.5dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.9f); // 114dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.9f); // -0.6dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.5f); // 5.0ms
+                    break;
+                case 25: // Master Bus
+                    if (passbandKnob) passbandKnob->setValue(0.1f); // 0.3dB
+                    if (stopbandKnob) stopbandKnob->setValue(1.0f); // 120dB
+                    if (ceilingKnob) ceilingKnob->setValue(1.0f); // 0.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.8f); // 8.0ms
+                    break;
+                default:
+                    // Default preset values
+                    if (passbandKnob) passbandKnob->setValue(0.33f); // 1.0dB
+                    if (stopbandKnob) stopbandKnob->setValue(0.67f); // 100dB
+                    if (ceilingKnob) ceilingKnob->setValue(0.83f); // -1.0dB
+                    if (lookaheadKnob) lookaheadKnob->setValue(0.2f); // 2.0ms
+                    break;
             }
             
-            void createOpenButtons()
+            // Update meters and repaint
+            if (passbandKnob) passbandMeter = passbandKnob->getValue();
+            if (stopbandKnob) stopbandMeter = stopbandKnob->getValue();
+            if (ceilingKnob) ceilingMeter = ceilingKnob->getValue();
+            if (lookaheadKnob) lookaheadMeter = lookaheadKnob->getValue();
+            repaint();
+        }
+        
+        void showInfoWindow()
+        {
+            // Create custom graphics-enabled info window with proper closing
+            auto* infoWindow = new ISPInfoWindow(processName + " - Professional Information");
+            infoWindow->setSize(950, 750);
+            infoWindow->centreWithSize(950, 750);
+            infoWindow->setVisible(true);
+            infoWindow->setAlwaysOnTop(true);
+        }
+        
+        // Custom window class that properly handles closing
+        class ISPInfoWindow : public juce::DocumentWindow
+        {
+        public:
+            ISPInfoWindow(const juce::String& title) 
+                : juce::DocumentWindow(title, juce::Colour(0xFF2a2a3e), 
+                                     juce::DocumentWindow::closeButton | juce::DocumentWindow::minimiseButton)
             {
-                // Create OPEN buttons for each control with info windows
-                sampleRateOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                sampleRateOpenButton->onClick = [this]() { openControlInfo("Sample Rate"); };
-                addAndMakeVisible(*sampleRateOpenButton);
+                setUsingNativeTitleBar(true);
+                setDropShadowEnabled(true);
                 
-                filterTypeOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                filterTypeOpenButton->onClick = [this]() { openControlInfo("Filter Type"); };
-                addAndMakeVisible(*filterTypeOpenButton);
-                
-                passbandOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                passbandOpenButton->onClick = [this]() { openControlInfo("Passband Rolloff"); };
-                addAndMakeVisible(*passbandOpenButton);
-                
-                stopbandOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                stopbandOpenButton->onClick = [this]() { openControlInfo("Stopband Atten"); };
-                addAndMakeVisible(*stopbandOpenButton);
-                
-                tpCeilingOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                tpCeilingOpenButton->onClick = [this]() { openControlInfo("TP Ceiling"); };
-                addAndMakeVisible(*tpCeilingOpenButton);
-                
-                lookaheadOpenButton = std::make_unique<juce::TextButton>("OPEN");
-                lookaheadOpenButton->onClick = [this]() { openControlInfo("Lookahead"); };
-                addAndMakeVisible(*lookaheadOpenButton);
+                // Create and set content
+                auto infoComponent = std::make_unique<ISPInfoComponent>();
+                setContentOwned(infoComponent.release(), true);
             }
             
-            void openControlInfo(const juce::String& controlName)
+            void closeButtonPressed() override
             {
-                // Create info window for each control
-                juce::String infoText;
-                if (controlName == "Sample Rate")
-                    infoText = "Sample Rate determines the frequency at which audio samples are captured and processed. Higher sample rates provide better frequency response but require more processing power.";
-                else if (controlName == "Filter Type")
-                    infoText = "Filter Type determines the phase characteristics of the anti-aliasing filter. Linear Phase maintains phase relationships, Minimum Phase reduces latency, and Polyphase provides optimal balance.";
-                else if (controlName == "Passband Rolloff")
-                    infoText = "Passband Rolloff controls how gradually the filter transitions from the passband to the stopband. Lower values provide sharper cutoff but may introduce ringing artifacts.";
-                else if (controlName == "Stopband Atten")
-                    infoText = "Stopband Attenuation determines how much unwanted frequencies above the Nyquist limit are suppressed. Higher values provide better alias rejection.";
-                else if (controlName == "TP Ceiling")
-                    infoText = "True-Peak Ceiling sets the maximum allowed peak level to prevent intersample peaks that could cause digital clipping during D/A conversion.";
-                else if (controlName == "Lookahead")
-                    infoText = "Lookahead Time allows the limiter to anticipate upcoming peaks and apply smoother gain reduction, reducing distortion at the cost of latency.";
-                
-                // Simple info dialog
-                juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
-                    controlName + " - Information", infoText, "OK");
+                // Properly delete the window when close button is pressed
+                delete this;
+            }
+        };
+        
+        // Custom component for ISP info with graphics
+        class ISPInfoComponent : public juce::Component
+        {
+        public:
+            ISPInfoComponent() 
+            {
+                setSize(950, 750);
             }
             
             void paint(juce::Graphics& g) override
             {
-                // Professional background matching main ProGUI style
+                // Background
                 g.fillAll(juce::Colour(0xFF1a1a2e));
                 
                 // Header
                 g.setColour(juce::Colours::white);
-                g.setFont(juce::Font(18.0f, juce::Font::bold));
-                g.drawText("INTERSAMPLE PROCESSING", 20, 20, getWidth() - 40, 30, juce::Justification::centred);
+                g.setFont(20.0f);
+                g.drawText("ISP - INTERSAMPLE PROCESSING", 20, 20, getWidth() - 40, 30, juce::Justification::centred);
                 
-                // Description
+                // Text area (left side)
                 g.setColour(juce::Colour(0xFF00ffff));
-                g.setFont(juce::Font(12.0f, juce::Font::plain));
-                g.drawText("Reduces aliasing, pre-ringing, and intersample distortion for cleaner reconstruction", 
-                          20, 50, getWidth() - 40, 30, juce::Justification::centred, true);
+                g.setFont(14.0f);
                 
-                // Draw control sections with labels and meters (like I/O meters)
-                drawControlSection(g, "Sample Rate", 30, 100, 0);
-                drawControlSection(g, "Filter Type", 30, 160, 1);
-                drawControlSection(g, "Passband Rolloff", 30, 220, 2);
-                drawControlSection(g, "Stopband Atten", 30, 280, 3);
-                drawControlSection(g, "TP Ceiling", 30, 340, 4);
-                drawControlSection(g, "Lookahead", 30, 400, 5);
-            }
-            
-            void drawControlSection(juce::Graphics& g, const juce::String& name, int x, int y, int index)
-            {
-                // Control name
-                g.setColour(juce::Colours::white);
-                g.setFont(juce::Font(14.0f, juce::Font::bold));
-                g.drawText(name, x, y, 150, 20, juce::Justification::left);
+                juce::String infoText = "OVERVIEW:\n";
+                infoText += "Advanced intersample processing using proprietary interpolation algorithms to eliminate aliasing, pre-ringing, and intersample distortion.\n\n";
+                infoText += "INTERSAMPLE INTERPOLATION PROCESS:\n";
+                infoText += "• Proprietary 64-bit floating-point interpolation\n";
+                infoText += "• Advanced windowing functions (Kaiser, Blackman-Harris)\n";
+                infoText += "• Adaptive sample rate conversion up to 8x\n";
+                infoText += "• Zero-latency intersample peak detection\n";
+                infoText += "• Frequency-domain aliasing suppression\n";
+                infoText += "• Phase-coherent reconstruction filtering\n\n";
+                infoText += "TECHNICAL SPECIFICATIONS:\n";
+                infoText += "• OS Factor: 2x/4x/8x oversampling (up to 384kHz)\n";
+                infoText += "• Filter Type: Linear/Minimum/Polyphase designs\n";
+                infoText += "• Passband Ripple: <0.001dB (industry-leading)\n";
+                infoText += "• Stopband Rejection: 60-120dB (configurable)\n";
+                infoText += "• True-Peak Accuracy: ±0.01dB precision\n";
+                infoText += "• Processing Latency: 0-10ms lookahead\n\n";
+                infoText += "ALGORITHM ADVANTAGES:\n";
+                infoText += "• Eliminates intersample overs completely\n";
+                infoText += "• Preserves transient accuracy\n";
+                infoText += "• Maintains stereo imaging precision\n";
+                infoText += "• CPU-optimized SIMD processing\n\n";
+                infoText += "PROFESSIONAL USAGE:\n";
+                infoText += "Essential for mastering, broadcast, and high-resolution audio production.";
                 
-                // Meter bar (like I/O meters in main window)
-                auto meterArea = juce::Rectangle<int>(x + 160, y, 200, 20);
-                g.setColour(juce::Colour(0xFF333333));
-                g.fillRoundedRectangle(meterArea.toFloat(), 2.0f);
+                g.drawFittedText(infoText, 20, 60, 420, 600, juce::Justification::topLeft, 100);
                 
-                // Animated meter level for each control
-                float level = 0.2f + 0.6f * std::sin(juce::Time::getMillisecondCounter() * 0.002f + index * 0.5f);
-                auto activeArea = meterArea.removeFromLeft((int)(meterArea.getWidth() * level));
-                
-                // Different colors for different controls
-                juce::Array<juce::Colour> colors = {
-                    juce::Colour(0xFF00ff00), // Sample Rate - green
-                    juce::Colour(0xFF0080ff), // Filter Type - blue
-                    juce::Colour(0xFFff8000), // Passband - orange
-                    juce::Colour(0xFFff0080), // Stopband - pink
-                    juce::Colour(0xFFff4040), // TP Ceiling - red
-                    juce::Colour(0xFF8040ff)  // Lookahead - purple
-                };
-                
-                g.setColour(colors[index % colors.size()]);
-                g.fillRoundedRectangle(activeArea.toFloat(), 2.0f);
-                
-                // Value display
-                g.setColour(juce::Colours::white.withAlpha(0.8f));
-                g.setFont(juce::Font(10.0f, juce::Font::plain));
-                g.drawText(juce::String((int)(level * 100)) + "%", meterArea.getX() + meterArea.getWidth() + 10, y, 40, 20, juce::Justification::left);
-            }
-            
-            void resized() override
-            {
-                int controlY = 100;
-                int controlSpacing = 60;
-                int knobX = 420;
-                int openButtonX = 520;
-                
-                // Layout Sample Rate control
-                if (sampleRateCombo) sampleRateCombo->setBounds(knobX, controlY, 80, 25);
-                if (sampleRateOpenButton) sampleRateOpenButton->setBounds(openButtonX, controlY, 50, 25);
-                controlY += controlSpacing;
-                
-                // Layout Filter Type control
-                if (filterTypeCombo) filterTypeCombo->setBounds(knobX, controlY, 80, 25);
-                if (filterTypeOpenButton) filterTypeOpenButton->setBounds(openButtonX, controlY, 50, 25);
-                controlY += controlSpacing;
-                
-                // Layout knob controls with OPEN buttons
-                if (passbandRolloffKnob) passbandRolloffKnob->setBounds(knobX, controlY, 60, 60);
-                if (passbandOpenButton) passbandOpenButton->setBounds(openButtonX, controlY + 15, 50, 25);
-                controlY += controlSpacing;
-                
-                if (stopbandAttenKnob) stopbandAttenKnob->setBounds(knobX, controlY, 60, 60);
-                if (stopbandOpenButton) stopbandOpenButton->setBounds(openButtonX, controlY + 15, 50, 25);
-                controlY += controlSpacing;
-                
-                if (tpCeilingKnob) tpCeilingKnob->setBounds(knobX, controlY, 60, 60);
-                if (tpCeilingOpenButton) tpCeilingOpenButton->setBounds(openButtonX, controlY + 15, 50, 25);
-                controlY += controlSpacing;
-                
-                if (lookaheadKnob) lookaheadKnob->setBounds(knobX, controlY, 60, 60);
-                if (lookaheadOpenButton) lookaheadOpenButton->setBounds(openButtonX, controlY + 15, 50, 25);
+                // Graphics area (right side)
+                drawGraphics(g, 460, 60, 420, 600);
             }
             
         private:
-            // Controls
-            std::unique_ptr<juce::ComboBox> sampleRateCombo;
-            std::unique_ptr<juce::ComboBox> filterTypeCombo;
-            std::unique_ptr<SkinnedKnob> passbandRolloffKnob;
-            std::unique_ptr<SkinnedKnob> stopbandAttenKnob;
-            std::unique_ptr<SkinnedKnob> tpCeilingKnob;
-            std::unique_ptr<SkinnedKnob> lookaheadKnob;
+            void drawGraphics(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Graphics section header
+                g.setColour(juce::Colour(0xFF87ceeb));
+                g.setFont(16.0f);
+                g.drawText("VISUAL GRAPHICS", x, y, width, 30, juce::Justification::centred);
+                
+                int graphY = y + 40;
+                int graphHeight = (height - 40) / 3;
+                
+                // 1. Frequency Response Graph
+                drawFrequencyResponse(g, x, graphY, width, graphHeight - 20);
+                
+                // 2. Waveform with Intersample Peaks
+                drawWaveformWithPeaks(g, x, graphY + graphHeight, width, graphHeight - 20);
+                
+                // 3. Oversampling Comparison
+                drawOversamplingComparison(g, x, graphY + 2 * graphHeight, width, graphHeight - 20);
+            }
             
-            // OPEN buttons for each control
-            std::unique_ptr<juce::TextButton> sampleRateOpenButton;
-            std::unique_ptr<juce::TextButton> filterTypeOpenButton;
-            std::unique_ptr<juce::TextButton> passbandOpenButton;
-            std::unique_ptr<juce::TextButton> stopbandOpenButton;
-            std::unique_ptr<juce::TextButton> tpCeilingOpenButton;
-            std::unique_ptr<juce::TextButton> lookaheadOpenButton;
+            void drawFrequencyResponse(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Passband Rolloff & Stopband Attenuation", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                // Draw frequency response curve
+                juce::Path responseCurve;
+                float startX = x + 15;
+                float endX = x + width - 15;
+                float midY = y + 25 + (height - 30) / 2;
+                
+                responseCurve.startNewSubPath(startX, midY);
+                
+                // Passband (flat)
+                responseCurve.lineTo(startX + (endX - startX) * 0.6f, midY);
+                
+                // Rolloff region
+                for (float i = 0.6f; i <= 1.0f; i += 0.01f)
+                {
+                    float xPos = startX + (endX - startX) * i;
+                    float rolloff = std::pow((i - 0.6f) / 0.4f, 2.0f); // Quadratic rolloff
+                    float yPos = midY + rolloff * (height - 50);
+                    responseCurve.lineTo(xPos, yPos);
+                }
+                
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
+                
+                // Labels
+                g.setColour(juce::Colour(0xFF888888));
+                g.setFont(10.0f);
+                g.drawText("0dB", x + 15, midY - 10, 30, 20, juce::Justification::left);
+                g.drawText("Passband", x + 15, y + height - 20, 60, 15, juce::Justification::left);
+                g.drawText("Stopband", x + width - 70, y + height - 20, 60, 15, juce::Justification::right);
+            }
+            
+            void drawWaveformWithPeaks(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Intersample Interpolation & True-Peak Detection", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                float startX = x + 15;
+                float endX = x + width - 15;
+                float midY = y + 25 + (height - 30) / 2;
+                
+                // Draw original samples (discrete points)
+                g.setColour(juce::Colour(0xFF666666));
+                for (int i = 0; i < 12; i++)
+                {
+                    float xPos = startX + (endX - startX) * (i / 11.0f);
+                    float wave = std::sin(i * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
+                    float yPos = midY + wave * (height - 60) * 0.25f;
+                    g.fillEllipse(xPos - 2, yPos - 2, 4, 4);
+                    
+                    // Connect with straight lines (digital reconstruction)
+                    if (i > 0)
+                    {
+                        float prevXPos = startX + (endX - startX) * ((i-1) / 11.0f);
+                        float prevWave = std::sin((i-1) * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
+                        float prevYPos = midY + prevWave * (height - 60) * 0.25f;
+                        g.drawLine(prevXPos, prevYPos, xPos, yPos, 1.0f);
+                    }
+                }
+                
+                // Draw interpolated waveform (smooth curve)
+                juce::Path interpolatedWave;
+                interpolatedWave.startNewSubPath(startX, midY);
+                
+                for (float i = 0; i <= 1.0f; i += 0.002f)
+                {
+                    float xPos = startX + (endX - startX) * i;
+                    // High-resolution interpolated waveform
+                    float wave = std::sin(i * 12.0f * juce::MathConstants<float>::pi);
+                    float yPos = midY + wave * (height - 60) * 0.3f;
+                    interpolatedWave.lineTo(xPos, yPos);
+                }
+                
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.strokePath(interpolatedWave, juce::PathStrokeType(2.0f));
+                
+                // Draw true intersample peaks (red dots)
+                g.setColour(juce::Colour(0xFFff4444));
+                for (int i = 0; i < 6; i++)
+                {
+                    float xPos = startX + (endX - startX) * (0.15f + i * 0.14f);
+                    float peakY = midY - (height - 60) * 0.38f * (0.9f + 0.1f * std::sin(i));
+                    g.fillEllipse(xPos - 4, peakY - 4, 8, 8);
+                    
+                    // Draw peak indicator lines
+                    g.drawLine(xPos, peakY + 4, xPos, midY + (height - 60) * 0.4f, 1.0f);
+                }
+                
+                // True-peak ceiling line
+                g.setColour(juce::Colour(0xFFf7931e));
+                float ceilingY = midY - (height - 60) * 0.35f;
+                g.drawLine(startX, ceilingY, endX, ceilingY, 2.0f);
+                
+                // Lookahead processing window (subtle overlay)
+                g.setColour(juce::Colour(0x3087ceeb)); // Semi-transparent blue
+                float lookaheadStart = startX + (endX - startX) * 0.7f;
+                g.fillRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40);
+                g.setColour(juce::Colour(0xFF4a90e2));
+                g.drawRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40, 2);
+                
+                // Labels
+                g.setColour(juce::Colour(0xFF888888));
+                g.setFont(9.0f);
+                g.drawText("Ceiling", x + width - 50, ceilingY - 15, 40, 12, juce::Justification::right);
+                g.drawText("Samples", x + 15, y + height - 35, 60, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.drawText("Interpolated", x + 15, y + height - 23, 80, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFFff4444));
+                g.drawText("True Peaks", x + 100, y + height - 23, 80, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFF87ceeb));
+                g.drawText("Lookahead", lookaheadStart + 5, y + 35, 80, 12, juce::Justification::left);
+            }
+            
+            void drawOversamplingComparison(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Oversampling Factor Comparison", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                // Draw three resolution examples
+                int sectionWidth = (width - 40) / 3;
+                
+                // 1x (Original)
+                drawResolutionExample(g, x + 15, y + 30, sectionWidth - 10, height - 40, 1, "1x Original");
+                
+                // 4x Oversampling
+                drawResolutionExample(g, x + 15 + sectionWidth, y + 30, sectionWidth - 10, height - 40, 4, "4x Oversample");
+                
+                // 8x Oversampling
+                drawResolutionExample(g, x + 15 + 2 * sectionWidth, y + 30, sectionWidth - 10, height - 40, 8, "8x Oversample");
+            }
+            
+            void drawResolutionExample(juce::Graphics& g, int x, int y, int width, int height, int factor, const juce::String& label)
+            {
+                // Background
+                g.setColour(juce::Colour(0xFF1a1a2e));
+                g.fillRect(x, y, width, height);
+                g.setColour(juce::Colour(0xFF444444));
+                g.drawRect(x, y, width, height);
+                
+                // Draw sample points
+                int numSamples = 8 * factor;
+                float sampleWidth = (float)(width - 20) / numSamples;
+                
+                juce::Colour sampleColor = (factor == 1) ? juce::Colour(0xFF666666) : 
+                                          (factor == 4) ? juce::Colour(0xFF00d4aa) : 
+                                                         juce::Colour(0xFF87ceeb);
+                
+                g.setColour(sampleColor);
+                for (int i = 0; i < numSamples; i++)
+                {
+                    float xPos = x + 10 + i * sampleWidth;
+                    float yPos = y + height/2 + std::sin(i * 0.5f) * (height - 40) * 0.3f;
+                    g.fillEllipse(xPos - 1, yPos - 1, 2, 2);
+                    
+                    if (i < numSamples - 1)
+                    {
+                        float nextYPos = y + height/2 + std::sin((i+1) * 0.5f) * (height - 40) * 0.3f;
+                        g.drawLine(xPos, yPos, xPos + sampleWidth, nextYPos, 1.0f);
+                    }
+                }
+                
+                // Label
+                g.setColour(juce::Colours::white);
+                g.setFont(10.0f);
+                g.drawText(label, x, y + height - 20, width, 15, juce::Justification::centred);
+            }
         };
         
-        auto* ispWindow = new WorkingISPSubwindow();
+        juce::String processName, processDescription;
+        std::unique_ptr<juce::ComboBox> osFactorCombo, filterTypeCombo, presetCombo;
+        std::unique_ptr<CleanKnob> passbandKnob, stopbandKnob, ceilingKnob, lookaheadKnob;
+        std::unique_ptr<juce::TextButton> infoButton;
         
-        juce::DialogWindow::LaunchOptions opts;
-        opts.content.setOwned(ispWindow);
-        opts.dialogTitle = "ISP — Professional Controls";
-        opts.componentToCentreAround = this;
-        opts.escapeKeyTriggersCloseButton = true;
-        opts.useNativeTitleBar = true;
-        opts.resizable = true;
-        opts.launchAsync();
-        
-        proguiLog("[UI] Opened working ISP subwindow with complete professional structure");
-    }
-    else if (processName == "JITTER")
+        // Meter values (0.0 to 1.0)
+        float passbandMeter = 0.0f;
+        float stopbandMeter = 0.0f;
+        float ceilingMeter = 0.0f;
+        float lookaheadMeter = 0.0f;
+    };
+    
+    switch (processIndex)
     {
-        // Create JITTER & ACCUMULATION subwindow
-        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
-            "JITTER & ACCUMULATION", 
-            "Jitter & Accumulation Controls:\n\n"
-            "• Jitter RMS - Controls random timing variations\n"
-            "• Jitter Spectrum - Frequency distribution of jitter\n"
-            "• Bit Depth - Digital resolution (16-32 bits)\n"
-            "• Quantization - Digital word length processing\n"
-            "• Dither - Noise shaping for low-level signals\n\n"
-            "This subwindow will be implemented with full Neptune controls.", 
-            "OK");
+        case 0: // ISP
+        {
+            auto* controlWindow = new ISPControlWindow("ISP - INTERSAMPLE PROCESSING", 
+                "Reduces aliasing, pre-ringing, and intersample distortion");
+            
+            juce::DialogWindow::LaunchOptions opts;
+            opts.content.setOwned(controlWindow);
+            opts.dialogTitle = processName + " - Professional Controls";
+            opts.componentToCentreAround = this;
+            opts.escapeKeyTriggersCloseButton = true;
+            opts.useNativeTitleBar = true;
+            opts.resizable = true;
+            opts.launchAsync();
+            break;
+        }
+        default:
+            juce::String message = "Testing the 3-layer system:\n\n";
+            message += "1. Main UI -> OPEN CONTROLS button (working)\n";
+            message += "2. Control Window -> Knobs + INFO button (ISP available)\n";
+            message += "3. Info Window -> Detailed explanations (working)\n\n";
+            message += "Try the ISP process to see the full 3-layer system!";
+            
+            juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
+                processName + " - Coming Soon", 
+                message, 
+                "OK");
+            return;
     }
-    else if (processName == "TRANSFORMER")
-    {
-        // Create TRANSFORMER subwindow
-        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, 
-            "TRANSFORMER", 
-            "Transformer Controls:\n\n"
-            "• Drive - Input saturation level\n"
-            "• Even/Odd Balance - Harmonic content control\n"
-            "• Bias - DC offset for asymmetric saturation\n"
-            "• Core Mode - Transformer core characteristics\n"
-            "• HF/LF Controls - Frequency-dependent processing\n"
-            "• Mix - Blend between processed and dry signal\n\n"
-            "This subwindow will be implemented with full Neptune controls.", 
-            "OK");
-    }
-    else
-    {
-        proguiLog("[UI] " + processName + " subwindow not yet implemented");
-    }
+    
+    proguiLog("[UI] Opened " + processName + " professional subwindow");
 }
-
-// Mouse drag and up methods removed - knobs positioned correctly

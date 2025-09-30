@@ -1,4 +1,5 @@
 #include "ProcessSubwindow.h"
+#include "ControlInfoWindow.h"
 
 ProcessSubwindow::ProcessSubwindow(const juce::String& name, const juce::String& desc)
     : processName(name), processDescription(desc)
@@ -115,6 +116,13 @@ void ProcessSubwindow::createGlobalControls()
     // I/O trims
     inputTrimSlider = createSlider("Input Trim", -24.0f, 24.0f, 0.0f);
     outputTrimSlider = createSlider("Output Trim", -24.0f, 24.0f, 0.0f);
+    
+    // Info button
+    infoButton = std::make_unique<juce::TextButton>("INFO");
+    infoButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xFF4a90e2));
+    infoButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    infoButton->onClick = [this]() { showInfoWindow(); };
+    addAndMakeVisible(*infoButton);
 }
 
 void ProcessSubwindow::layoutHeader(juce::Rectangle<int> headerArea)
@@ -132,6 +140,9 @@ void ProcessSubwindow::layoutHeader(juce::Rectangle<int> headerArea)
     presetCombo->setBounds(topRow.removeFromLeft(120).reduced(2));
     engineCombo->setBounds(topRow.removeFromLeft(80).reduced(2));
     qualityCombo->setBounds(topRow.removeFromLeft(100).reduced(2));
+    
+    // INFO button in top row
+    infoButton->setBounds(topRow.removeFromLeft(60).reduced(2));
     
     amountKnob->setBounds(bottomRow.removeFromLeft(60).reduced(5));
     bypassButton->setBounds(bottomRow.removeFromLeft(80).reduced(2));
@@ -198,4 +209,28 @@ void ProcessSubwindow::paintFooter(juce::Graphics& g, juce::Rectangle<int> foote
     g.setColour(juce::Colour(0xFF444444));
     g.fillRoundedRectangle(transportArea.toFloat().reduced(5), 4.0f);
     g.drawText("Transport", transportArea, juce::Justification::centred);
+}
+
+void ProcessSubwindow::showInfoWindow()
+{
+    // Create basic info structure - subclasses can override this method for specific info
+    ControlInfoWindow::ControlInfo info;
+    info.title = processName + " - PROFESSIONAL CONTROLS";
+    info.overview = processDescription;
+    info.technicalDetails = "This is a professional audio processing module with advanced controls.";
+    info.practicalUsage = "Use this process to enhance your audio with professional-grade processing.";
+    info.commonSettings = "Adjust controls based on your specific audio material and desired outcome.";
+    info.accentColor = juce::Colour(0xFF4a90e2);
+    
+    // Create and show ControlInfoWindow
+    auto* infoWindow = new ControlInfoWindow(info);
+    
+    juce::DialogWindow::LaunchOptions opts;
+    opts.content.setOwned(infoWindow);
+    opts.dialogTitle = processName + " - Information";
+    opts.componentToCentreAround = this;
+    opts.escapeKeyTriggersCloseButton = true;
+    opts.useNativeTitleBar = true;
+    opts.resizable = false;
+    opts.launchAsync();
 }

@@ -5,6 +5,9 @@
 #include "../shared/ui_core/SkinnedKnob.h"
 #include "../shared/ui_core/SkinnedSlider.h"
 
+// Forward declaration
+class ControlInfoWindow;
+
 /**
  * Base class for all Professional Mojo process subwindows
  * Template: Header (title/preset/amount) + Body (controls) + Meter column + Footer (waveform/transport/IO/Bake)
@@ -45,6 +48,13 @@ protected:
     // I/O controls
     std::unique_ptr<SkinnedSlider> inputTrimSlider;
     std::unique_ptr<SkinnedSlider> outputTrimSlider;
+    
+    // Info button
+    std::unique_ptr<juce::TextButton> infoButton;
+
+protected:
+    // Virtual method for showing process-specific info
+    virtual void showInfoWindow();
 
 private:
     void createGlobalControls();
