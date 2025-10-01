@@ -5,7 +5,6 @@
 #include "Components/HorizontalBarMeter.h"
 #include "Components/ProcessControl.h"
 #include "Components/NeptuneISPSubwindow.h"
-#include "Components/PsychedelicStealMojoComponent.h"
 // #include "ControlInfoWindow.h" // Temporarily disabled due to linking issues
 // Professional subwindow includes temporarily disabled - using simple inline approach
 // #include "ProcessSubwindow.h"
@@ -182,13 +181,44 @@ UIDemoComponent::UIDemoComponent()
         opts.resizable = true;
         opts.launchAsync();
     };
-    btnStealMojo.onClick = [this]
+    // Consumer GUI button
+    addAndMakeVisible(btnConsumerMode);
+    btnConsumerMode.onClick = [this]
     {
-        auto* comp = new PsychedelicStealMojoComponent();
-        comp->setSize(700, 900);
+        auto* comp = new ConsumerGUI();
+        comp->setSize(800, 600);
+        
+        // Connect Steal Mojo button to open extraction window
+        comp->onStealMojoClicked = [this]() {
+            auto* mojoComp = new StealMojoComponent();
+            mojoComp->setSize(700, 1000);
+            juce::DialogWindow::LaunchOptions mojoOpts;
+            mojoOpts.content.setOwned(mojoComp);
+            mojoOpts.dialogTitle = "Steal The Mojo";
+            mojoOpts.componentToCentreAround = this;
+            mojoOpts.escapeKeyTriggersCloseButton = true;
+            mojoOpts.useNativeTitleBar = true;
+            mojoOpts.resizable = true;
+            mojoOpts.launchAsync();
+        };
+        
         juce::DialogWindow::LaunchOptions opts;
         opts.content.setOwned(comp);
-        opts.dialogTitle = "✨ Steal The Mojo ✨";
+        opts.dialogTitle = "MoreMojo - Consumer";
+        opts.componentToCentreAround = this;
+        opts.escapeKeyTriggersCloseButton = true;
+        opts.useNativeTitleBar = true;
+        opts.resizable = true;
+        opts.launchAsync();
+    };
+    
+    btnStealMojo.onClick = [this]
+    {
+        auto* comp = new StealMojoComponent();
+        comp->setSize(700, 1000);
+        juce::DialogWindow::LaunchOptions opts;
+        opts.content.setOwned(comp);
+        opts.dialogTitle = "Steal The Mojo";
         opts.componentToCentreAround = this;
         opts.escapeKeyTriggersCloseButton = true;
         opts.useNativeTitleBar = true;
@@ -282,6 +312,11 @@ UIDemoComponent::UIDemoComponent()
     this->startTimerHz(30);
     // Ensure initial layout even if no resize event yet
     this->resized();
+}
+
+UIDemoComponent::~UIDemoComponent()
+{
+    // Destructor needed for std::unique_ptr with forward-declared types
 }
 
 void UIDemoComponent::paint(juce::Graphics& g)
@@ -900,9 +935,10 @@ void UIDemoComponent::resized()
     btnVUMode.setBounds(0, 0, 0, 0); // hidden
     btnLEDMode.setBounds(0, 0, 0, 0); // hidden
     
-    // Show Consumer button in top-right, hide Pro Master
-    btnProMaster.setBounds(0, 0, 0, 0); // hidden
-    btnStealMojo.setBounds(bounds.getWidth() - 150, 10, 140, 35); // Consumer mode button
+    // Mode buttons in top-right
+    btnProMaster.setBounds(0, 0, 0, 0); // hidden for now
+    btnConsumerMode.setBounds(bounds.getWidth() - 310, 10, 140, 35); // Consumer GUI
+    btnStealMojo.setBounds(bounds.getWidth() - 160, 10, 150, 35); // Steal Mojo
     
     // ProcessControl components handle their own positioning
     

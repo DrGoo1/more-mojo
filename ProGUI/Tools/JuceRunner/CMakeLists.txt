@@ -13,6 +13,22 @@ if (NOT TARGET progui_ui)
         ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/NeptuneISPSubwindow.h
         ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/HorizontalBarMeter.cpp
         ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/HorizontalBarMeter.h
+        # Steal The Mojo - Psychedelic UI components (header-only)
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/PsychedelicStyles.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/PsychedelicKnob.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/MojoRadarChart.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/CharacterMeter.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Components/StealMojoComponent.h
+        # Steal The Mojo - Stem extraction system
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/StemExtractor.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/StemExtractor.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/PythonBridge.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/PythonBridge.h
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/DSPSeparator.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/DSPSeparator.h
+        # Steal The Mojo - Audio analysis system (Phase 2)
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/AudioAnalyzer.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../../Source/Audio/AudioAnalyzer.h
     )
     target_include_directories(progui_ui PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/../../Source
@@ -25,6 +41,9 @@ if (NOT TARGET progui_ui)
         juce::juce_graphics
         juce::juce_events
         juce::juce_core
+        juce::juce_dsp
+        juce::juce_audio_basics
+        juce::juce_audio_formats
     )
 endif()
 cmake_minimum_required(VERSION 3.22)
@@ -76,6 +95,12 @@ target_link_libraries(ProGUIJuceRunner PRIVATE
     juce::juce_graphics
     juce::juce_data_structures
     juce::juce_core
+    juce::juce_dsp
+    juce::juce_audio_basics
+    juce::juce_audio_formats
+    juce::juce_audio_devices
+    juce::juce_audio_processors
+    juce::juce_audio_utils
 )
 
 # Ensure generated JuceHeader.h is found

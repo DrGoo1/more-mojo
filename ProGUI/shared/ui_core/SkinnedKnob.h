@@ -23,6 +23,15 @@ public:
 
     void setValue(float v, juce::NotificationType nt = juce::dontSendNotification) { slider.setValue(juce::jlimit(0.0,1.0,(double)v), nt); }
     float getValue() const { return (float) slider.getValue(); }
+    
+    // Add setRange for compatibility with ProcessSubwindow (maps to internal 0-1 slider)
+    void setRange(double min, double max, double interval = 0.0) { 
+        rangeMin = min; 
+        rangeMax = max; 
+    }
+    
+    double getRangeMin() const { return rangeMin; }
+    double getRangeMax() const { return rangeMax; }
 
     void resized() override
     {
@@ -43,43 +52,34 @@ public:
         
         if (! skin.knobFrames.empty())
         {
-            // Draw realistic 3D depression with light bouncing
-            float depthRadius = juce::jmin(r.getWidth(), r.getHeight()) * 0.55f;
-            auto depthArea = juce::Rectangle<float>(depthRadius * 2, depthRadius * 2).withCentre(c);
-            
-            // Deep outer shadow (very dark)
-            g.setColour(juce::Colour(0xFF000000).withAlpha(0.8f));
-            g.fillEllipse(depthArea.expanded(6));
-            
-            // Medium shadow
-            g.setColour(juce::Colour(0xFF222222).withAlpha(0.6f));
-            g.fillEllipse(depthArea.expanded(3));
-            
-            // Inner recessed area (dark gray)
-            g.setColour(juce::Colour(0xFF333333));
-            g.fillEllipse(depthArea);
-            
-            // Realistic light reflection - only on upper-left arc (not full ring)
-            juce::Path lightArc;
-            float startAngle = juce::MathConstants<float>::pi * 1.2f; // upper-left
-            float endAngle = juce::MathConstants<float>::pi * 1.8f;   // upper-right
-            lightArc.addCentredArc(c.x, c.y, depthRadius - 2, depthRadius - 2, 0, startAngle, endAngle, true);
-            g.setColour(juce::Colour(0xFFffffff).withAlpha(0.5f));
-            g.strokePath(lightArc, juce::PathStrokeType(3.0f));
-            
-            // Inner light reflection - smaller arc
-            juce::Path innerLightArc;
-            innerLightArc.addCentredArc(c.x, c.y, depthRadius - 8, depthRadius - 8, 0, startAngle + 0.2f, endAngle - 0.2f, true);
-            g.setColour(juce::Colour(0xFFffffff).withAlpha(0.3f));
-            g.strokePath(innerLightArc, juce::PathStrokeType(2.0f));
-            
-            // Draw Neptune knob (slightly smaller to fit in depression)
+            // Draw Neptune knob PLAIN (no depression) with colorful center tinting
             int n = (int) skin.knobFrames.size();
             int idx = juce::jlimit(0, n-1, (int) std::round(t * (n-1)));
             auto img = skin.knobFrames[(size_t) idx];
-            float scale = juce::jmin(r.getWidth() / img.getWidth(), r.getHeight() / img.getHeight()) * 0.9f;
+            float scale = juce::jmin(r.getWidth() / img.getWidth(), r.getHeight() / img.getHeight()) * 1.0f;
             auto dest = juce::Rectangle<float>(img.getWidth() * scale, img.getHeight() * scale).withCentre(c);
+            
+            // Draw the base knob
             g.drawImage(img, dest);
+            
+            // Apply colorful tint to the center area
+            g.setColour(juce::Colour(0xFFFF6B35).withAlpha(0.3f)); // Bright orange tint
+            auto centerRadius = dest.getWidth() * 0.25f; // 25% of knob size
+            juce::ColourGradient centerGlow(
+                juce::Colour(0xFFFFD166).withAlpha(0.5f), // Bright yellow center
+                c.x, c.y,
+                juce::Colour(0xFFFF6B35).withAlpha(0.2f), // Orange fade out
+                c.x + centerRadius, c.y + centerRadius,
+                true
+            );
+            g.setGradientFill(centerGlow);
+            g.fillEllipse(c.x - centerRadius, c.y - centerRadius, centerRadius * 2, centerRadius * 2);
+            
+            // Add a bright highlight in the very center
+            auto highlightRadius = centerRadius * 0.3f;
+            g.setColour(juce::Colour(0xFFFFFFFF).withAlpha(0.4f));
+            g.fillEllipse(c.x - highlightRadius, c.y - highlightRadius, highlightRadius * 2, highlightRadius * 2);
+            
             drewKnob = true;
         }
         else if (skin.knobImage.isValid())
@@ -101,4 +101,6 @@ public:
 
 private:
     juce::Slider slider;
+    double rangeMin = 0.0;
+    double rangeMax = 1.0;
 };

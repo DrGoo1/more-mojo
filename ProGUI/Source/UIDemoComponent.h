@@ -14,6 +14,7 @@
 #include "../shared/ui_core/TransportBar.h"
 #include "Components/ProMasterComponent.h"
 #include "Components/StealMojoComponent.h"
+#include "Components/ConsumerGUI.h"
 #include "Components/NeptuneMixKnob.h"
 #include "../shared/ui_core/SkinnedKnob.h"
 #include "../shared/ui_core/SkinnedSlider.h"
@@ -38,6 +39,7 @@ class UIDemoComponent : public juce::Component, private juce::Timer
 {
 public:
     UIDemoComponent();
+    ~UIDemoComponent() override;
     void paint(juce::Graphics& g) override;
     void resized() override;
     void mouseDown(const juce::MouseEvent& event) override;
@@ -63,6 +65,7 @@ private:
     juce::TextButton btnLEDMode;
     juce::TextButton btnProMaster { "Pro Master…" };
     juce::TextButton btnStealMojo { "Steal The Mojo" };
+    juce::TextButton btnConsumerMode { "Consumer GUI" };
     juce::Image skinImage;
 
     // Shell: master bypass and timeline zoom controls

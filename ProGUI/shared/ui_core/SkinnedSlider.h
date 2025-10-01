@@ -27,6 +27,16 @@ public:
         slider.setValue(juce::jlimit(-12.0, 12.0, (double)v), nt); 
     }
     float getValue() const { return (float) slider.getValue(); }
+    
+    // Add setRange for compatibility with ProcessSubwindow
+    void setRange(double min, double max, double interval = 0.0) { 
+        slider.setRange(min, max, interval);
+        rangeMin = min;
+        rangeMax = max;
+    }
+    
+    double getRangeMin() const { return rangeMin; }
+    double getRangeMax() const { return rangeMax; }
 
     void resized() override
     {
@@ -100,4 +110,6 @@ public:
 
 private:
     juce::Slider slider;
+    double rangeMin = -12.0;
+    double rangeMax = 12.0;
 };

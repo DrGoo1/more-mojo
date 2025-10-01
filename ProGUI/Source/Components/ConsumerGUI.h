@@ -328,11 +328,20 @@ public:
             }
         }
         
+        // Professional Controls button (same styling as STM)
+        proControlsButton = std::make_unique<juce::TextButton>("PRO CONTROLS");
+        proControlsButton->setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+        proControlsButton->setColour(juce::TextButton::textColourOffId, juce::Colours::transparentBlack);
+        proControlsButton->onClick = [this]() { handleProControls(); };
+        proControlsButton->setTooltip("Open Professional Controls: Advanced audio processing with ISP, SRC, JITTER, ALIGN, TRANSIENT, DEESSER, and TRANSFORMER modules. Features Neptune knobs and real-time metering for precise audio manipulation.");
+        addAndMakeVisible(*proControlsButton);
+        
         // Steal Mojo button (PROMINENT - will draw with psychedelic style)
         stealMojoButton = std::make_unique<juce::TextButton>("STEAL THE MOJO");
         stealMojoButton->setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
         stealMojoButton->setColour(juce::TextButton::textColourOffId, juce::Colours::transparentBlack);
         stealMojoButton->onClick = [this]() { handleStealMojo(); };
+        stealMojoButton->setTooltip("Steal The Mojo: Analyze audio to extract its sonic character and vibe. Upload a reference track, choose an instrument profile, and watch the psychedelic radar chart + character meters reveal its mojo essence. Apply extracted mojo to your own tracks!");
         addAndMakeVisible(*stealMojoButton);
         
         // Start animation
@@ -383,6 +392,22 @@ public:
         // Draw psychedelic title (no subtitle)
         drawPsychedelicText(g, "MORE MOJO", titleLabel->getBounds(), 56.0f);
         
+        // Draw PRO CONTROLS button with emphasis (same style as STM)
+        if (proControlsButton) {
+            auto btnBounds = proControlsButton->getBounds();
+            
+            // Draw glowing background
+            g.setColour(PsychedelicTheme::Colors::groovyGreen.withAlpha(0.5f));
+            g.fillRoundedRectangle(btnBounds.toFloat().expanded(5), 10.0f);
+            
+            // Draw psychedelic text
+            drawPsychedelicText(g, "PRO CONTROLS", btnBounds, 18.0f);
+            
+            // Draw border
+            g.setColour(juce::Colour(0xFF00FF88));
+            g.drawRoundedRectangle(btnBounds.toFloat(), 8.0f, 3.0f);
+        }
+        
         // Draw STEAL THE MOJO button with emphasis
         if (stealMojoButton) {
             auto btnBounds = stealMojoButton->getBounds();
@@ -399,6 +424,22 @@ public:
             g.drawRoundedRectangle(btnBounds.toFloat(), 8.0f, 3.0f);
         }
         
+        // Draw EXPORT button with psychedelic emphasis (STM style)
+        if (exportButton) {
+            auto btnBounds = exportButton->getBounds();
+            
+            // Draw glowing background
+            g.setColour(PsychedelicTheme::Colors::skyBlue.withAlpha(0.5f));
+            g.fillRoundedRectangle(btnBounds.toFloat().expanded(4), 8.0f);
+            
+            // Draw psychedelic text
+            drawPsychedelicText(g, "EXPORT", btnBounds, 16.0f);
+            
+            // Draw border
+            g.setColour(juce::Colour(0xFF00D4FF));
+            g.drawRoundedRectangle(btnBounds.toFloat(), 6.0f, 2.5f);
+        }
+        
         // Draw borders around control buttons
         auto drawButtonBorder = [&](juce::TextButton* btn, juce::Colour color) {
             if (!btn) return;
@@ -411,7 +452,7 @@ public:
         drawButtonBorder(playButton.get(), PsychedelicTheme::Colors::groovyGreen);
         drawButtonBorder(stopButton.get(), PsychedelicTheme::Colors::electricPink);
         drawButtonBorder(ffButton.get(), PsychedelicTheme::Colors::cosmicOrange);
-        drawButtonBorder(exportButton.get(), PsychedelicTheme::Colors::skyBlue);
+        // Export button now drawn with psychedelic style above, no simple border
     }
     
     void paint(juce::Graphics& g) override {
@@ -528,6 +569,9 @@ public:
         auto mojoLabelArea = bounds.removeFromTop(45).reduced(40);
         mojoLabel->setBounds(mojoLabelArea);
         
+        // Professional Controls button at top-left
+        proControlsButton->setBounds(20, 15, 220, 60);
+        
         // Steal Mojo button at top-right (emphasized)
         stealMojoButton->setBounds(bounds.getWidth() - 240, 15, 220, 60);
         
@@ -576,17 +620,23 @@ public:
         auto buttonArea = bounds.removeFromTop(45).reduced(150, 5);
         int buttonWidth = 80;
         int gap = 10;
-        int totalWidth = buttonWidth * 5 + gap * 4;
+        int totalWidth = buttonWidth * 4 + gap * 3;
         int startX = buttonArea.getCentreX() - totalWidth / 2;
         
         rewindButton->setBounds(startX, buttonArea.getY(), buttonWidth, 35);
         playButton->setBounds(startX + (buttonWidth + gap), buttonArea.getY(), buttonWidth, 35);
         stopButton->setBounds(startX + (buttonWidth + gap) * 2, buttonArea.getY(), buttonWidth, 35);
         ffButton->setBounds(startX + (buttonWidth + gap) * 3, buttonArea.getY(), buttonWidth, 35);
-        exportButton->setBounds(startX + (buttonWidth + gap) * 4, buttonArea.getY(), buttonWidth, 35);
+        
+        // Export button moved to the right with STM styling
+        exportButton->setBounds(bounds.getWidth() - 140, buttonArea.getY(), 120, 35);
         
         bounds.removeFromTop(10); // spacing
     }
+    
+    // Public methods for Pro GUI integration
+    juce::File getLoadedFile() const { return loadedFile; }
+    bool hasAudioLoaded() const { return audioLoaded; }
     
 private:
     void timerCallback() override {
@@ -645,8 +695,8 @@ private:
         g.drawImage(frame, bounds.toFloat(),
                    juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
         
-        // Draw main label above switch
-        auto labelBounds = bounds.withBottom(bounds.getY() - 5).withHeight(16);
+        // Draw main label above switch - wider for full "Match Volume" text
+        auto labelBounds = bounds.withBottom(bounds.getY() - 5).withHeight(16).withWidth(100).withX(bounds.getX() - 20);
         g.setFont(juce::Font(11.0f, juce::Font::bold));
         
         // Black outline for better readability
@@ -1112,6 +1162,12 @@ private:
         }
     }
     
+    void handleProControls() {
+        if (onProControlsClicked) {
+            onProControlsClicked();
+        }
+    }
+    
     std::unique_ptr<juce::Label> titleLabel;
     std::unique_ptr<juce::Label> subtitleLabel;
     std::unique_ptr<juce::Label> fileInfoLabel;
@@ -1123,6 +1179,7 @@ private:
     std::unique_ptr<juce::TextButton> ffButton;
     std::unique_ptr<juce::TextButton> exportButton;
     std::unique_ptr<juce::TextButton> stealMojoButton;
+    std::unique_ptr<juce::TextButton> proControlsButton;
     std::unique_ptr<SkinnedKnob> mojoKnob;
     std::unique_ptr<juce::Label> inputMeterLabel;
     std::unique_ptr<juce::Label> outputMeterLabel;
@@ -1215,4 +1272,5 @@ private:
     
 public:
     std::function<void()> onStealMojoClicked;
+    std::function<void()> onProControlsClicked;
 };

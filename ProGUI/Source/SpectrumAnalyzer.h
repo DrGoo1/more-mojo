@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../../JUCE/modules/juce_core/juce_core.h"
-#include "../../JUCE/modules/juce_events/juce_events.h"
-#include "../../JUCE/modules/juce_graphics/juce_graphics.h"
-#include "../../JUCE/modules/juce_gui_basics/juce_gui_basics.h"
-#include "../../JUCE/modules/juce_gui_extra/juce_gui_extra.h"
-#include "../../JUCE/modules/juce_dsp/juce_dsp.h"
-#include "../../JUCE/modules/juce_audio_basics/juce_audio_basics.h"
+#include <juce_core/juce_core.h>
+#include <juce_events/juce_events.h>
+#include <juce_graphics/juce_graphics.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_dsp/juce_dsp.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 //==============================================================================
 /**

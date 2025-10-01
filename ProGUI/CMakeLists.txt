@@ -133,12 +133,26 @@ add_library(progui_ui STATIC
     Source/MLARSubwindow.h
     Source/TransformerSubwindow.cpp
     Source/TransformerSubwindow.h
+    Source/Components/PsychedelicStyles.h
+    Source/Components/PsychedelicKnob.h
+    Source/Components/MojoRadarChart.h
+    Source/Components/CharacterMeter.h
+    Source/Components/StealMojoComponent.h
+        # Steal The Mojo - Stem extraction system
+        Source/Audio/StemExtractor.cpp
+        Source/Audio/StemExtractor.h
+        Source/Audio/PythonBridge.cpp
+        Source/Audio/PythonBridge.h
+        Source/Audio/DSPSeparator.cpp
+        Source/Audio/DSPSeparator.h
+        # Steal The Mojo - Audio analysis system (Phase 2)
+        Source/Audio/AudioAnalyzer.cpp
+        Source/Audio/AudioAnalyzer.h
 )
 target_include_directories(progui_ui
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Source
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/ui_core
-        ${CMAKE_CURRENT_BINARY_DIR}
 )
 target_link_libraries(progui_ui
     PUBLIC

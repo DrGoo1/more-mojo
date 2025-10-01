@@ -1,0 +1,613 @@
+[  1%] Building CXX object CMakeFiles/progui_ui.dir/Source/UIDemoComponent.cpp.o
+[  3%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/NeptuneVUMeter.cpp.o
+[  3%] Building CXX object CMakeFiles/progui_ui.dir/Source/Neptune/NeptuneKnobDemo.cpp.o
+[  4%] Building CXX object CMakeFiles/MoreMojoProGUIApp.dir/Source/Main.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Main.cpp:1:10: fatal error: 'JuceHeader.h' file not found
+    1 | #include <JuceHeader.h>
+      |          ^~~~~~~~~~~~~~
+1 error generated.
+make[2]: *** [CMakeFiles/MoreMojoProGUIApp.dir/Source/Main.cpp.o] Error 1
+make[1]: *** [CMakeFiles/MoreMojoProGUIApp.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[  5%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/NeptuneKnob.cpp.o
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:10:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/../shared/ui_core/Theme.h:21:22: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   21 |     juce::Font title { 18.0f, juce::Font::bold };
+      |                      ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:10:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/../shared/ui_core/Theme.h:22:21: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   22 |     juce::Font body { 14.0f };
+      |                     ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:203:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  203 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:203:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  203 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:250:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  250 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:250:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  250 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:260:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  260 |     g.setFont(juce::Font(20.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:274:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  274 |     g.setFont(juce::Font(40.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:274:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  274 |     g.setFont(juce::Font(40.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:280:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  280 |     g.setFont(juce::Font(40.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:280:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  280 |     g.setFont(juce::Font(40.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:287:26: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  287 |     glyphs.addLineOfText(juce::Font(40.0f, juce::Font::bold), text, 
+      |                          ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:287:26: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  287 |     glyphs.addLineOfText(juce::Font(40.0f, juce::Font::bold), text, 
+      |                          ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:316:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  316 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:4:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/PsychedelicTheme.h:316:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  316 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+[  6%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/NeptuneMixKnob.cpp.o
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:102:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  102 |         g.setFont(juce::Font(18.0f, juce::Font::italic));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:102:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  102 |         g.setFont(juce::Font(18.0f, juce::Font::italic));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:116:23: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  116 |             g.setFont(juce::Font(14.0f));
+      |                       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:129:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  129 |         g.setFont(juce::Font(13.0f));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:154:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  154 |         g.setFont(juce::Font(48.0f, juce::Font::bold));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:154:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  154 |         g.setFont(juce::Font(48.0f, juce::Font::bold));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:1:
+In file included from /Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.h:16:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/StealMojoComponent.h:170:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  170 |         g.setFont(juce::Font(13.0f));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+[  7%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/ProcessControl.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:516:23: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  516 |             g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |                       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:516:23: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  516 |             g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |                       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:543:23: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  543 |             g.setFont(juce::Font("Arial Black", 18.0f, juce::Font::bold));
+      |                       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:543:23: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  543 |             g.setFont(juce::Font("Arial Black", 18.0f, juce::Font::bold));
+      |                       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:672:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  672 |         g.setFont(juce::Font(18.0f, juce::Font::bold));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/UIDemoComponent.cpp:672:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  672 |         g.setFont(juce::Font(18.0f, juce::Font::bold));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+[  8%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/NeptuneISPSubwindow.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/ProcessControl.cpp:58:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   58 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/ProcessControl.cpp:58:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   58 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/ProcessControl.cpp:64:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   64 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/ProcessControl.cpp:64:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   64 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+4 warnings generated.
+[  9%] Building CXX object CMakeFiles/progui_ui.dir/Source/Components/HorizontalBarMeter.cpp.o
+[ 10%] Building CXX object CMakeFiles/progui_ui.dir/Source/ControlInfoWindow.cpp.o
+28 warnings generated.
+[ 11%] Building CXX object CMakeFiles/progui_ui.dir/Source/ProcessSubwindow.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:81:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   81 |     g.setFont(juce::Font(20.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:81:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   81 |     g.setFont(juce::Font(20.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:85:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   85 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:85:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   85 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:96:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   96 |     g.setFont(juce::Font(12.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:96:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   96 |     g.setFont(juce::Font(12.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/NeptuneISPSubwindow.cpp:100:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  100 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+7 warnings generated.
+[ 12%] Building CXX object CMakeFiles/progui_ui.dir/Source/ISPSubwindow.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/HorizontalBarMeter.cpp:30:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   30 |     g.setFont(juce::Font(10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/Components/HorizontalBarMeter.cpp:30:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   30 |     g.setFont(juce::Font(10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:62:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   62 |     g.setFont(juce::Font(26.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:62:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   62 |     g.setFont(juce::Font(26.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:70:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   70 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:70:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   70 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:76:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   76 |     g.setFont(juce::Font(12.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:76:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   76 |     g.setFont(juce::Font(12.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:84:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   84 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:84:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   84 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:90:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   90 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:90:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   90 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:98:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   98 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:98:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   98 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:104:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  104 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:104:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  104 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:112:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  112 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:112:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  112 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:118:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  118 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:118:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  118 |     g.setFont(juce::Font(11.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:126:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  126 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:126:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  126 |     g.setFont(juce::Font(14.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:153:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  153 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:153:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  153 |     g.setFont(juce::Font(16.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:235:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  235 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:272:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  272 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:353:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  353 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:388:19: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  388 |         g.setFont(juce::Font(9.0f));
+      |                   ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:434:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  434 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:477:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  477 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ControlInfoWindow.cpp:514:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  514 |     g.setFont(juce::Font(10.0f));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:76:7: note: 'Font' has been explicitly marked deprecated here
+   76 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+2 warnings generated.
+[ 13%] Building CXX object CMakeFiles/progui_ui.dir/Source/SRCSubwindow.cpp.o
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:59:11: error: no member named 'setRange' in 'SkinnedKnob'
+   59 |     knob->setRange(min, max, 0.01);
+      |     ~~~~~~^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:69:13: error: no member named 'setRange' in 'SkinnedSlider'
+   69 |     slider->setRange(min, max, 0.01);
+      |     ~~~~~~~~^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:177:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  177 |     g.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:177:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  177 |     g.setFont(juce::Font("Arial", 18.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:183:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  183 |     g.setFont(juce::Font("Arial", 12.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:183:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  183 |     g.setFont(juce::Font("Arial", 12.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:195:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  195 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:195:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  195 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:204:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  204 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ProcessSubwindow.cpp:204:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+  204 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+29 warnings generated.
+[ 14%] Building CXX object CMakeFiles/progui_ui.dir/Source/JitterSubwindow.cpp.o
+8 warnings and 2 errors generated.
+make[2]: *** [CMakeFiles/progui_ui.dir/Source/ProcessSubwindow.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ISPSubwindow.cpp:65:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   65 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/ISPSubwindow.cpp:65:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   65 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+2 warnings generated.
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/SRCSubwindow.cpp:59:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   59 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/SRCSubwindow.cpp:59:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   59 |     g.setFont(juce::Font("Arial", 10.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/SRCSubwindow.cpp:88:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   88 |     g.setFont(juce::Font("Arial", 9.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/SRCSubwindow.cpp:88:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   88 |     g.setFont(juce::Font("Arial", 9.0f, juce::Font::plain));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/JitterSubwindow.cpp:75:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   75 |     g.setFont(juce::Font("Arial", 9.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/Source/JitterSubwindow.cpp:75:15: warning: 'Font' is deprecated: Use the constructor that takes a FontOptions argument [-Wdeprecated-declarations]
+   75 |     g.setFont(juce::Font("Arial", 9.0f, juce::Font::bold));
+      |               ^
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/JUCE/modules/juce_graphics/fonts/juce_Font.h:88:7: note: 'Font' has been explicitly marked deprecated here
+   88 |     [[deprecated ("Use the constructor that takes a FontOptions argument")]]
+      |       ^
+4 warnings generated.
+2 warnings generated.
+make[1]: *** [CMakeFiles/progui_ui.dir/all] Error 2
+make: *** [all] Error 2
