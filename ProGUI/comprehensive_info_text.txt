@@ -1,0 +1,29 @@
+=== COMPREHENSIVE INFO TEXT FOR RESTORATION ===
+
+This file contains the comprehensive documentation text that should be in the ISPInfoComponent::getProcessInfo() method.
+
+The current implementation has placeholder text. Replace each return statement with the comprehensive versions below.
+
+Note: The full text from the backup contains special unicode characters (→, ×) that need to be converted to ASCII (->
+
+, x) before use in C++ source.
+
+ACTION REQUIRED:
+The text is too large (5-6KB per process) to paste here. 
+
+The working version exists in:
+/Volumes/MP 1/MoreMojo/ChatGPT/ProGUI/backups/20250930_134058/UIDemoComponent.cpp
+Lines 1574-1580 contain the full return statements.
+
+Manual steps to restore:
+1. Open both files side-by-side
+2. Copy the return statement content from backup lines 1575, 1577, 1579
+3. Replace unicode → with -> and × with x
+4. Paste into current Source/UIDemoComponent.cpp lines 1192, 1194, 1196
+
+The comprehensive text includes detailed sections like:
+- JITTER: OVERVIEW, WHAT IS JITTER, JITTER ANALYSIS, TYPES, AUDIBLE EFFECTS, TECHNICAL SPECS, APPLICATIONS, WORKFLOW TIPS
+- SRC: OVERVIEW, WHY IT MATTERS, SAMPLE RATE FAMILIES, CONVERSION PROCESS, QUALITY SETTINGS, TECHNICAL SPECS, APPLICATIONS
+- ALIGN: OVERVIEW, WHY IT MATTERS, TIME ALIGNMENT, UNDERSTANDING PHASE, CONTROLS, POLARITY, CORRELATION METER, CROSSOVER, AUTO-ALIGN, COMMON PROBLEMS, AUDIBLE EFFECTS, TECHNICAL SPECS, APPLICATIONS, WORKFLOW TIPS
+
+Each is approximately 80-100 lines of comprehensive documentation.

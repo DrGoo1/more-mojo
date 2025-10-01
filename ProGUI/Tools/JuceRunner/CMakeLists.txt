@@ -34,18 +34,24 @@ project(ProGUI_JuceRunner VERSION 1.0.0 LANGUAGES C CXX)
 # Adjust this if your JUCE source is elsewhere
 set(JUCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../JUCE")
 
-if(NOT EXISTS "${JUCE_DIR}/CMakeLists.txt")
-    message(FATAL_ERROR "JUCE not found at ${JUCE_DIR}. Update JUCE_DIR or add JUCE as a submodule at ProGUI/JUCE")
+# Only add JUCE if it hasn't been added by parent CMakeLists
+if(NOT TARGET juce::juce_core)
+    if(NOT EXISTS "${JUCE_DIR}/CMakeLists.txt")
+        message(FATAL_ERROR "JUCE not found at ${JUCE_DIR}. Update JUCE_DIR or add JUCE as a submodule at ProGUI/JUCE")
+    endif()
+
+    # JUCE requires C++17
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_C_STANDARD 11)
+    set(CMAKE_C_STANDARD_REQUIRED ON)
+
+    # Add JUCE
+    message(STATUS "Adding JUCE from JuceRunner subdirectory")
+    add_subdirectory("${JUCE_DIR}" JUCE-build)
+else()
+    message(STATUS "JUCE already added by parent - skipping")
 endif()
-
-# JUCE requires C++17
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-
-# Add JUCE
-add_subdirectory("${JUCE_DIR}" JUCE-build)
 
 # Sources
 set(RUNNER_SOURCES

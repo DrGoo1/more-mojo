@@ -1149,490 +1149,6 @@ void UIDemoComponent::openProcessSubwindow(int processIndex)
         juce::Slider slider;
     };
     
-// Custom component for ISP info with graphics
-class ISPInfoComponent : public juce::Component
-{
-public:
-    ISPInfoComponent(const juce::String& title = "ISP") : windowTitle(title)
-    {
-        setSize(950, 750);
-    }
-    
-    void paint(juce::Graphics& g) override
-    {
-        // Background
-        g.fillAll(juce::Colour(0xFF1a1a2e));
-        
-        // Header
-        g.setColour(juce::Colours::white);
-        g.setFont(20.0f);
-        juce::String headerText = windowTitle.toUpperCase();
-        if (windowTitle.contains("ISP")) headerText = "ISP - INTERSAMPLE PROCESSING";
-        else if (windowTitle.contains("SRC")) headerText = "SRC - SAMPLE RATE CONVERSION";
-        else if (windowTitle.contains("JITTER")) headerText = "JITTER ANALYSIS & OPTIMIZATION";
-        else if (windowTitle.contains("ALIGN")) headerText = "PHASE & TIME ALIGNMENT";
-        g.drawText(headerText, 20, 20, getWidth() - 40, 30, juce::Justification::centred);
-        
-        // Text area (left side) - Use getProcessInfo()
-        g.setColour(juce::Colour(0xFF00ffff));
-        g.setFont(10.0f);
-        juce::String infoText = getProcessInfo();
-        g.drawFittedText(infoText, 20, 60, 420, 600, juce::Justification::topLeft, 100);
-        
-        // Graphics area (right side)
-        drawGraphics(g, 460, 60, 420, 600);
-    }
-    
-private:
-    juce::String windowTitle;
-    
-    juce::String getProcessInfo()
-    {
-        if (windowTitle.contains("JITTER")) {
-            return "JITTER ANALYSIS & OPTIMIZATION\n\nMeasures and displays digital audio clock timing irregularities.\n\nCONTROLS:\n- RMS Jitter Meter: Average clock timing deviation (target: <10ps)\n- Peak Jitter Display: Worst-case timing errors  \n- Spectral Analysis: Jitter across frequency spectrum\n- Dither Type Switch: TPDF / Triangular / Gaussian / None\n- Bit Depth Switch: 16 / 20 / 24 / 32 bit\n\nRESULT:\nLower jitter = cleaner audio with better imaging and transients.\nValues >100ps may cause audible degradation.";
-        } else if (windowTitle.contains("SRC")) {
-            return "SAMPLE RATE CONVERSION\n\nConverts audio between different sample rates while preserving quality.\n\nCONTROLS:\n- Source Rate Switch: 44.1 / 48 / 88.2 / 96 / 176.4 / 192 kHz\n- Target Rate Switch: 44.1 / 48 / 88.2 / 96 / 176.4 / 192 kHz\n- Quality Mode: Draft / Standard / High / Ultra\n- Passband Ripple: Filter transition sharpness\n- Stopband Attenuation: Aliasing rejection (60-140dB)\n\nRESULT:\nHigher quality settings = more transparent conversion.\nUse Ultra mode for critical mastering work.";
-        } else if (windowTitle.contains("ALIGN")) {
-            return "PHASE & TIME ALIGNMENT\n\nSynchronizes multiple audio sources to eliminate phase cancellation.\n\nCONTROLS:\n- Time Delay: Sample-accurate compensation (+/-10,000 samples)\n- Phase Rotation Switch: 0 / 90 / 180 / 270 degrees\n- Polarity Switch: Normal / Inverted\n- Correlation Meter: Phase relationship (-1.0 to +1.0)\n- Crossover Frequency: Band split point (20Hz-20kHz)\n\nRESULT:\nProper alignment restores fullness, punch, and clarity.\nCorrelation meter: >+0.7 = good, <0 = phase problems.";
-        }
-        // Default ISP info
-        return "INTERSAMPLE PROCESSING\n\nEliminates intersample peaks that can cause digital distortion.\n\nCONTROLS:\n• OS Factor - Oversampling rate (2x/4x/8x)\n• Filter Type - Linear/Minimum/Polyphase\n• Passband Rolloff - Filter transition sharpness\n• Stopband Rejection - Aliasing suppression (60-120dB)\n• True-Peak Ceiling - Maximum output level\n• Lookahead Time - Peak detection window (0-10ms)\n\nRESULT:\nPrevents intersample overs in final masters.\nEssential for loud mastering and broadcast.";
-    }
-
-    
-    void drawGraphics(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Graphics section header
-        g.setColour(juce::Colour(0xFF87ceeb));
-        g.setFont(16.0f);
-        g.drawText("VISUAL GRAPHICS", x, y, width, 30, juce::Justification::centred);
-        
-        if (windowTitle.contains("JITTER")) {
-            drawJitterGraphics(g, x, y + 40, width, height - 40);
-        } else if (windowTitle.contains("SRC")) {
-            drawSRCGraphics(g, x, y + 40, width, height - 40);
-        } else if (windowTitle.contains("ALIGN")) {
-            drawAlignGraphics(g, x, y + 40, width, height - 40);
-        } else {
-            // Default ISP graphics
-            int graphY = y + 40;
-            int graphHeight = (height - 40) / 3;
-            drawFrequencyResponse(g, x, graphY, width, graphHeight - 20);
-            drawWaveformWithPeaks(g, x, graphY + graphHeight, width, graphHeight - 20);
-            drawOversamplingComparison(g, x, graphY + 2 * graphHeight, width, graphHeight - 20);
-        }
-    }
-    
-    void drawFrequencyResponse(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colours::white);
-        g.setFont(12.0f);
-        g.drawText("Passband Rolloff & Stopband Attenuation", x, y, width, 20, juce::Justification::centred);
-        
-        // Graph background
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, y + 25, width - 20, height - 30);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, y + 25, width - 20, height - 30);
-        
-        // Draw frequency response curve
-        juce::Path responseCurve;
-        float startX = x + 15;
-        float endX = x + width - 15;
-        float midY = y + 25 + (height - 30) / 2;
-        
-        responseCurve.startNewSubPath(startX, midY);
-        
-        // Passband (flat)
-        responseCurve.lineTo(startX + (endX - startX) * 0.6f, midY);
-        
-        // Rolloff region
-        for (float i = 0.6f; i <= 1.0f; i += 0.01f)
-        {
-            float xPos = startX + (endX - startX) * i;
-            float rolloff = std::pow((i - 0.6f) / 0.4f, 2.0f); // Quadratic rolloff
-            float yPos = midY + rolloff * (height - 50);
-            responseCurve.lineTo(xPos, yPos);
-        }
-        
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
-        
-        // Labels
-        g.setColour(juce::Colour(0xFF888888));
-        g.setFont(10.0f);
-        g.drawText("0dB", x + 15, midY - 10, 30, 20, juce::Justification::left);
-        g.drawText("Passband", x + 15, y + height - 20, 60, 15, juce::Justification::left);
-        g.drawText("Stopband", x + width - 70, y + height - 20, 60, 15, juce::Justification::right);
-    }
-    
-    void drawWaveformWithPeaks(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colours::white);
-        g.setFont(12.0f);
-        g.drawText("Intersample Interpolation & True-Peak Detection", x, y, width, 20, juce::Justification::centred);
-        
-        // Graph background
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, y + 25, width - 20, height - 30);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, y + 25, width - 20, height - 30);
-        
-        float startX = x + 15;
-        float endX = x + width - 15;
-        float midY = y + 25 + (height - 30) / 2;
-        
-        // Draw original samples (discrete points)
-        g.setColour(juce::Colour(0xFF666666));
-        for (int i = 0; i < 12; i++)
-        {
-            float xPos = startX + (endX - startX) * (i / 11.0f);
-            float wave = std::sin(i * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
-            float yPos = midY + wave * (height - 60) * 0.25f;
-            g.fillEllipse(xPos - 2, yPos - 2, 4, 4);
-            
-            // Connect with straight lines (digital reconstruction)
-            if (i > 0)
-            {
-                float prevXPos = startX + (endX - startX) * ((i-1) / 11.0f);
-                float prevWave = std::sin((i-1) * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
-                float prevYPos = midY + prevWave * (height - 60) * 0.25f;
-                g.drawLine(prevXPos, prevYPos, xPos, yPos, 1.0f);
-            }
-        }
-        
-        // Draw interpolated waveform (smooth curve)
-        juce::Path interpolatedWave;
-        interpolatedWave.startNewSubPath(startX, midY);
-        
-        for (float i = 0; i <= 1.0f; i += 0.002f)
-        {
-            float xPos = startX + (endX - startX) * i;
-            // High-resolution interpolated waveform
-            float wave = std::sin(i * 12.0f * juce::MathConstants<float>::pi);
-            float yPos = midY + wave * (height - 60) * 0.3f;
-            interpolatedWave.lineTo(xPos, yPos);
-        }
-        
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.strokePath(interpolatedWave, juce::PathStrokeType(2.0f));
-        
-        // Draw true intersample peaks (red dots)
-        g.setColour(juce::Colour(0xFFff4444));
-        for (int i = 0; i < 6; i++)
-        {
-            float xPos = startX + (endX - startX) * (0.15f + i * 0.14f);
-            float peakY = midY - (height - 60) * 0.38f * (0.9f + 0.1f * std::sin(i));
-            g.fillEllipse(xPos - 4, peakY - 4, 8, 8);
-            
-            // Draw peak indicator lines
-            g.drawLine(xPos, peakY + 4, xPos, midY + (height - 60) * 0.4f, 1.0f);
-        }
-        
-        // True-peak ceiling line
-        g.setColour(juce::Colour(0xFFf7931e));
-        float ceilingY = midY - (height - 60) * 0.35f;
-        g.drawLine(startX, ceilingY, endX, ceilingY, 2.0f);
-        
-        // Lookahead processing window (subtle overlay)
-        g.setColour(juce::Colour(0x3087ceeb)); // Semi-transparent blue
-        float lookaheadStart = startX + (endX - startX) * 0.7f;
-        g.fillRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40);
-        g.setColour(juce::Colour(0xFF4a90e2));
-        g.drawRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40, 2);
-        
-        // Labels
-        g.setColour(juce::Colour(0xFF888888));
-        g.setFont(9.0f);
-        g.drawText("Ceiling", x + width - 50, ceilingY - 15, 40, 12, juce::Justification::right);
-        g.drawText("Samples", x + 15, y + height - 35, 60, 12, juce::Justification::left);
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.drawText("Interpolated", x + 15, y + height - 23, 80, 12, juce::Justification::left);
-        g.setColour(juce::Colour(0xFFff4444));
-        g.drawText("True Peaks", x + 100, y + height - 23, 80, 12, juce::Justification::left);
-        g.setColour(juce::Colour(0xFF87ceeb));
-        g.drawText("Lookahead", lookaheadStart + 5, y + 35, 80, 12, juce::Justification::left);
-    }
-    
-    void drawOversamplingComparison(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colours::white);
-        g.setFont(12.0f);
-        g.drawText("Oversampling Factor Comparison", x, y, width, 20, juce::Justification::centred);
-        
-        // Graph background
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, y + 25, width - 20, height - 30);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, y + 25, width - 20, height - 30);
-        
-        // Draw three resolution examples
-        int sectionWidth = (width - 40) / 3;
-        
-        // 1x (Original)
-        drawResolutionExample(g, x + 15, y + 30, sectionWidth - 10, height - 40, 1, "1x Original");
-        
-        // 4x Oversampling
-        drawResolutionExample(g, x + 15 + sectionWidth, y + 30, sectionWidth - 10, height - 40, 4, "4x Oversample");
-        
-        // 8x Oversampling
-        drawResolutionExample(g, x + 15 + 2 * sectionWidth, y + 30, sectionWidth - 10, height - 40, 8, "8x Oversample");
-    }
-    
-    void drawResolutionExample(juce::Graphics& g, int x, int y, int width, int height, int factor, const juce::String& label)
-    {
-        // Background
-        g.setColour(juce::Colour(0xFF1a1a2e));
-        g.fillRect(x, y, width, height);
-        g.setColour(juce::Colour(0xFF444444));
-        g.drawRect(x, y, width, height);
-        
-        // Draw sample points
-        int numSamples = 8 * factor;
-        float sampleWidth = (float)(width - 20) / numSamples;
-        
-        juce::Colour sampleColor = (factor == 1) ? juce::Colour(0xFF666666) : 
-                                  (factor == 4) ? juce::Colour(0xFF00d4aa) : 
-                                                 juce::Colour(0xFF87ceeb);
-        
-        g.setColour(sampleColor);
-        for (int i = 0; i < numSamples; i++)
-        {
-            float xPos = x + 10 + i * sampleWidth;
-            float yPos = y + height/2 + std::sin(i * 0.5f) * (height - 40) * 0.3f;
-            g.fillEllipse(xPos - 1, yPos - 1, 2, 2);
-            
-            if (i < numSamples - 1)
-            {
-                float nextYPos = y + height/2 + std::sin((i+1) * 0.5f) * (height - 40) * 0.3f;
-                g.drawLine(xPos, yPos, xPos + sampleWidth, nextYPos, 1.0f);
-            }
-        }
-        
-        // Label
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText(label, x, y + height - 20, width, 15, juce::Justification::centred);
-    }
-    
-    void drawJitterGraphics(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.setFont(14.0f);
-        g.drawText("JITTER MEASUREMENT", x, y, width, 25, juce::Justification::centred);
-        
-        // Draw RMS Jitter meter
-        int meterY = y + 35;
-        int meterHeight = (height - 50) / 2;
-        
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, meterY, width - 20, meterHeight);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, meterY, width - 20, meterHeight);
-        
-        // Draw jitter level bars
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("RMS Jitter (picoseconds)", x + 20, meterY + 10, width - 40, 15, juce::Justification::left);
-        
-        // Good range (green)
-        g.setColour(juce::Colour(0xFF00ff00));
-        g.fillRect(x + 20, meterY + 35, (width - 40) / 3, 20);
-        g.setColour(juce::Colours::white);
-        g.drawText("<10ps", x + 20, meterY + 60, (width - 40) / 3, 15, juce::Justification::centred);
-        
-        // Fair range (yellow)
-        g.setColour(juce::Colour(0xFFffff00));
-        g.fillRect(x + 20 + (width - 40) / 3, meterY + 35, (width - 40) / 3, 20);
-        g.setColour(juce::Colours::white);
-        g.drawText("10-100ps", x + 20 + (width - 40) / 3, meterY + 60, (width - 40) / 3, 15, juce::Justification::centred);
-        
-        // Poor range (red)
-        g.setColour(juce::Colour(0xFFff0000));
-        g.fillRect(x + 20 + 2 * (width - 40) / 3, meterY + 35, (width - 40) / 3, 20);
-        g.setColour(juce::Colours::white);
-        g.drawText(">100ps", x + 20 + 2 * (width - 40) / 3, meterY + 60, (width - 40) / 3, 15, juce::Justification::centred);
-        
-        // Draw spectral analysis graph
-        int graphY = meterY + meterHeight + 20;
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, graphY, width - 20, height - (graphY - y) - 10);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, graphY, width - 20, height - (graphY - y) - 10);
-        
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("Spectral Distribution", x + 20, graphY + 5, width - 40, 15, juce::Justification::left);
-        
-        // Draw simplified spectrum
-        juce::Path spectrum;
-        float startX = x + 20;
-        float endX = x + width - 20;
-        float midY = graphY + (height - (graphY - y) - 10) / 2;
-        spectrum.startNewSubPath(startX, midY);
-        for (float i = 0; i <= 1.0f; i += 0.02f)
-        {
-            float xPos = startX + (endX - startX) * i;
-            float noise = std::sin(i * 20.0f) * 15.0f;
-            spectrum.lineTo(xPos, midY + noise);
-        }
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.strokePath(spectrum, juce::PathStrokeType(2.0f));
-    }
-    
-    void drawSRCGraphics(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colour(0xFF87ceeb));
-        g.setFont(14.0f);
-        g.drawText("SAMPLE RATE CONVERSION", x, y, width, 25, juce::Justification::centred);
-        
-        // Draw input/output sample rate visualization
-        int graphY = y + 35;
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, graphY, width - 20, height - 50);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, graphY, width - 20, height - 50);
-        
-        // Input samples (lower rate)
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("Input: 44.1 kHz", x + 20, graphY + 10, width / 2 - 30, 15, juce::Justification::left);
-        
-        int inputY = graphY + 35;
-        g.setColour(juce::Colour(0xFF666666));
-        for (int i = 0; i < 8; i++)
-        {
-            float xPos = x + 30 + i * ((width / 2 - 40) / 7.0f);
-            g.fillEllipse(xPos - 2, inputY - 2, 4, 4);
-        }
-        
-        // Arrow
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.fillRect(x + width / 2 - 20, graphY + 30, 40, 3);
-        g.fillRect(x + width / 2 + 15, graphY + 25, 3, 13);
-        
-        // Output samples (higher rate)
-        g.setColour(juce::Colours::white);
-        g.drawText("Output: 48 kHz", x + width / 2 + 10, graphY + 10, width / 2 - 30, 15, juce::Justification::left);
-        
-        int outputY = graphY + 35;
-        g.setColour(juce::Colour(0xFF87ceeb));
-        for (int i = 0; i < 12; i++)
-        {
-            float xPos = x + width / 2 + 20 + i * ((width / 2 - 40) / 11.0f);
-            g.fillEllipse(xPos - 2, outputY - 2, 4, 4);
-        }
-        
-        // Anti-aliasing filter response
-        int filterY = graphY + 80;
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("Anti-Aliasing Filter Response", x + 20, filterY, width - 40, 15, juce::Justification::centred);
-        
-        juce::Path filterCurve;
-        float startX = x + 20;
-        float endX = x + width - 20;
-        float midY = filterY + 50;
-        filterCurve.startNewSubPath(startX, midY);
-        filterCurve.lineTo(startX + (endX - startX) * 0.7f, midY);
-        for (float i = 0.7f; i <= 1.0f; i += 0.01f)
-        {
-            float xPos = startX + (endX - startX) * i;
-            float rolloff = std::pow((i - 0.7f) / 0.3f, 3.0f);
-            filterCurve.lineTo(xPos, midY + rolloff * 60);
-        }
-        g.setColour(juce::Colour(0xFF87ceeb));
-        g.strokePath(filterCurve, juce::PathStrokeType(2.0f));
-    }
-    
-    void drawAlignGraphics(juce::Graphics& g, int x, int y, int width, int height)
-    {
-        // Title
-        g.setColour(juce::Colour(0xFFf7931e));
-        g.setFont(14.0f);
-        g.drawText("PHASE & TIME ALIGNMENT", x, y, width, 25, juce::Justification::centred);
-        
-        int graphY = y + 35;
-        g.setColour(juce::Colour(0xFF0a0a1a));
-        g.fillRect(x + 10, graphY, width - 20, height - 50);
-        g.setColour(juce::Colour(0xFF333333));
-        g.drawRect(x + 10, graphY, width - 20, height - 50);
-        
-        // Correlation meter
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("Phase Correlation Meter", x + 20, graphY + 10, width - 40, 15, juce::Justification::centred);
-        
-        int meterY = graphY + 35;
-        int meterWidth = width - 60;
-        
-        // Draw correlation scale
-        g.setColour(juce::Colour(0xFF333333));
-        g.fillRect(x + 30, meterY, meterWidth, 20);
-        
-        // Color gradient: red (-1) -> yellow (0) -> green (+1)
-        for (int i = 0; i < meterWidth; i++)
-        {
-            float pos = (float)i / meterWidth;
-            float correlation = -1.0f + pos * 2.0f;
-            juce::Colour color;
-            if (correlation < 0)
-                color = juce::Colour(0xFFff0000).interpolatedWith(juce::Colour(0xFFffff00), (correlation + 1.0f));
-            else
-                color = juce::Colour(0xFFffff00).interpolatedWith(juce::Colour(0xFF00ff00), correlation);
-            
-            g.setColour(color);
-            g.fillRect(x + 30 + i, meterY, 1, 20);
-        }
-        
-        // Draw scale labels
-        g.setColour(juce::Colours::white);
-        g.setFont(9.0f);
-        g.drawText("-1.0", x + 20, meterY + 25, 30, 12, juce::Justification::left);
-        g.drawText("0", x + 30 + meterWidth / 2 - 10, meterY + 25, 20, 12, juce::Justification::centred);
-        g.drawText("+1.0", x + width - 50, meterY + 25, 30, 12, juce::Justification::right);
-        
-        // Draw waveform alignment example
-        int waveY = meterY + 60;
-        g.setColour(juce::Colours::white);
-        g.setFont(10.0f);
-        g.drawText("Waveform Alignment", x + 20, waveY, width - 40, 15, juce::Justification::left);
-        
-        float startX = x + 30;
-        float endX = x + width - 30;
-        float midY = waveY + 50;
-        
-        // Draw two waveforms - one aligned, one offset
-        juce::Path wave1;
-        juce::Path wave2;
-        wave1.startNewSubPath(startX, midY);
-        wave2.startNewSubPath(startX + 20, midY); // Offset for alignment visualization
-        
-        for (float i = 0; i <= 1.0f; i += 0.01f)
-        {
-            float xPos = startX + (endX - startX) * i;
-            float sine = std::sin(i * 8.0f * juce::MathConstants<float>::pi);
-            float yOffset = sine * 30.0f;
-            wave1.lineTo(xPos, midY + yOffset);
-            wave2.lineTo(xPos + 20, midY + yOffset);
-        }
-        
-        g.setColour(juce::Colour(0xFF00d4aa));
-        g.strokePath(wave1, juce::PathStrokeType(2.0f));
-        g.setColour(juce::Colour(0xFFf7931e).withAlpha(0.6f));
-        g.strokePath(wave2, juce::PathStrokeType(2.0f));
-        
-        // Show time offset
-        g.setColour(juce::Colours::white);
-        g.setFont(9.0f);
-        g.drawText("Time offset →", startX + 5, midY + 40, 100, 12, juce::Justification::left);
-    }
-};
     class ISPControlWindow : public juce::Component
     {
     public:
@@ -2016,6 +1532,306 @@ private:
             }
         };
         
+        // Custom component for ISP info with graphics
+        class ISPInfoComponent : public juce::Component
+        {
+        public:
+            ISPInfoComponent(const juce::String& title = "ISP") : windowTitle(title)
+            {
+                setSize(950, 750);
+            }
+            
+            void paint(juce::Graphics& g) override
+            {
+                // Background
+                g.fillAll(juce::Colour(0xFF1a1a2e));
+                
+                // Header
+                g.setColour(juce::Colours::white);
+                g.setFont(20.0f);
+                juce::String headerText = windowTitle.toUpperCase();
+                if (windowTitle.contains("ISP")) headerText = "ISP - INTERSAMPLE PROCESSING";
+                else if (windowTitle.contains("SRC")) headerText = "SRC - SAMPLE RATE CONVERSION";
+                else if (windowTitle.contains("JITTER")) headerText = "JITTER ANALYSIS & OPTIMIZATION";
+                else if (windowTitle.contains("ALIGN")) headerText = "PHASE & TIME ALIGNMENT";
+                g.drawText(headerText, 20, 20, getWidth() - 40, 30, juce::Justification::centred);
+                
+                // Text area (left side) - Use getProcessInfo()
+                g.setColour(juce::Colour(0xFF00ffff));
+                g.setFont(10.0f);
+                juce::String infoText = getProcessInfo();
+                g.drawFittedText(infoText, 20, 60, 420, 600, juce::Justification::topLeft, 100);
+                
+                // Graphics area (right side)
+                drawGraphics(g, 460, 60, 420, 600);
+            }
+            
+        private:
+            juce::String windowTitle;
+            
+            juce::String getProcessInfo()
+            {
+                if (windowTitle.contains("JITTER")) {
+                    return "OVERVIEW:\nAdvanced jitter analysis and digital audio optimization system that measures, analyzes, and corrects timing irregularities in digital audio systems. This comprehensive tool ensures maximum digital audio fidelity through precise clock analysis and bit-depth optimization.\n\nWHAT IS JITTER AND WHY IT MATTERS:\n- Jitter is the deviation in timing of digital audio clock signals, measured in picoseconds (ps)\n- Even tiny amounts of jitter (10-100ps) can cause audible degradation in high-quality audio\n- Jitter creates time-domain distortion, affecting stereo imaging, transient response, and harmonic structure\n- Low jitter (<10ps) is essential for pristine digital audio quality matching or exceeding analog\n- The difference between 100ps and 10ps jitter is clearly audible on revealing monitoring systems\n\nJITTER ANALYSIS IN DETAIL:\n- RMS Jitter Measurement: Continuous monitoring of clock stability with picosecond-accurate measurement\n- Peak Jitter Detection: Identifies worst-case timing variations that cause audible artifacts\n- Spectral Analysis: Frequency-domain analysis shows jitter distribution across the audio spectrum\n- Period Jitter: Measures variation between adjacent clock cycles (critical for audio quality)\n- Phase Jitter: Tracks cumulative timing error over time (affects long-term stability)\n- Histogram Display: Visual representation of jitter distribution patterns\n\nTYPES OF JITTER:\n- Period Jitter: Variation in individual clock cycle durations\n- Cycle-to-Cycle Jitter: Difference between adjacent clock periods\n- Time Interval Error (TIE): Cumulative timing deviation over multiple cycles\n- Phase Jitter: Long-term phase variation of the clock signal\n- Random Jitter: Gaussian noise affecting clock timing (benign, broad spectrum)\n- Deterministic Jitter: Predictable, repeating patterns (more audible, creates specific artifacts)\n\nAUDIBLE EFFECTS OF JITTER:\n- Excellent (<10ps RMS): Pristine, black background, precise imaging, clean transients\n- Good (10-50ps RMS): Slightly reduced clarity, minor imaging smear, still professional quality\n- Moderate (50-100ps RMS): Noticeable harshness, reduced depth, compressed soundstage\n- Poor (>100ps RMS): Obvious distortion, flat imaging, grainy high frequencies, listener fatigue\n\nJITTER SOURCES:\n- Clock Quality: Crystal oscillator stability and quality directly affects jitter performance\n- Power Supply Noise: Ripple and noise on power rails couples into clock circuitry\n- EMI/RFI: Electromagnetic interference from nearby digital circuits or external sources\n- Cable Runs: Long digital audio cables introduce reflections and timing uncertainty\n- PCB Layout: Poor circuit board design allows crosstalk between clock and data signals\n\nBIT DEPTH ANALYSIS:\n- 16-bit: 96.3dB dynamic range, 65,536 quantization levels (CD quality)\n- 24-bit: 144.5dB dynamic range, 16,777,216 levels (professional standard)\n- 32-bit float: 192.6dB+ dynamic range, virtually infinite headroom (mixing/mastering)\n- Effective Bits: Measures actual resolution after accounting for noise floor and distortion\n- Bit Depth Impact: Higher bit depth provides lower quantization noise and greater dynamic range\n\nDIGITAL INTERFACES:\n- S/PDIF: Consumer format, typically 50-150ps jitter depending on implementation\n- AES/EBU: Professional standard, designed for <50ps jitter with proper equipment\n- USB Audio: Varies widely, 20-200ps depending on implementation quality\n- Network Audio (Dante/AVB): Modern protocols with <10ps jitter when properly configured\n- Word Clock: External sync can improve or degrade jitter depending on clock quality\n\nTECHNICAL SPECIFICATIONS:\n- Jitter Measurement Range: 1ps to 10,000ps (10ns) with 0.1ps resolution\n- Measurement Bandwidth: DC to 1MHz for complete jitter spectrum analysis\n- Time Interval Error: Tracks cumulative jitter over 1 million samples\n- Spectral Resolution: 1Hz bins for precise identification of jitter sources\n- Real-Time Display: Live jitter histogram and spectrum with <10ms update rate\n- Interface Support: Measures S/PDIF, AES/EBU, Word Clock, USB, Network Audio\n- Bit Depth Analysis: 16-bit to 32-bit integer and floating-point formats\n\nPROFESSIONAL APPLICATIONS:\n- Mastering: Verify jitter levels are below audibility threshold (<10ps) for pristine transfers\n- Digital Transfers: Monitor jitter during A/D conversion to ensure maximum fidelity\n- Interface Testing: Evaluate and compare jitter performance of different audio interfaces\n- Clock Evaluation: Measure effectiveness of external word clocks and master clocks\n- System Optimization: Identify jitter sources in complex studio installations\n- Format Conversion: Ensure jitter doesn't accumulate during sample rate or bit depth conversion\n- Archive Preservation: Document jitter characteristics of source material and transfers\n\nCONTROL DESCRIPTIONS:\n- Jitter RMS: Displays root-mean-square jitter value in picoseconds\n- Peak Jitter: Shows maximum jitter deviation for worst-case analysis\n- Bit Depth: Select or display current audio bit depth (16/24/32-bit)\n- Dither: Control dithering for optimal bit depth reduction\n- Interface: Select digital audio interface to monitor (S/PDIF/AES/USB/Clock)";
+                } else if (windowTitle.contains("SRC")) {
+                    return "OVERVIEW:\nProfessional-grade sample rate conversion using state-of-the-art resampling algorithms. Converts between any sample rates while preserving audio fidelity through advanced anti-aliasing filters, high-precision interpolation, and transparent frequency response.\n\nWHY SAMPLE RATE CONVERSION MATTERS:\n- Different media formats use different sample rates: CD (44.1kHz), video (48kHz), hi-res (96/192kHz)\n- Poor SRC creates audible artifacts: aliasing, loss of high frequencies, phase distortion, and harshness\n- Professional SRC is transparent: preserves the original character with no audible degradation\n- Critical for mastering, broadcast, and any workflow involving multiple sample rate domains\n\nSAMPLE RATE FAMILIES EXPLAINED:\n- 44.1kHz Family: CD and music production (44.1, 88.2, 176.4, 352.8 kHz)\n- 48kHz Family: Video and broadcast (48, 96, 192, 384 kHz)\n- Integer Conversion: Within same family (44.1→88.2) is computationally easier, higher quality\n- Cross-Family Conversion: Between families (44.1→48) requires complex algorithms, more challenging\n- Common ratios: 2:1, 3:2, 147:160 (44.1→48), etc. affect conversion complexity\n\nCONVERSION PROCESS:\n- Upsampling: Interpolate new samples between existing ones using sophisticated algorithms\n- Filtering: Apply anti-aliasing filter to remove artifacts and ensure proper bandwidth\n- Downsampling: Decimate (remove) samples after filtering to reach target sample rate\n- Phase Compensation: Maintain phase coherence across frequency spectrum\n- Dither: Optional re-dithering if bit depth reduction occurs during conversion\n\nQUALITY SETTINGS DETAILED:\n- Draft Mode: Fast preview conversion (80dB stopband, <0.01% CPU)\n- Standard Mode: Balanced quality/speed for general use (100dB stopband, ~0.1% CPU)\n- High Mode: Professional quality for distribution (120dB stopband, ~0.5% CPU)\n- Ultra Mode: Maximum quality for critical mastering (140dB+ stopband, ~2% CPU)\n- Custom Mode: User-defined passband/stopband specifications for specialized needs\n\nANTI-ALIASING FILTER DESIGN:\n- Passband Ripple: Adjustable 0.001dB to 0.1dB variation (flatter = more transparent)\n- Stopband Attenuation: 80dB to 160dB rejection (higher = cleaner conversion)\n- Transition Bandwidth: Optimized for minimal pre-ringing and time-domain accuracy\n- Phase Response Options: Linear (transparent) or Minimum (zero-latency)\n- Filter Length: Automatically calculated for optimal quality/performance balance\n\nLATENCY AND PERFORMANCE:\n- Draft: ~1ms latency, suitable for real-time monitoring\n- Standard: ~5ms latency, ideal for mixing and general production\n- High: ~20ms latency, appropriate for mastering and offline processing\n- Ultra: ~50ms latency, designed for critical archive and distribution\n- Processing load scales with quality setting and conversion ratio complexity\n\nTECHNICAL SPECIFICATIONS:\n- Passband: DC to 0.4535 x Nyquist frequency (adjustable for different requirements)\n- Stopband Rejection: Up to 160dB (eliminates aliasing artifacts completely)\n- THD+N: <0.0001% at nominal levels (transparent, no added distortion)\n- Frequency Response: +/-0.01dB in passband (maintains tonal balance)\n- Phase Linearity: +/-0.5 degrees in passband for linear phase mode\n- Processing: 64-bit floating point precision throughout signal path\n- Dynamic Range: >140dB when properly dithered\n\nCOMMON CONVERSION SCENARIOS:\n- CD to Broadcast: 44.1kHz -> 48kHz (cross-family, requires high quality)\n- Hi-Res Mastering: 96kHz -> 44.1kHz for CD (2.177:1 ratio, critical quality)\n- Video Post: Various rates -> 48kHz for video synchronization\n- Archive Preservation: Original rate -> multiple distribution formats\n- Live Sound: Mixing console rate -> output device rate in real-time\n\nPROFESSIONAL APPLICATIONS:\n- Mastering: Convert between CD (44.1kHz) and broadcast (48kHz) standards\n- Archive Transfer: Digitize at highest rate, convert for multiple distributions\n- Film/Video Post: Convert audio to match video frame rates (23.976, 24, 25, 29.97, 30fps)\n- Broadcast: Ensure compliance with broadcast sample rate standards\n- Hi-Res Distribution: Create multiple sample rate versions from high-res masters\n- Live Sound: Interface between devices with different clock rates in real-time\n- Podcast Production: Standardize various source sample rates for consistent output\n\nAUDIBLE QUALITY DIFFERENCES:\n- Poor SRC: Harsh highs, blurred transients, reduced stereo width, metallic artifacts\n- Good SRC: Maintains original character, preserves detail, transparent conversion\n- The difference is most audible on complex material: drums, vocals, acoustic instruments\n- Critical for preserving high-frequency air and spatial imaging\n\nCONTROL DESCRIPTIONS:\n- Target Rate: Destination sample rate selection (standard rates or custom)\n- Quality: Conversion algorithm quality level (Draft/Standard/High/Ultra/Custom)\n- Phase Mode: Linear phase (transparent) or minimum phase (zero latency)\n- Dither: Optional dithering for bit depth reduction during conversion";
+                } else if (windowTitle.contains("ALIGN")) {
+                    return "OVERVIEW:\nPhase and Time Alignment - Precision synchronization system for multi-source audio that eliminates phase cancellation, comb filtering, and timing issues. Essential for maintaining coherent sound when combining multiple microphones or sources.\n\nWHY PHASE ALIGNMENT MATTERS:\n- Out-of-phase signals cause comb filtering, hollowness, and loss of bass response\n- Timing misalignment between mics creates phase cancellation at specific frequencies\n- Proper alignment restores fullness, punch, clarity, and three-dimensional soundstage\n- Critical for multi-mic recordings, stereo imaging, and professional productions\n- The difference between aligned and misaligned signals is immediately audible\n\nTIME ALIGNMENT IN DETAIL:\n- Sample-accurate delay compensation (+/-10,000 samples = +/-208ms at 48kHz)\n- Subsample precision using high-quality interpolation (0.01 sample accuracy)\n- Distance-based delay calculator: enter mic distances, get exact delay times\n- Speed of sound compensation accounts for temperature (sound travels faster in warm air)\n- Group delay compensation for different processing chains and speaker crossovers\n- Essential for aligning: overhead mics to close mics, room mics to spot mics, stereo pairs\n\nUNDERSTANDING PHASE:\n- Phase describes the timing relationship between two waveforms\n- In-phase (0 degrees): Signals add constructively, increased level and fullness\n- Out-of-phase (180 degrees): Signals cancel, thin sound, loss of bass\n- Partially out-of-phase (90 degrees): Comb filtering, hollow, phasey sound\n- Phase relationships vary with frequency, creating complex interference patterns\n\nPHASE ALIGNMENT CONTROLS:\n- Continuous phase rotation (0-360 degrees) with 0.1-degree precision\n- All-pass filter implementation provides frequency-independent phase rotation\n- Phase correlation analysis shows real-time coherence between channels\n- Automatic phase alignment detection analyzes tracks and suggests optimal settings\n- Frequency-dependent phase adjustment for surgical correction\n- Visual phase scope display shows phase relationships in real-time\n\nPOLARITY CORRECTION:\n- Instant polarity inversion (180-degree phase flip)\n- Automatic polarity detection algorithm identifies inverted signals\n- Visual polarity correlation display (-1 = inverted, +1 = in-phase, 0 = uncorrelated)\n- Per-channel polarity control for multi-track productions\n- Preserves frequency response while correcting phase relationships\n- Essential when one mic is wired backwards or amp polarity is reversed\n\nCORRELATION METER EXPLAINED:\n- +1.0: Perfect correlation, signals completely in-phase (mono)\n- +0.7 to +1.0: Good correlation, solid stereo image with good mono compatibility\n- +0.3 to +0.7: Moderate correlation, wide stereo but some phase issues\n- 0.0: No correlation, completely independent signals\n- -0.3 to 0.0: Inverted correlation, serious phase problems, thin sound\n- -1.0: Perfect anti-correlation, signals completely out-of-phase\n\nCROSSOVER PROCESSING:\n- Linear phase crossover filters maintain phase coherence across frequency bands\n- Adjustable crossover frequency (20Hz-20kHz) for flexible band separation\n- Slope options: 6dB (gentle), 12dB (standard), 18dB (steep), 24dB/octave (very steep)\n- Linkwitz-Riley alignment ensures flat summed frequency response\n- Independent processing of low and high frequency bands\n- Essential for subwoofer alignment, multi-way speaker systems, and frequency-specific processing\n\nAUTO-ALIGN FUNCTION:\n- Analyzes multiple tracks for phase relationships using cross-correlation\n- Automatically calculates optimal delay times for maximum coherence\n- Detects and corrects polarity inversions automatically\n- Maximizes phase coherence across entire frequency spectrum\n- Reports alignment quality metrics and suggests improvements\n- Saves hours of manual trial-and-error adjustment\n\nCOMMON PHASE PROBLEMS:\n- Drum Overheads vs Close Mics: Overheads capture sound later due to distance\n- Stereo Mic Pair: One mic slightly farther from source causes phase smearing\n- Double-Tracked Guitars: Slightly different timing creates comb filtering\n- Bass DI + Mic: Different signal paths cause phase cancellation\n- Room Mics: Reflections and distance create complex phase relationships\n\nAUDIBLE EFFECTS:\n- Good Alignment: Full, punchy, clear, three-dimensional, solid bass\n- Poor Alignment: Thin, hollow, phasey, weak bass, unstable stereo image\n- Comb Filtering: Notches at specific frequencies, robotic or tunnel-like sound\n- Polarity Inversion: Dramatic loss of bass, thin midrange, unstable image\n\nTECHNICAL SPECIFICATIONS:\n- Delay Range: +/-10,000 samples (+/-208ms at 48kHz, +/-227ms at 44.1kHz)\n- Delay Resolution: 0.01 sample precision via high-quality interpolation\n- Phase Rotation: 0.1-degree resolution (0-360 degrees continuous)\n- Correlation Meter: -1.0 to +1.0 display range, 0.01 resolution\n- Processing Latency: <1ms added latency (look-ahead mode adds specified delay)\n- Frequency Response: +/-0.01dB when properly aligned\n- Crossover Slopes: 6, 12, 18, 24dB/octave Linkwitz-Riley\n\nPROFESSIONAL APPLICATIONS:\n- Multi-Mic Drum Recording: Align overheads, close mics, room mics for solid, punchy drums\n- Stereo Pair Correction: Fix spacing and positioning issues in stereo recordings\n- Double-Tracked Instruments: Phase-align multiple guitar, vocal, or bass takes\n- Bass Recording: Align DI signal with microphone for full, solid low end\n- Room Correction: Compensate for speaker/listener position in studios and live venues\n- Live Sound: Align main PA speakers with delay fill speakers for uniform coverage\n- Post Production: Sync audio from multiple camera sources for video production\n- Mastering: Verify and optimize stereo image phase coherence\n\nWORKFLOW TIPS:\n- Always check correlation meter when combining multiple signals\n- Use Auto-Align as starting point, then fine-tune by ear\n- Flip polarity first, then adjust timing delay\n- Solo signals individually, then together to hear phase interaction\n- Check phase at different frequencies using crossover bands\n- Zoom in on transients to align precisely by visual waveform\n\nCONTROL DESCRIPTIONS:\n- Delay: Time offset in samples or milliseconds for precise timing alignment\n- Polarity: Instant signal inversion (normal/inverted) for phase correction\n- Phase Rotate: Continuous phase adjustment (0-360 degrees) for fine tuning\n- Crossover: Frequency split point for independent band processing and alignment";
+                }
+                // Default ISP info
+                return "OVERVIEW:\nAdvanced intersample processing using proprietary interpolation algorithms to eliminate aliasing, pre-ringing, and intersample distortion.\n\nINTERSAMPLE INTERPOLATION PROCESS:\n- Proprietary 64-bit floating-point interpolation\n- Advanced windowing functions (Kaiser, Blackman-Harris)\n- Adaptive sample rate conversion up to 8x\n- Zero-latency intersample peak detection\n- Frequency-domain aliasing suppression\n- Phase-coherent reconstruction filtering\n\nTECHNICAL SPECIFICATIONS:\n- OS Factor: 2x/4x/8x oversampling (up to 384kHz)\n- Filter Type: Linear/Minimum/Polyphase designs\n- Passband Ripple: <0.001dB (industry-leading)\n- Stopband Rejection: 60-120dB (configurable)\n- True-Peak Accuracy: +/-0.01dB precision\n- Processing Latency: 0-10ms lookahead\n\nALGORITHM ADVANTAGES:\n- Eliminates intersample overs completely\n- Preserves transient accuracy\n- Maintains stereo imaging precision\n- CPU-optimized SIMD processing\n\nPROFESSIONAL USAGE:\nEssential for mastering, broadcast, and high-resolution audio production.";
+            }
+            
+            void drawGraphics(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Graphics section header
+                g.setColour(juce::Colour(0xFF87ceeb));
+                g.setFont(16.0f);
+                g.drawText("VISUAL GRAPHICS", x, y, width, 30, juce::Justification::centred);
+                
+                if (windowTitle.contains("JITTER")) {
+                    drawJitterGraphics(g, x, y + 40, width, height - 40);
+                } else if (windowTitle.contains("SRC")) {
+                    drawSRCGraphics(g, x, y + 40, width, height - 40);
+                } else if (windowTitle.contains("ALIGN")) {
+                    drawAlignGraphics(g, x, y + 40, width, height - 40);
+                } else {
+                    // Default ISP graphics
+                    int graphY = y + 40;
+                    int graphHeight = (height - 40) / 3;
+                    drawFrequencyResponse(g, x, graphY, width, graphHeight - 20);
+                    drawWaveformWithPeaks(g, x, graphY + graphHeight, width, graphHeight - 20);
+                    drawOversamplingComparison(g, x, graphY + 2 * graphHeight, width, graphHeight - 20);
+                }
+            }
+            
+            void drawFrequencyResponse(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Passband Rolloff & Stopband Attenuation", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                // Draw frequency response curve
+                juce::Path responseCurve;
+                float startX = x + 15;
+                float endX = x + width - 15;
+                float midY = y + 25 + (height - 30) / 2;
+                
+                responseCurve.startNewSubPath(startX, midY);
+                
+                // Passband (flat)
+                responseCurve.lineTo(startX + (endX - startX) * 0.6f, midY);
+                
+                // Rolloff region
+                for (float i = 0.6f; i <= 1.0f; i += 0.01f)
+                {
+                    float xPos = startX + (endX - startX) * i;
+                    float rolloff = std::pow((i - 0.6f) / 0.4f, 2.0f); // Quadratic rolloff
+                    float yPos = midY + rolloff * (height - 50);
+                    responseCurve.lineTo(xPos, yPos);
+                }
+                
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
+                
+                // Labels
+                g.setColour(juce::Colour(0xFF888888));
+                g.setFont(10.0f);
+                g.drawText("0dB", x + 15, midY - 10, 30, 20, juce::Justification::left);
+                g.drawText("Passband", x + 15, y + height - 20, 60, 15, juce::Justification::left);
+                g.drawText("Stopband", x + width - 70, y + height - 20, 60, 15, juce::Justification::right);
+            }
+            
+            void drawWaveformWithPeaks(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Intersample Interpolation & True-Peak Detection", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                float startX = x + 15;
+                float endX = x + width - 15;
+                float midY = y + 25 + (height - 30) / 2;
+                
+                // Draw original samples (discrete points)
+                g.setColour(juce::Colour(0xFF666666));
+                for (int i = 0; i < 12; i++)
+                {
+                    float xPos = startX + (endX - startX) * (i / 11.0f);
+                    float wave = std::sin(i * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
+                    float yPos = midY + wave * (height - 60) * 0.25f;
+                    g.fillEllipse(xPos - 2, yPos - 2, 4, 4);
+                    
+                    // Connect with straight lines (digital reconstruction)
+                    if (i > 0)
+                    {
+                        float prevXPos = startX + (endX - startX) * ((i-1) / 11.0f);
+                        float prevWave = std::sin((i-1) * 2.0f * juce::MathConstants<float>::pi / 11.0f * 6.0f);
+                        float prevYPos = midY + prevWave * (height - 60) * 0.25f;
+                        g.drawLine(prevXPos, prevYPos, xPos, yPos, 1.0f);
+                    }
+                }
+                
+                // Draw interpolated waveform (smooth curve)
+                juce::Path interpolatedWave;
+                interpolatedWave.startNewSubPath(startX, midY);
+                
+                for (float i = 0; i <= 1.0f; i += 0.002f)
+                {
+                    float xPos = startX + (endX - startX) * i;
+                    // High-resolution interpolated waveform
+                    float wave = std::sin(i * 12.0f * juce::MathConstants<float>::pi);
+                    float yPos = midY + wave * (height - 60) * 0.3f;
+                    interpolatedWave.lineTo(xPos, yPos);
+                }
+                
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.strokePath(interpolatedWave, juce::PathStrokeType(2.0f));
+                
+                // Draw true intersample peaks (red dots)
+                g.setColour(juce::Colour(0xFFff4444));
+                for (int i = 0; i < 6; i++)
+                {
+                    float xPos = startX + (endX - startX) * (0.15f + i * 0.14f);
+                    float peakY = midY - (height - 60) * 0.38f * (0.9f + 0.1f * std::sin(i));
+                    g.fillEllipse(xPos - 4, peakY - 4, 8, 8);
+                    
+                    // Draw peak indicator lines
+                    g.drawLine(xPos, peakY + 4, xPos, midY + (height - 60) * 0.4f, 1.0f);
+                }
+                
+                // True-peak ceiling line
+                g.setColour(juce::Colour(0xFFf7931e));
+                float ceilingY = midY - (height - 60) * 0.35f;
+                g.drawLine(startX, ceilingY, endX, ceilingY, 2.0f);
+                
+                // Lookahead processing window (subtle overlay)
+                g.setColour(juce::Colour(0x3087ceeb)); // Semi-transparent blue
+                float lookaheadStart = startX + (endX - startX) * 0.7f;
+                g.fillRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40);
+                g.setColour(juce::Colour(0xFF4a90e2));
+                g.drawRect((int)lookaheadStart, y + 30, (int)((endX - startX) * 0.25f), height - 40, 2);
+                
+                // Labels
+                g.setColour(juce::Colour(0xFF888888));
+                g.setFont(9.0f);
+                g.drawText("Ceiling", x + width - 50, ceilingY - 15, 40, 12, juce::Justification::right);
+                g.drawText("Samples", x + 15, y + height - 35, 60, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.drawText("Interpolated", x + 15, y + height - 23, 80, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFFff4444));
+                g.drawText("True Peaks", x + 100, y + height - 23, 80, 12, juce::Justification::left);
+                g.setColour(juce::Colour(0xFF87ceeb));
+                g.drawText("Lookahead", lookaheadStart + 5, y + 35, 80, 12, juce::Justification::left);
+            }
+            
+            void drawOversamplingComparison(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                // Title
+                g.setColour(juce::Colours::white);
+                g.setFont(12.0f);
+                g.drawText("Oversampling Factor Comparison", x, y, width, 20, juce::Justification::centred);
+                
+                // Graph background
+                g.setColour(juce::Colour(0xFF0a0a1a));
+                g.fillRect(x + 10, y + 25, width - 20, height - 30);
+                g.setColour(juce::Colour(0xFF333333));
+                g.drawRect(x + 10, y + 25, width - 20, height - 30);
+                
+                // Draw three resolution examples
+                int sectionWidth = (width - 40) / 3;
+                
+                // 1x (Original)
+                drawResolutionExample(g, x + 15, y + 30, sectionWidth - 10, height - 40, 1, "1x Original");
+                
+                // 4x Oversampling
+                drawResolutionExample(g, x + 15 + sectionWidth, y + 30, sectionWidth - 10, height - 40, 4, "4x Oversample");
+                
+                // 8x Oversampling
+                drawResolutionExample(g, x + 15 + 2 * sectionWidth, y + 30, sectionWidth - 10, height - 40, 8, "8x Oversample");
+            }
+            
+            void drawResolutionExample(juce::Graphics& g, int x, int y, int width, int height, int factor, const juce::String& label)
+            {
+                // Background
+                g.setColour(juce::Colour(0xFF1a1a2e));
+                g.fillRect(x, y, width, height);
+                g.setColour(juce::Colour(0xFF444444));
+                g.drawRect(x, y, width, height);
+                
+                // Draw sample points
+                int numSamples = 8 * factor;
+                float sampleWidth = (float)(width - 20) / numSamples;
+                
+                juce::Colour sampleColor = (factor == 1) ? juce::Colour(0xFF666666) : 
+                                          (factor == 4) ? juce::Colour(0xFF00d4aa) : 
+                                                         juce::Colour(0xFF87ceeb);
+                
+                g.setColour(sampleColor);
+                for (int i = 0; i < numSamples; i++)
+                {
+                    float xPos = x + 10 + i * sampleWidth;
+                    float yPos = y + height/2 + std::sin(i * 0.5f) * (height - 40) * 0.3f;
+                    g.fillEllipse(xPos - 1, yPos - 1, 2, 2);
+                    
+                    if (i < numSamples - 1)
+                    {
+                        float nextYPos = y + height/2 + std::sin((i+1) * 0.5f) * (height - 40) * 0.3f;
+                        g.drawLine(xPos, yPos, xPos + sampleWidth, nextYPos, 1.0f);
+                    }
+                }
+                
+                // Label
+                g.setColour(juce::Colours::white);
+                g.setFont(10.0f);
+                g.drawText(label, x, y + height - 20, width, 15, juce::Justification::centred);
+            }
+            
+            // Placeholder implementations for process-specific graphics
+            // These display simplified versions - full implementations are in ProfessionalSubwindow
+            void drawJitterGraphics(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                g.setColour(juce::Colour(0xFF00d4aa));
+                g.setFont(12.0f);
+                g.drawText("JITTER ANALYSIS VISUALIZATION", x, y, width, 30, juce::Justification::centred);
+                g.setFont(10.0f);
+                g.setColour(juce::Colours::white);
+                g.drawText("See comprehensive graphics in the main professional control window", x, y + 50, width, 100, juce::Justification::centred);
+            }
+            
+            void drawSRCGraphics(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                g.setColour(juce::Colour(0xFF87ceeb));
+                g.setFont(12.0f);
+                g.drawText("SAMPLE RATE CONVERSION VISUALIZATION", x, y, width, 30, juce::Justification::centred);
+                g.setFont(10.0f);
+                g.setColour(juce::Colours::white);
+                g.drawText("See comprehensive graphics in the main professional control window", x, y + 50, width, 100, juce::Justification::centred);
+            }
+            
+            void drawAlignGraphics(juce::Graphics& g, int x, int y, int width, int height)
+            {
+                g.setColour(juce::Colour(0xFFf7931e));
+                g.setFont(12.0f);
+                g.drawText("PHASE & TIME ALIGNMENT VISUALIZATION", x, y, width, 30, juce::Justification::centred);
+                g.setFont(10.0f);
+                g.setColour(juce::Colours::white);
+                g.drawText("See comprehensive graphics in the main professional control window", x, y + 50, width, 100, juce::Justification::centred);
+            }
+        };
         
         juce::String processName, processDescription;
         std::unique_ptr<juce::ComboBox> osFactorCombo, filterTypeCombo, presetCombo;
@@ -2050,50 +1866,10 @@ private:
                     addAndMakeVisible(*presetCombo);
                 }
                 
-                // Create Source Rate Switch
-                sourceRateCombo = std::make_unique<juce::ComboBox>();
-                if (sourceRateCombo) {
-                    sourceRateCombo->addItem("44.1 kHz", 1);
-                    sourceRateCombo->addItem("48 kHz", 2);
-                    sourceRateCombo->addItem("88.2 kHz", 3);
-                    sourceRateCombo->addItem("96 kHz", 4);
-                    sourceRateCombo->addItem("176.4 kHz", 5);
-                    sourceRateCombo->addItem("192 kHz", 6);
-                    sourceRateCombo->setSelectedId(1);
-                    sourceRateCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    sourceRateCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF00d4aa));
-                    addAndMakeVisible(*sourceRateCombo);
-                }
+                // Create knobs
+                qualityKnob = std::make_unique<CleanKnob>();
+                if (qualityKnob) addAndMakeVisible(*qualityKnob);
                 
-                // Create Target Rate Switch
-                targetRateCombo = std::make_unique<juce::ComboBox>();
-                if (targetRateCombo) {
-                    targetRateCombo->addItem("44.1 kHz", 1);
-                    targetRateCombo->addItem("48 kHz", 2);
-                    targetRateCombo->addItem("88.2 kHz", 3);
-                    targetRateCombo->addItem("96 kHz", 4);
-                    targetRateCombo->addItem("176.4 kHz", 5);
-                    targetRateCombo->addItem("192 kHz", 6);
-                    targetRateCombo->setSelectedId(2);
-                    targetRateCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    targetRateCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF87ceeb));
-                    addAndMakeVisible(*targetRateCombo);
-                }
-                
-                // Create Quality Mode Switch
-                qualityCombo = std::make_unique<juce::ComboBox>();
-                if (qualityCombo) {
-                    qualityCombo->addItem("Draft", 1);
-                    qualityCombo->addItem("Standard", 2);
-                    qualityCombo->addItem("High", 3);
-                    qualityCombo->addItem("Ultra", 4);
-                    qualityCombo->setSelectedId(3);
-                    qualityCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    qualityCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFFff6b35));
-                    addAndMakeVisible(*qualityCombo);
-                }
-                
-                // Create knobs for Passband Ripple and Stopband Attenuation
                 rippleKnob = std::make_unique<CleanKnob>();
                 if (rippleKnob) addAndMakeVisible(*rippleKnob);
                 
@@ -2126,26 +1902,25 @@ private:
             g.setFont(13.0f);
             g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
             
-            // Switch labels
+            // Labels and meters
             g.setColour(juce::Colours::white);
             g.setFont(11.0f);
-            g.drawText("Source Rate", 70, 180, 120, 20, juce::Justification::centred);
-            g.drawText("Target Rate", 310, 180, 120, 20, juce::Justification::centred);
-            g.drawText("Quality Mode", getWidth()/2 - 75, 270, 150, 20, juce::Justification::centred);
+            g.drawText("Quality", 70, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Ripple", 190, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Stopband", 310, 240, 80, 40, juce::Justification::centred);
             
-            // Knob labels
-            g.drawText("Passband Ripple", 70, 360, 120, 20, juce::Justification::centred);
-            g.drawText("Stopband Attenuation", 280, 360, 160, 20, juce::Justification::centred);
+            // Draw meters centered above knobs
+            drawVerticalMeter(g, 110, 280, 20, 100, 0.65f, juce::Colour(0xFF00d4aa), "Qual");
+            drawVerticalMeter(g, 230, 280, 20, 100, 0.45f, juce::Colour(0xFFff6b35), "Rip");
+            drawVerticalMeter(g, 350, 280, 20, 100, 0.85f, juce::Colour(0xFF4a90e2), "Stop");
         }
         
         void resized() override
         {
             if (presetCombo) presetCombo->setBounds(getWidth()/2 - 75, 120, 150, 25);
-            if (sourceRateCombo) sourceRateCombo->setBounds(60, 210, 140, 30);
-            if (targetRateCombo) targetRateCombo->setBounds(300, 210, 140, 30);
-            if (qualityCombo) qualityCombo->setBounds(getWidth()/2 - 70, 300, 140, 30);
-            if (rippleKnob) rippleKnob->setBounds(90, 390, 80, 80);
-            if (stopbandKnob) stopbandKnob->setBounds(320, 390, 80, 80);
+            if (qualityKnob) qualityKnob->setBounds(80, 410, 80, 80);
+            if (rippleKnob) rippleKnob->setBounds(200, 410, 80, 80);
+            if (stopbandKnob) stopbandKnob->setBounds(320, 410, 80, 80);
             if (infoButton) infoButton->setBounds(getWidth() - 80, 20, 60, 30);
         }
         
@@ -2197,10 +1972,7 @@ private:
     private:
         juce::String processName;
         std::unique_ptr<juce::ComboBox> presetCombo;
-        std::unique_ptr<juce::ComboBox> sourceRateCombo;
-        std::unique_ptr<juce::ComboBox> targetRateCombo;
-        std::unique_ptr<juce::ComboBox> qualityCombo;
-        std::unique_ptr<CleanKnob> rippleKnob, stopbandKnob;
+        std::unique_ptr<CleanKnob> qualityKnob, rippleKnob, stopbandKnob;
         std::unique_ptr<juce::TextButton> infoButton;
     };
     
@@ -2227,31 +1999,18 @@ private:
                     addAndMakeVisible(*presetCombo);
                 }
                 
-                // Create Dither Type Switch
-                ditherTypeCombo = std::make_unique<juce::ComboBox>();
-                if (ditherTypeCombo) {
-                    ditherTypeCombo->addItem("TPDF", 1);
-                    ditherTypeCombo->addItem("Triangular", 2);
-                    ditherTypeCombo->addItem("Gaussian", 3);
-                    ditherTypeCombo->addItem("None", 4);
-                    ditherTypeCombo->setSelectedId(1);
-                    ditherTypeCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    ditherTypeCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF00d4aa));
-                    addAndMakeVisible(*ditherTypeCombo);
-                }
+                // Create knobs - Jitter RMS, Spectrum, Bit-Depth, Quant Mode, Dither Level
+                jitterRMSKnob = std::make_unique<CleanKnob>();
+                if (jitterRMSKnob) addAndMakeVisible(*jitterRMSKnob);
                 
-                // Create Bit Depth Switch
-                bitDepthCombo = std::make_unique<juce::ComboBox>();
-                if (bitDepthCombo) {
-                    bitDepthCombo->addItem("16 bit", 1);
-                    bitDepthCombo->addItem("20 bit", 2);
-                    bitDepthCombo->addItem("24 bit", 3);
-                    bitDepthCombo->addItem("32 bit", 4);
-                    bitDepthCombo->setSelectedId(3); // Default to 24-bit
-                    bitDepthCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    bitDepthCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF87ceeb));
-                    addAndMakeVisible(*bitDepthCombo);
-                }
+                spectrumKnob = std::make_unique<CleanKnob>();
+                if (spectrumKnob) addAndMakeVisible(*spectrumKnob);
+                
+                bitDepthKnob = std::make_unique<CleanKnob>();
+                if (bitDepthKnob) addAndMakeVisible(*bitDepthKnob);
+                
+                ditherKnob = std::make_unique<CleanKnob>();
+                if (ditherKnob) addAndMakeVisible(*ditherKnob);
                 
                 // Create INFO button
                 infoButton = std::make_unique<juce::TextButton>("INFO");
@@ -2279,37 +2038,28 @@ private:
             g.setFont(13.0f);
             g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
             
-            // Draw meters with labels
+            // Labels and meters
             g.setColour(juce::Colours::white);
             g.setFont(11.0f);
+            g.drawText("Jitter RMS", 70, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Spectrum", 190, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Bit Depth", 310, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Dither", 430, 240, 80, 40, juce::Justification::centred);
             
-            // RMS Jitter Meter
-            g.drawText("RMS Jitter Meter", 50, 180, 150, 20, juce::Justification::centred);
-            drawVerticalMeter(g, 100, 200, 30, 120, 0.3f, juce::Colour(0xFF00d4aa), "");
-            g.setFont(9.0f);
-            g.drawText("<10ps", 50, 325, 50, 15, juce::Justification::left);
-            g.drawText("Good", 50, 340, 50, 15, juce::Justification::left);
-            
-            // Peak Jitter Display  
-            g.setFont(11.0f);
-            g.drawText("Peak Jitter", 200, 180, 120, 20, juce::Justification::centred);
-            drawVerticalMeter(g, 240, 200, 30, 120, 0.5f, juce::Colour(0xFFff6b35), "");
-            
-            // Spectral Analysis
-            g.drawText("Spectral Analysis", 350, 180, 150, 20, juce::Justification::centred);
-            drawVerticalMeter(g, 400, 200, 30, 120, 0.4f, juce::Colour(0xFF4a90e2), "");
-            
-            // Control switches section
-            g.setFont(11.0f);
-            g.drawText("Dither Type", 100, 380, 120, 20, juce::Justification::centred);
-            g.drawText("Bit Depth", 380, 380, 120, 20, juce::Justification::centred);
+            // Draw meters centered above knobs (knob centers: 120, 240, 360, 480)
+            drawVerticalMeter(g, 110, 280, 20, 100, 0.5f, juce::Colour(0xFF00d4aa), "RMS");
+            drawVerticalMeter(g, 230, 280, 20, 100, 0.7f, juce::Colour(0xFFff6b35), "Spec");
+            drawVerticalMeter(g, 350, 280, 20, 100, 0.6f, juce::Colour(0xFF4a90e2), "Bits");
+            drawVerticalMeter(g, 470, 280, 20, 100, 0.4f, juce::Colour(0xFFf7931e), "Dith");
         }
         
         void resized() override
         {
             if (presetCombo) presetCombo->setBounds(getWidth()/2 - 75, 120, 150, 25);
-            if (ditherTypeCombo) ditherTypeCombo->setBounds(60, 410, 180, 30);
-            if (bitDepthCombo) bitDepthCombo->setBounds(340, 410, 180, 30);
+            if (jitterRMSKnob) jitterRMSKnob->setBounds(80, 410, 80, 80);
+            if (spectrumKnob) spectrumKnob->setBounds(200, 410, 80, 80);
+            if (bitDepthKnob) bitDepthKnob->setBounds(320, 410, 80, 80);
+            if (ditherKnob) ditherKnob->setBounds(440, 410, 80, 80);
             if (infoButton) infoButton->setBounds(getWidth() - 80, 20, 60, 30);
         }
         
@@ -2361,8 +2111,7 @@ private:
     private:
         juce::String processName;
         std::unique_ptr<juce::ComboBox> presetCombo;
-        std::unique_ptr<juce::ComboBox> ditherTypeCombo;
-        std::unique_ptr<juce::ComboBox> bitDepthCombo;
+        std::unique_ptr<CleanKnob> jitterRMSKnob, spectrumKnob, bitDepthKnob, ditherKnob;
         std::unique_ptr<juce::TextButton> infoButton;
     };
     
@@ -2389,37 +2138,18 @@ private:
                     addAndMakeVisible(*presetCombo);
                 }
                 
-                // Create Time Delay knob
+                // Create knobs - Delay, Polarity, Phase Rotate, Crossover
                 delayKnob = std::make_unique<CleanKnob>();
                 if (delayKnob) addAndMakeVisible(*delayKnob);
                 
-                // Create Crossover Frequency knob
+                polarityKnob = std::make_unique<CleanKnob>();
+                if (polarityKnob) addAndMakeVisible(*polarityKnob);
+                
+                phaseKnob = std::make_unique<CleanKnob>();
+                if (phaseKnob) addAndMakeVisible(*phaseKnob);
+                
                 crossoverKnob = std::make_unique<CleanKnob>();
                 if (crossoverKnob) addAndMakeVisible(*crossoverKnob);
-                
-                // Create Phase Rotation Switch
-                phaseRotationCombo = std::make_unique<juce::ComboBox>();
-                if (phaseRotationCombo) {
-                    phaseRotationCombo->addItem("0\u00B0", 1);
-                    phaseRotationCombo->addItem("90\u00B0", 2);
-                    phaseRotationCombo->addItem("180\u00B0", 3);
-                    phaseRotationCombo->addItem("270\u00B0", 4);
-                    phaseRotationCombo->setSelectedId(1);
-                    phaseRotationCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    phaseRotationCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFF4a90e2));
-                    addAndMakeVisible(*phaseRotationCombo);
-                }
-                
-                // Create Polarity Switch
-                polarityCombo = std::make_unique<juce::ComboBox>();
-                if (polarityCombo) {
-                    polarityCombo->addItem("Normal", 1);
-                    polarityCombo->addItem("Inverted", 2);
-                    polarityCombo->setSelectedId(1);
-                    polarityCombo->setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xFF1a2a3a));
-                    polarityCombo->setColour(juce::ComboBox::textColourId, juce::Colour(0xFFff6b35));
-                    addAndMakeVisible(*polarityCombo);
-                }
                 
                 // Create INFO button
                 infoButton = std::make_unique<juce::TextButton>("INFO");
@@ -2447,54 +2177,28 @@ private:
             g.setFont(13.0f);
             g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
             
-            // Draw Correlation Meter (center position)
+            // Labels and meters
             g.setColour(juce::Colours::white);
-            g.setFont(13.0f);
-            g.drawText("CORRELATION METER", getWidth()/2 - 100, 190, 200, 25, juce::Justification::centred);
-            
-            // Horizontal correlation meter (-1.0 to +1.0)
-            int meterX = getWidth()/2 - 150;
-            int meterY = 220;
-            int meterWidth = 300;
-            int meterHeight = 40;
-            
-            g.setColour(juce::Colour(0xFF2a2a3e));
-            g.fillRect(meterX, meterY, meterWidth, meterHeight);
-            g.setColour(juce::Colour(0xFF4a4a6a));
-            g.drawRect(meterX, meterY, meterWidth, meterHeight);
-            
-            // Draw center line at 0.0
-            g.setColour(juce::Colours::white);
-            g.drawLine(meterX + meterWidth/2, meterY, meterX + meterWidth/2, meterY + meterHeight, 1.5f);
-            
-            // Draw correlation value (example: +0.8)
-            float correlation = 0.8f; // Placeholder value
-            float barWidth = (correlation + 1.0f) / 2.0f * meterWidth;
-            g.setColour(correlation > 0.7f ? juce::Colour(0xFF00ff00) : correlation > 0.0f ? juce::Colour(0xFFffff00) : juce::Colour(0xFFff0000));
-            g.fillRect((float)meterX, (float)meterY, barWidth, (float)meterHeight);
-            
-            // Draw scale markers
-            g.setColour(juce::Colours::white);
-            g.setFont(9.0f);
-            g.drawText("-1.0", meterX, meterY + meterHeight + 5, 30, 15, juce::Justification::left);
-            g.drawText("0.0", meterX + meterWidth/2 - 15, meterY + meterHeight + 5, 30, 15, juce::Justification::centred);
-            g.drawText("+1.0", meterX + meterWidth - 30, meterY + meterHeight + 5, 30, 15, juce::Justification::right);
-            
-            // Knob and switch labels
             g.setFont(11.0f);
-            g.drawText("Time Delay", 60, 300, 120, 20, juce::Justification::centred);
-            g.drawText("Crossover Freq", 350, 300, 140, 20, juce::Justification::centred);
-            g.drawText("Phase Rotation", 90, 440, 140, 20, juce::Justification::centred);
-            g.drawText("Polarity", 380, 440, 100, 20, juce::Justification::centred);
+            g.drawText("Delay", 70, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Polarity", 190, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Phase", 310, 240, 80, 40, juce::Justification::centred);
+            g.drawText("Crossover", 430, 240, 80, 40, juce::Justification::centred);
+            
+            // Draw meters centered above knobs (knob centers: 120, 240, 360, 480)
+            drawVerticalMeter(g, 110, 280, 20, 100, 0.3f, juce::Colour(0xFF00d4aa), "Del");
+            drawVerticalMeter(g, 230, 280, 20, 100, 0.5f, juce::Colour(0xFFff6b35), "Pol");
+            drawVerticalMeter(g, 350, 280, 20, 100, 0.8f, juce::Colour(0xFF4a90e2), "Phase");
+            drawVerticalMeter(g, 470, 280, 20, 100, 0.6f, juce::Colour(0xFFf7931e), "Cross");
         }
         
         void resized() override
         {
             if (presetCombo) presetCombo->setBounds(getWidth()/2 - 75, 120, 150, 25);
-            if (delayKnob) delayKnob->setBounds(80, 330, 80, 80);
-            if (crossoverKnob) crossoverKnob->setBounds(370, 330, 80, 80);
-            if (phaseRotationCombo) phaseRotationCombo->setBounds(80, 470, 160, 30);
-            if (polarityCombo) polarityCombo->setBounds(360, 470, 140, 30);
+            if (delayKnob) delayKnob->setBounds(80, 410, 80, 80);
+            if (polarityKnob) polarityKnob->setBounds(200, 410, 80, 80);
+            if (phaseKnob) phaseKnob->setBounds(320, 410, 80, 80);
+            if (crossoverKnob) crossoverKnob->setBounds(440, 410, 80, 80);
             if (infoButton) infoButton->setBounds(getWidth() - 80, 20, 60, 30);
         }
         
@@ -2546,9 +2250,7 @@ private:
     private:
         juce::String processName;
         std::unique_ptr<juce::ComboBox> presetCombo;
-        std::unique_ptr<CleanKnob> delayKnob, crossoverKnob;
-        std::unique_ptr<juce::ComboBox> phaseRotationCombo;
-        std::unique_ptr<juce::ComboBox> polarityCombo;
+        std::unique_ptr<CleanKnob> delayKnob, polarityKnob, phaseKnob, crossoverKnob;
         std::unique_ptr<juce::TextButton> infoButton;
     };
     
@@ -2617,12 +2319,7 @@ private:
             g.fillRoundedRectangle(getWidth()/2 - 90, 95, 180, 60, 8.0f);
             g.setColour(juce::Colour(0xFF87ceeb));
             g.setFont(13.0f);
-            // Use "TRANSFORMER TYPE" label for Transformer window, "PRESET" for others
-            if (processName.contains("TRANSFORMER")) {
-                g.drawText("TRANSFORMER TYPE", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
-            } else {
-                g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
-            }
+            g.drawText("PRESET", getWidth()/2 - 80, 100, 160, 20, juce::Justification::centred);
             
             // Process-specific labels and meters
             g.setColour(juce::Colours::white);
