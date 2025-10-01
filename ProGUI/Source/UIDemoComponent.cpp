@@ -5,6 +5,7 @@
 #include "Components/HorizontalBarMeter.h"
 #include "Components/ProcessControl.h"
 #include "Components/NeptuneISPSubwindow.h"
+#include "Components/PsychedelicStealMojoComponent.h"
 // #include "ControlInfoWindow.h" // Temporarily disabled due to linking issues
 // Professional subwindow includes temporarily disabled - using simple inline approach
 // #include "ProcessSubwindow.h"
@@ -183,11 +184,11 @@ UIDemoComponent::UIDemoComponent()
     };
     btnStealMojo.onClick = [this]
     {
-        auto* comp = new StealMojoComponent();
-        comp->setSize(500, 400);
+        auto* comp = new PsychedelicStealMojoComponent();
+        comp->setSize(700, 900);
         juce::DialogWindow::LaunchOptions opts;
         opts.content.setOwned(comp);
-        opts.dialogTitle = "Steal The Mojo";
+        opts.dialogTitle = "✨ Steal The Mojo ✨";
         opts.componentToCentreAround = this;
         opts.escapeKeyTriggersCloseButton = true;
         opts.useNativeTitleBar = true;
