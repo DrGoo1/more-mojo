@@ -62,7 +62,7 @@ private:
     juce::TextButton btnVUMode;
     juce::TextButton btnLEDMode;
     juce::TextButton btnProMaster { "Pro Master…" };
-    juce::TextButton btnStealMojo { "Steal The Mojo…" };
+    juce::TextButton btnStealMojo { "Steal The Mojo" };
     juce::Image skinImage;
 
     // Shell: master bypass and timeline zoom controls

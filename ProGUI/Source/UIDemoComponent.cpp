@@ -184,13 +184,14 @@ UIDemoComponent::UIDemoComponent()
     btnStealMojo.onClick = [this]
     {
         auto* comp = new StealMojoComponent();
+        comp->setSize(500, 400);
         juce::DialogWindow::LaunchOptions opts;
         opts.content.setOwned(comp);
         opts.dialogTitle = "Steal The Mojo";
         opts.componentToCentreAround = this;
         opts.escapeKeyTriggersCloseButton = true;
         opts.useNativeTitleBar = true;
-        opts.resizable = false;
+        opts.resizable = true;
         opts.launchAsync();
     };
 
@@ -898,9 +899,9 @@ void UIDemoComponent::resized()
     btnVUMode.setBounds(0, 0, 0, 0); // hidden
     btnLEDMode.setBounds(0, 0, 0, 0); // hidden
     
-    // Hide all bottom buttons for clean interface
+    // Show Consumer button in top-right, hide Pro Master
     btnProMaster.setBounds(0, 0, 0, 0); // hidden
-    btnStealMojo.setBounds(0, 0, 0, 0); // hidden
+    btnStealMojo.setBounds(bounds.getWidth() - 150, 10, 140, 35); // Consumer mode button
     
     // ProcessControl components handle their own positioning
     
